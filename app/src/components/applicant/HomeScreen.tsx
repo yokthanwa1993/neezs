@@ -60,11 +60,6 @@ const HomeScreen = () => {
     { id: 2, title: 'งานใหม่ล่าสุด', description: 'มีงานใหม่ 12 ตำแหน่ง', image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=400&h=200&fit=crop&crop=center' },
     { id: 3, title: 'แนะนำเพื่อน', description: 'รับเงินรางวัล 200 บาท', image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=200&fit=crop&crop=center' },
   ];
-  
-  const banners = [
-    { id: 1, image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=300&fit=crop&crop=center', alt: 'Modern Office Space', title: 'ค้นหางานในฝัน', subtitle: 'เริ่มต้นอาชีพใหม่วันนี้' },
-    { id: 2, image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&h=300&fit=crop&crop=center', alt: 'Team Collaboration', title: 'ร่วมงานกับทีมมืออาชีพ', subtitle: 'พัฒนาทักษะไปด้วยกัน' },
-  ];
 
   const renderWelcomeSection = () => {
     if (user) {
@@ -161,25 +156,6 @@ const HomeScreen = () => {
             </CarouselContent>
             <CarouselPrevious className="hidden sm:flex" />
             <CarouselNext className="hidden sm:flex" />
-          </Carousel>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-bold mb-4">ประกาศล่าสุด</h2>
-           <Carousel opts={{ loop: true }} className="w-full">
-            <CarouselContent>
-              {banners.map((banner) => (
-                <CarouselItem key={banner.id}>
-                  <Card className="relative overflow-hidden aspect-video">
-                    <img src={banner.image} alt={banner.alt} className="w-full h-full object-cover"/>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-6 flex flex-col justify-end">
-                      <h3 className="text-white text-xl font-bold">{banner.title}</h3>
-                      <p className="text-white/90">{banner.subtitle}</p>
-                    </div>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
           </Carousel>
         </section>
       </main>

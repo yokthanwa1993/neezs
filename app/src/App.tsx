@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LiffProvider } from './contexts/LiffContext';
+import { DevModeProvider, useDevMode } from './contexts/DevModeContext';
 import LineLogin from './components/shared/LineLogin';
 import ProfilePage from './components/applicant/ProfilePage';
 import Wallet from './components/applicant/Wallet';
@@ -16,9 +17,11 @@ import ChatHistoryPage from './pages/applicant/ChatHistoryPage';
 import NotificationsPage from './pages/shared/NotificationsPage';
 import FullTimeJobs from './pages/applicant/FullTimeJobs';
 import LineCallback from './components/shared/LineCallback';
+import DevPage from './pages/shared/DevPage';
 
 const AppContent = () => {
   const { user, isLoading } = useAuth();
+  const { isDevMode } = useDevMode();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -30,6 +33,9 @@ const AppContent = () => {
   }
 
   const protectedRoute = (element: React.ReactElement) => {
+    if (isDevMode) {
+      return element;
+    }
     return user ? element : <Navigate to="/login" replace />;
   };
 
@@ -51,6 +57,7 @@ const AppContent = () => {
           <Route path="/settings" element={protectedRoute(<SettingsPage />)} />
           <Route path="/chat-history" element={protectedRoute(<ChatHistoryPage />)} />
           <Route path="/notifications" element={protectedRoute(<NotificationsPage />)} />
+          <Route path="/dev" element={<DevPage />} />
         </Routes>
       </div>
     </div>
@@ -59,16 +66,16 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <LiffProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </LiffProvider>
-    </AuthProvider>
+    <Router>
+      <DevModeProvider>
+        <AuthProvider>
+          <LiffProvider>
+            <AppContent />
+          </LiffProvider>
+        </AuthProvider>
+      </DevModeProvider>
+    </Router>
   );
 }
 
-export default App;// Triggering deployment
-// Triggering deployment again
-// Final trigger attempt
+export default App;
