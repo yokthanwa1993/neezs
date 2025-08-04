@@ -1,0 +1,52 @@
+name: Deploy neeiz-web to CapRover
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web/**'
+      - '.github/workflows/deploy-web.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build application
+        run: pnpm run build
+
+      - name: Create deployment tar
+        run: |
+          mkdir -p ../deploy_temp
+          cp -r * ../deploy_temp/
+          cd ../deploy_temp
+          rm -rf node_modules .git .next .DS_Store
+          tar -czf ../deploy.tar .
+          cd ..
+          rm -rf deploy_temp
+
+      - name: Deploy to CapRover
+        uses: caprover/deploy-from-github@v1.0.1
+        with:
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          app: 'neeiz-web'
+          token: '${{ secrets.CAPROVER_NEEIZ_WEB_TOKEN }}' 

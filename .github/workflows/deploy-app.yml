@@ -1,0 +1,57 @@
+name: Deploy neeiz-app to CapRover
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - '.github/workflows/deploy-app.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build application
+        run: pnpm run build
+
+      - name: Create deployment tar
+        run: |
+          # Create a clean directory for deployment
+          mkdir -p ../deploy_temp
+          cp -r * ../deploy_temp/
+          cd ../deploy_temp
+          
+          # Remove unnecessary files
+          rm -rf node_modules .git dist .pnpm-store .DS_Store
+          
+          # Create tar file in the workspace root where CapRover expects it
+          tar -czf ../deploy.tar .
+          cd ..
+          rm -rf deploy_temp
+
+      - name: Deploy to CapRover
+        uses: caprover/deploy-from-github@v1.0.1
+        with:
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          app: 'neeiz-app'
+          token: '${{ secrets.CAPROVER_NEEIZ_APP_TOKEN }}'
