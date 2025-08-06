@@ -136,9 +136,9 @@ const HomeSeeker = () => {
               >
                 <div className="relative">
                   <Carousel className="w-full" opts={{ loop: true }}>
-                    <CarouselContent>
+                    <CarouselContent className="-ml-0">
                       {job.images.map((img, index) => (
-                        <CarouselItem key={index}>
+                        <CarouselItem key={index} className="pl-0">
                           <img src={img} alt={`${job.title} ${index + 1}`} className="w-full h-48 object-cover" />
                         </CarouselItem>
                       ))}
@@ -185,13 +185,15 @@ const HomeSeeker = () => {
                     <ArrowLeft className="w-6 h-6 text-gray-800" />
                   </button>
                   <Carousel className="w-full" opts={{ loop: true }}>
-                    <CarouselContent>
+                    <CarouselContent className="-ml-0">
                       {selectedJob.images.map((img, index) => (
-                        <CarouselItem key={index}>
+                        <CarouselItem key={index} className="pl-0">
                           <img src={img.replace('w=400&h=300', 'w=800&h=600')} alt={`${selectedJob.title} ${index + 1}`} className="w-full h-64 object-cover" />
                         </CarouselItem>
                       ))}
                     </CarouselContent>
+                    <CarouselPrevious className="absolute left-4" />
+                    <CarouselNext className="absolute right-4" />
                   </Carousel>
                 </div>
                 <div className="p-6 bg-white">
