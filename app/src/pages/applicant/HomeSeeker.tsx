@@ -135,10 +135,10 @@ const HomeSeeker = () => {
                 onClick={() => setSelectedJob(job)}
               >
                 <div className="relative">
-                  <Carousel className="w-full" opts={{ loop: true }}>
-                    <CarouselContent className="-ml-0">
+                  <Carousel className="w-full" opts={{ loop: true, duration: 0 }}>
+                    <CarouselContent>
                       {job.images.map((img, index) => (
-                        <CarouselItem key={index} className="pl-0">
+                        <CarouselItem key={index}>
                           <img src={img} alt={`${job.title} ${index + 1}`} className="w-full h-48 object-cover" />
                         </CarouselItem>
                       ))}
@@ -184,10 +184,10 @@ const HomeSeeker = () => {
                   >
                     <ArrowLeft className="w-6 h-6 text-gray-800" />
                   </button>
-                  <Carousel className="w-full" opts={{ loop: true }}>
-                    <CarouselContent className="-ml-0">
+                  <Carousel className="w-full" opts={{ loop: true, duration: 0 }}>
+                    <CarouselContent>
                       {selectedJob.images.map((img, index) => (
-                        <CarouselItem key={index} className="pl-0">
+                        <CarouselItem key={index}>
                           <img src={img.replace('w=400&h=300', 'w=800&h=600')} alt={`${selectedJob.title} ${index + 1}`} className="w-full h-64 object-cover" />
                         </CarouselItem>
                       ))}
