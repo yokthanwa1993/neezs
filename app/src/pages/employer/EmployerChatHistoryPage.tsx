@@ -54,13 +54,8 @@ const EmployerChatHistoryPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 pb-20 relative">
-      {/* Header */}
-      <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
-        <h1 className="text-2xl font-bold text-gray-900 text-center">ข้อความ</h1>
-      </div>
-
       {/* Search and Filters */}
-      <div className="p-4 bg-white">
+      <div className="p-4 bg-white pt-8">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <Input

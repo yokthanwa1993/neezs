@@ -40,11 +40,116 @@ const HomeSeeker = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   const jobTemplates = [
-    { title: 'พนักงานเสิร์ฟ', company: 'Siam Restaurant', images: ['https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1592861956120-e524fc739696?w=400&h=300&fit=crop'] },
-    { title: 'บาริสต้า', company: 'Coffee Corner', images: ['https://images.unsplash.com/photo-1511920183353-3c7c95a5742c?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1525803377221-4213da3d3512?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=400&h=300&fit=crop'] },
-    { title: 'พนักงานทำความสะอาด', company: 'Clean Co.', images: ['https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1603712725038-92c104815203?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1562886838-633576457a2a?w=400&h=300&fit=crop'] },
-    { title: 'พนักงานต้อนรับ', company: 'Grand Hotel', images: ['https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400&h=300&fit=crop'] },
-    { title: 'ผู้ช่วยครัว', company: 'Kitchen Express', images: ['https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1604332436015-a83854a4a753?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop'] },
+    { 
+      title: 'พนักงานเสิร์ฟ', 
+      company: 'Siam Restaurant', 
+      images: [
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1592861956120-e524fc739696?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=400&h=300&fit=crop'
+      ] 
+    },
+    { 
+      title: 'บาริสต้า', 
+      company: 'Coffee Corner', 
+      images: [
+        'https://images.unsplash.com/photo-1511920183353-3c7c95a5742c?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1525803377221-4213da3d3512?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop'
+      ] 
+    },
+    { 
+      title: 'พนักงานทำความสะอาด', 
+      company: 'Clean Co.', 
+      images: [
+        'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1603712725038-92c104815203?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1562886838-633576457a2a?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1541123437800-1a7302143b49?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1628177242233-a859805936a8?w=400&h=300&fit=crop'
+      ] 
+    },
+    { 
+      title: 'พนักงานต้อนรับ', 
+      company: 'Grand Hotel', 
+      images: [
+        'https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop'
+      ] 
+    },
+    { 
+      title: 'ผู้ช่วยครัว', 
+      company: 'Kitchen Express', 
+      images: [
+        'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1604332436015-a83854a4a753?w=400&h=300&fit=crop', 
+        'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1495195129352-aeb3c5e281e5?w=400&h=300&fit=crop'
+      ] 
+    },
+    {
+      title: 'พนักงานขาย',
+      company: 'Fashion Outlet',
+      images: [
+        'https://images.unsplash.com/photo-1556742111-a3297a0d56d6?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1560250056-07ba64664864?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1579548122204-e7812a1b4a2a?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1586429209134-1b65b05b625b?w=400&h=300&fit=crop'
+      ]
+    },
+    {
+      title: 'พนักงานแคชเชียร์',
+      company: 'SuperMart',
+      images: [
+        'https://images.unsplash.com/photo-1557821552-17105176677c?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1583324132598-3383a45555b6?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1609950564924-1fb11d78321b?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1599425137027-a855d444a170?w=400&h=300&fit=crop'
+      ]
+    },
+    {
+      title: 'พนักงานรักษาความปลอดภัย',
+      company: 'Secure Corp',
+      images: [
+        'https://images.unsplash.com/photo-1571942674907-213a0201816f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1616594199393-a11a94d4dc9b?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1559532293-1d19c4e3de38?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1621992130821-b150f62141e5?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1519756301029-33fefb07cdba?w=400&h=300&fit=crop'
+      ]
+    },
+    {
+      title: 'พนักงานส่งของ',
+      company: 'Express Delivery',
+      images: [
+        'https://images.unsplash.com/photo-1591700541393-95e4205663a6?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1617978241112-898785df45b5?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1586455122341-927f2dec0691?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1599255095433-e2513a123d81?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1620327467561-1e9161666c62?w=400&h=300&fit=crop'
+      ]
+    },
+    {
+      title: 'พนักงานทั่วไป',
+      company: 'Warehouse Hub',
+      images: [
+        'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1517995103993-73e4e3a31f19?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1621905251918-48416d8574a8?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1540479859555-1ac74b49a241?w=400&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1534275339504-913cda30e04d?w=400&h=300&fit=crop'
+      ]
+    }
   ];
 
   const featuredJobs: Job[] = Array.from({ length: 100 }, (_, i) => {
@@ -64,56 +169,24 @@ const HomeSeeker = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col h-screen">
       {/* Premium Header */}
-      <header className="bg-white px-4 pt-6 pb-4 rounded-b-3xl shadow-sm z-30 sticky top-0">
-        <div 
-            className="flex items-center justify-between w-full p-3 bg-gray-50 rounded-xl cursor-pointer mb-4"
-            onClick={() => setIsSearching(true)}
-        >
-            <div className="flex items-center text-gray-500 text-sm">
-                <Search className="w-5 h-5 mr-3" />
-                <span>ค้นหางาน, ตำแหน่ง...</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600 font-medium">
-                <MapPin className="w-5 h-5 mr-1.5 text-gray-400" />
-                <span>{location}</span>
-            </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-14 h-14 border-2 border-primary/50">
-              <AvatarImage src={user?.picture} alt={user?.name} />
-              <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-sm text-gray-500">ยินดีต้อนรับกลับมา,</p>
-              <h1 className="text-xl font-bold text-gray-800">{user?.name || 'Guest'}</h1>
-            </div>
-          </div>
-        </div>
-
-        {/* Find Jobs on Map Section */}
-        <div className="mt-5">
+      <header className="bg-white px-4 pt-4 pb-3 shadow-sm z-30 sticky top-0">
+        <div className="flex items-center gap-4">
+          <span className="text-base font-extrabold text-gray-900 flex-shrink-0">NEEZS</span>
           <div 
-            className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+              className="flex-grow flex items-center p-3 bg-gray-100 rounded-full cursor-pointer"
+              onClick={() => setIsSearching(true)}
+          >
+              <Search className="w-5 h-5 mr-3 text-gray-400" />
+              <span className="text-gray-400 text-sm">Search...</span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full bg-gray-100 flex-shrink-0 group hover:bg-primary/20"
             onClick={() => navigate('/map-view')}
           >
-            <div className="flex items-center">
-              <div className="bg-primary/10 p-3 rounded-full mr-4">
-                <MapPin className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-base text-gray-900">ดูตำแหน่งงานบนแผนที่</h3>
-                <p className="text-sm text-gray-500">ค้นหางานใกล้ตัวคุณได้ง่ายๆ</p>
-              </div>
-            </div>
-            <div className="w-16 h-16 rounded-lg overflow-hidden ml-4 flex-shrink-0">
-              <img 
-                src="/assets/images/map-preview.jpeg" 
-                alt="Map preview" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
+            <MapPin className="w-5 h-5 text-gray-600 group-hover:text-primary" />
+          </Button>
         </div>
       </header>
 

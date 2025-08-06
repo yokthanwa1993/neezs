@@ -91,9 +91,14 @@ const HomeEmployer: React.FC = () => {
                     ลงประกาศงาน
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] p-0 flex flex-col h-[90vh] max-h-[700px]">
-                  <DialogHeader className="p-6 pb-2">
-                    <DialogTitle>ลงประกาศงานใหม่</DialogTitle>
+                <DialogContent className="w-full h-full max-w-none max-h-none p-0 flex flex-col border-none rounded-none">
+                  <DialogHeader className="p-4 pb-3 flex flex-row items-center justify-between sticky top-0 bg-white z-10 shadow-sm">
+                    <DialogTitle className="text-lg font-bold">ลงประกาศงานใหม่</DialogTitle>
+                    <DialogClose asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full">
+                        <X className="h-5 w-5" />
+                      </Button>
+                    </DialogClose>
                   </DialogHeader>
                   <AddJobForm onFinished={() => setIsAddJobOpen(false)} />
                 </DialogContent>

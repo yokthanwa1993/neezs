@@ -52,11 +52,7 @@ const EmployerNotificationsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-center">การแจ้งเตือน</h1>
-      </div>
-
-      <div className="p-4">
+      <div className="p-4 pt-8">
         <div className="mb-4">
           <p className="text-sm text-gray-600">
             คุณมีการแจ้งเตือนที่ยังไม่ได้อ่าน <span className="font-bold text-primary">{unreadCount}</span> รายการ

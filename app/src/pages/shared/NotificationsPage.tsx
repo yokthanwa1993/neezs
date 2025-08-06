@@ -53,20 +53,17 @@ const NotificationsPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <header className="bg-white p-4 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center justify-between">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-gray-700" />
-          </button>
-          <h1 className="text-xl font-bold text-gray-900">การแจ้งเตือน</h1>
-          <div className="w-10"></div> {/* Spacer */}
-        </div>
-      </header>
+    <div className="relative min-h-screen bg-gray-50 pb-20">
+      {/* Floating Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md"
+      >
+        <ArrowLeft className="h-6 w-6 text-gray-700" />
+      </button>
 
       {/* Tabs */}
-      <div className="bg-white px-4 pt-2 pb-3">
+      <div className="px-4 pt-20 pb-3">
         <div className="flex space-x-2 bg-gray-100 p-1 rounded-xl">
           <button
             onClick={() => setSelectedTab('all')}
@@ -96,7 +93,7 @@ const NotificationsPage = () => {
       </div>
 
       {/* Notifications List */}
-      <main className="p-4">
+      <main className="px-4">
         {filteredNotifications.length > 0 ? (
           <div className="space-y-3">
             {filteredNotifications.map((item) => (

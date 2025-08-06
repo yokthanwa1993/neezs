@@ -48,11 +48,7 @@ const EmployerProfile: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-center">โปรไฟล์ผู้จ้างงาน</h1>
-      </div>
-
-      <div className="p-4">
+      <div className="p-4 pt-8">
         {/* Company Info Card */}
         <Card className="mb-6 shadow-md">
           <CardContent className="p-4 flex items-center space-x-4">

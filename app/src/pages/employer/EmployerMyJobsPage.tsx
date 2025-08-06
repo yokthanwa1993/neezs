@@ -70,17 +70,8 @@ const EmployerMyJobsPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">My Jobs</h1>
-          <Button onClick={() => navigate('/employer/add-job')} size="sm" className="bg-primary hover:bg-primary/90">
-            <Plus className="w-4 h-4 mr-2" /> Post a Job
-          </Button>
-        </div>
-      </div>
-
-      <div className="p-4">
+    <div className="min-h-screen bg-gray-50 pb-20 relative">
+      <div className="p-4 pt-8">
         <Tabs defaultValue="active" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-gray-100 rounded-lg">
             <TabsTrigger value="active">Active ({mockJobs.active.length})</TabsTrigger>
@@ -111,6 +102,13 @@ const EmployerMyJobsPage = () => {
         </Tabs>
       </div>
       
+      <Button 
+        onClick={() => navigate('/employer/add-job')} 
+        className="absolute bottom-24 right-4 rounded-full w-16 h-16 shadow-lg bg-primary hover:bg-primary/90 flex items-center justify-center"
+      >
+        <Plus size={32} className="text-primary-foreground" />
+      </Button>
+
       <EmployerBottomNavigation />
     </div>
   );

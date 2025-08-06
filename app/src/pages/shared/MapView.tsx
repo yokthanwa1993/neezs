@@ -24,13 +24,15 @@ const MapView = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <header className="bg-white p-4 shadow-sm sticky top-0 z-20 flex items-center flex-shrink-0">
-        <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-xl font-bold text-gray-800">หางานบนแผนที่</h1>
-      </header>
+    <div className="relative flex flex-col h-screen bg-gray-50">
+      <Button
+        variant="outline"
+        size="icon"
+        className="absolute top-4 left-4 z-20 bg-white rounded-full shadow-md h-10 w-10"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </Button>
 
       <div className="flex-grow relative">
         {/* Map View */}
