@@ -7,6 +7,7 @@ type Job = {
   title: string;
   company: string;
   location: { lat: number; lng: number };
+  salary: string;
 };
 
 type JobsMapProps = {
@@ -87,6 +88,7 @@ export const JobsMap = ({ jobs, selectedJob, onSelectJob }: JobsMapProps) => {
           <div className="p-1 max-w-xs">
             <h3 className="font-bold text-md">{selectedJob.title}</h3>
             <p className="text-sm text-gray-600">{selectedJob.company}</p>
+            <p className="text-sm text-green-600 font-semibold mt-1">{selectedJob.salary}</p>
             <Button size="sm" className="mt-2 w-full">ดูรายละเอียด</Button>
           </div>
         </InfoWindow>
