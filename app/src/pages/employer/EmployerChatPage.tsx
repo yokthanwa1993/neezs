@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
+import { Send } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -7,11 +10,12 @@ interface Message {
   timestamp: string;
 }
 
-const ChatPage: React.FC = () => {
+const EmployerChatPage: React.FC = () => {
+  const { id } = useParams(); // To get applicant ID
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: 'สวัสดี! มีอะไรให้ช่วยไหม?', sender: 'other', timestamp: '10:30' },
-    { id: 2, text: 'สอบถามเกี่ยวกับงานที่โพสต์ไว้', sender: 'user', timestamp: '10:32' },
-    { id: 3, text: 'แน่นอน งานไหนครับ?', sender: 'other', timestamp: '10:33' },
+    { id: 1, text: 'สวัสดีครับ สนใจสมัครงานพนักงานเสิร์ฟครับ', sender: 'other', timestamp: '10:30' },
+    { id: 2, text: 'สวัสดีค่ะ ยินดีค่ะ ไม่ทราบว่ามีประสบการณ์มาก่อนไหมคะ', sender: 'user', timestamp: '10:32' },
+    { id: 3, text: 'เคยทำที่ร้านอาหารสยาม 2 ปีครับ', sender: 'other', timestamp: '10:33' },
   ]);
   
   const [newMessage, setNewMessage] = useState('');
@@ -38,8 +42,11 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      
+    <div className="flex flex-col h-screen bg-gray-100 pb-20">
+      <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
+        <h1 className="text-lg font-bold text-center">ธันวา พรหมมินทร์</h1>
+        <p className="text-sm text-gray-500 text-center">พนักงานเสิร์ฟ</p>
+      </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
@@ -51,13 +58,13 @@ const ChatPage: React.FC = () => {
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                 message.sender === 'user' 
                   ? 'bg-primary text-primary-foreground rounded-br-none' 
-                  : 'bg-white text-black rounded-bl-none'
+                  : 'bg-white text-black rounded-bl-none shadow-sm'
               }`}
             >
               <p>{message.text}</p>
               <p 
-                className={`text-xs mt-1 ${
-                  message.sender === 'user' ? 'text-gray-800' : 'text-gray-500'
+                className={`text-xs mt-1 text-right ${
+                  message.sender === 'user' ? 'text-primary-foreground/70' : 'text-gray-500'
                 }`}
               >
                 {message.timestamp}
@@ -67,7 +74,7 @@ const ChatPage: React.FC = () => {
         ))}
       </div>
       
-      <div className="bg-white p-4 border-t">
+      <div className="bg-white p-2 border-t sticky bottom-[60px] z-10">
         <div className="flex items-center">
           <textarea
             value={newMessage}
@@ -80,16 +87,15 @@ const ChatPage: React.FC = () => {
           <button
             onClick={handleSendMessage}
             disabled={newMessage.trim() === ''}
-            className="ml-2 bg-primary text-primary-foreground rounded-full p-2 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="ml-2 bg-primary text-white rounded-full p-3 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
+            <Send className="h-5 w-5" />
           </button>
         </div>
       </div>
+      <EmployerBottomNavigation />
     </div>
   );
 };
 
-export default ChatPage;
+export default EmployerChatPage;

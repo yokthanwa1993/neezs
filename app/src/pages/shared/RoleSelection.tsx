@@ -14,14 +14,14 @@ const RoleSelection: React.FC = () => {
     
     // Redirect based on role
     if (role === 'applicant') {
-      navigate('/applicant/dashboard');
+      navigate('/home');
     } else {
-      navigate('/employer/dashboard');
+      navigate('/employer/home');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-amber-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -38,12 +38,12 @@ const RoleSelection: React.FC = () => {
           {/* Applicant Card */}
           <button
             onClick={() => handleRoleSelect('applicant')}
-            className="w-full bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border-2 border-transparent hover:border-blue-200"
+            className="w-full bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-200 border-2 border-transparent hover:border-primary/40"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <User className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                  <User className="w-6 h-6 text-primary" />
                 </div>
                 <div className="text-left">
                   <h3 className="text-lg font-semibold text-gray-900">
@@ -93,4 +93,4 @@ const RoleSelection: React.FC = () => {
   );
 };
 
-export default RoleSelection; 
+export default RoleSelection;

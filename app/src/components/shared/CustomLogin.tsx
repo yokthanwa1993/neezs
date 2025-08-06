@@ -127,7 +127,7 @@ const CustomLogin: React.FC<CustomLoginProps> = ({ onLoginSuccess }) => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-blue-600">
+          <CardTitle className="text-2xl font-bold text-primary">
             Gig Marketplace
           </CardTitle>
           <CardDescription>
@@ -174,7 +174,7 @@ const CustomLogin: React.FC<CustomLoginProps> = ({ onLoginSuccess }) => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-primary hover:bg-primary/90"
                   disabled={isLoading}
                 >
                   {isLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}

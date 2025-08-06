@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Clock, DollarSign, Filter, Star, Bookmark, ChevronRight } from 'lucide-react';
+import { Search, MapPin, Clock, DollarSign, Star, Bookmark, ChevronRight } from 'lucide-react';
 import BottomNavigation from '../../components/shared/BottomNavigation';
 
 const FullTimeJobs = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
   const [selectedLocation, setSelectedLocation] = useState('ทั้งหมด');
 
   // Mock data for full-time jobs
@@ -86,16 +85,14 @@ const FullTimeJobs = () => {
     }
   ];
 
-  const categories = ['ทั้งหมด', 'เทคโนโลยี', 'การตลาด', 'การเงิน', 'ขาย', 'ออกแบบ', 'บริหาร'];
   const locations = ['ทั้งหมด', 'กรุงเทพฯ', 'นนทบุรี', 'ปทุมธานี', 'สมุทรปราการ'];
 
   const filteredJobs = fullTimeJobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'ทั้งหมด' || job.category === selectedCategory;
     const matchesLocation = selectedLocation === 'ทั้งหมด' || job.location === selectedLocation;
     
-    return matchesSearch && matchesCategory && matchesLocation;
+    return matchesSearch && matchesLocation;
   });
 
   return (
@@ -110,30 +107,10 @@ const FullTimeJobs = () => {
           <input
             type="text"
             placeholder="ค้นหาตำแหน่งงานหรือบริษัท..."
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f5c518] focus:border-transparent"
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </div>
-
-        {/* Category Filter */}
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">หมวดหมู่</h3>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-[#f5c518] text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Location Filter */}
@@ -146,7 +123,7 @@ const FullTimeJobs = () => {
                 onClick={() => setSelectedLocation(location)}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                   selectedLocation === location
-                    ? 'bg-[#f5c518] text-white'
+                    ? 'bg-primary text-primary-foreground'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -187,7 +164,7 @@ const FullTimeJobs = () => {
               </div>
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <Bookmark 
-                  className={`w-5 h-5 ${job.isBookmarked ? 'fill-[#f5c518] text-[#f5c518]' : 'text-gray-400'}`} 
+                  className={`w-5 h-5 ${job.isBookmarked ? 'fill-primary text-primary' : 'text-gray-400'}`} 
                 />
               </button>
             </div>
@@ -232,7 +209,7 @@ const FullTimeJobs = () => {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <button className="flex-1 bg-[#f5c518] text-white font-semibold py-3 rounded-xl hover:bg-[#e6b015] transition-colors">
+              <button className="flex-1 bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:bg-primary/90 transition-colors">
                 สมัครงาน
               </button>
               <button className="px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">

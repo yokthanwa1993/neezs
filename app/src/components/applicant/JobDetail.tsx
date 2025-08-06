@@ -59,7 +59,7 @@ const JobDetail = () => {
               <h2 className="font-bold text-lg mb-2">รายละเอียดงาน</h2>
               <p className="text-gray-700">{job.description}</p>
             </div>
-            <span className="text-[#f5c518] font-bold text-lg">{job.salary}</span>
+            <span className="text-primary font-bold text-lg">{job.salary}</span>
           </div>
 
           <div className="space-y-3">
@@ -83,7 +83,7 @@ const JobDetail = () => {
           <ul className="space-y-2">
             {job.requirements.map((req, index) => (
               <li key={index} className="flex items-start">
-                <span className="text-[#f5c518] mr-2">•</span>
+                <span className="text-primary mr-2">•</span>
                 <span className="text-gray-700">{req}</span>
               </li>
             ))}
@@ -95,7 +95,7 @@ const JobDetail = () => {
           <ul className="space-y-2">
             {job.benefits.map((benefit, index) => (
               <li key={index} className="flex items-start">
-                <span className="text-[#f5c518] mr-2">•</span>
+                <span className="text-primary mr-2">•</span>
                 <span className="text-gray-700">{benefit}</span>
               </li>
             ))}
@@ -128,10 +128,10 @@ const JobDetail = () => {
         <button 
           onClick={handleApply}
           disabled={isApplied}
-          className={`w-full rounded-full py-3 font-bold text-black ${
+          className={`w-full rounded-full py-3 font-bold text-primary-foreground ${
             isApplied 
               ? 'bg-gray-300 cursor-not-allowed' 
-              : 'bg-[#f5c518] hover:bg-yellow-500'
+              : 'bg-primary hover:bg-primary/90'
           }`}
         >
           {isApplied 

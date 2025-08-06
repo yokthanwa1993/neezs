@@ -1,151 +1,90 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Pencil, MoreVertical, Trash2 } from 'lucide-react';
+import { ArrowLeft, Search } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 
+// อัปเดตข้อมูล mock ให้ใช้รูปภาพจริงและชื่อภาษาไทย
 const chats = [
-  {
-    id: 1,
-    name: 'Andy Robertson',
-    avatar: '/avatars/andy.jpg',
-    lastMessage: 'โอเคครับ กรุณาส่งประวัติส่วนตัวของคุณ...',
-    timestamp: '5 นาทีที่แล้ว',
-    unread: true,
-    unreadCount: 2,
-  },
-  {
-    id: 2,
-    name: 'Giorgio Chiellini',
-    avatar: '/avatars/giorgio.jpg',
-    lastMessage: 'สวัสดีครับ, อรุณสวัสดิ์',
-    timestamp: '30 นาทีที่แล้ว',
-    unread: false,
-  },
-  {
-    id: 3,
-    name: 'Alex Morgan',
-    avatar: '/avatars/alex.jpg',
-    lastMessage: 'เห็นตำแหน่งนักออกแบบ UI/UX...',
-    timestamp: '09:30 น.',
-    unread: false,
-  },
-  {
-    id: 4,
-    name: 'Megan Rapinoe',
-    avatar: '/avatars/megan.jpg',
-    lastMessage: 'เห็นตำแหน่งนักออกแบบ UI/UX...',
-    timestamp: '13:00 น.',
-    unread: false,
-    showDelete: true,
-  },
-  {
-    id: 5,
-    name: 'Alessandro Bastoni',
-    avatar: '/avatars/alessandro.jpg',
-    lastMessage: 'เห็นตำแหน่งนักออกแบบ UI/UX...',
-    timestamp: '18:00 น.',
-    unread: false,
-  },
-  {
-    id: 6,
-    name: 'Ilkay Gundogan',
-    avatar: '/avatars/ilkay.jpg',
-    lastMessage: 'เห็นตำแหน่งนักออกแบบ UI/UX...',
-    timestamp: 'เมื่อวานนี้',
-    unread: false,
-  },
+    { id: 1, name: 'สมชาย ใจดี', lastMessage: 'เยี่ยมเลย เดี๋ยวเช็คให้นะ', timestamp: '21:34', unread: true, avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { id: 2, name: 'สมหญิง อารี', lastMessage: 'ขอบคุณค่ะ', timestamp: '21:34', unread: true, avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { id: 3, name: 'อาทิตย์ รุ่งเรือง', lastMessage: 'ยินดีต้อนรับ!', timestamp: '21:34', unread: false, avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { id: 4, name: 'คุณมานี มีนา', lastMessage: 'สวัสดีตอนเช้า!', timestamp: '21:34', unread: true, avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { id: 5, name: 'วิชัย แซ่ตั้ง', lastMessage: 'ทำต่อไป!', timestamp: '21:34', unread: false, avatarUrl: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { id: 6, name: 'อรุณี ศรีสดใส', lastMessage: 'ขอบคุณค่ะ', timestamp: '21:34', unread: true, avatarUrl: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=256&h=256&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
 ];
 
 const ChatHistoryPage: React.FC = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const handleChatSelect = (chatId: number) => {
-    navigate(`/chat/${chatId}`);
-  };
+    const handleChatSelect = (chatId: number) => {
+        navigate(`/chat/${chatId}`);
+    };
 
-  return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white via-yellow-50 to-white">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-8 pb-4">
-        <div className="flex-1 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">ข้อความ</h1>
-        </div>
-        <div className="absolute right-6 flex items-center space-x-3">
-          <button className="p-2 rounded-full hover:bg-yellow-100" aria-label="สร้างข้อความใหม่">
-            <Pencil size={22} className="text-[#f5c518]" />
-          </button>
-          <button className="p-2 rounded-full hover:bg-yellow-100" aria-label="เพิ่มเติม">
-            <MoreVertical size={22} className="text-gray-400" />
-          </button>
-        </div>
-      </div>
+    return (
+        <div className="flex flex-col h-screen bg-white">
+            {/* Header and Search */}
+            <header className="bg-primary text-primary-foreground p-4 pb-6 sticky top-0 z-10">
+                <div className="flex items-center mb-4">
+                    <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-black/10">
+                        <ArrowLeft size={24} />
+                    </button>
+                    <h1 className="text-xl font-bold text-center flex-1">ข้อความ</h1>
+                    <div className="w-10"></div> {/* Spacer */}
+                </div>
+                <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <Input
+                        type="text"
+                        placeholder="ค้นหา"
+                        className="w-full pl-12 pr-4 py-3 h-12 bg-white text-gray-900 border-none rounded-xl focus:outline-none"
+                    />
+                </div>
+            </header>
 
-      {/* Search bar */}
-      <div className="px-6 mb-4">
-        <div className="flex items-center bg-white rounded-xl shadow-sm px-4 py-2 border border-gray-100">
-          <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            placeholder="ค้นหาข้อความ"
-            className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400"
-          />
-        </div>
-      </div>
-
-      {/* Chat list */}
-      <div className="flex-1 px-2 pb-4 overflow-y-auto">
-        {chats.map((chat, idx) => (
-          <div
-            key={chat.id}
-            className="flex items-center px-4 py-3 hover:bg-yellow-50 rounded-2xl transition group relative"
-            onClick={() => handleChatSelect(chat.id)}
-            style={{ cursor: 'pointer' }}
-          >
-            {/* Avatar */}
-            <div className="w-12 h-12 rounded-full overflow-hidden mr-4 border border-gray-100 bg-gray-200 flex items-center justify-center">
-              <img
-                src={chat.avatar}
-                alt={chat.name}
-                className="w-full h-full object-cover"
-                onError={e => { (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(chat.name); }}
-              />
-            </div>
-            {/* Chat info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-900 text-base">{chat.name}</span>
-                <span className="text-xs text-gray-400">{chat.timestamp}</span>
-              </div>
-              <div className="flex items-center mt-1">
-                <span className={`text-sm truncate ${chat.unread ? 'text-[#f5c518] font-medium' : 'text-gray-400'}`}>
-                  {chat.lastMessage}
-                </span>
-                {chat.unread && (
-                  <span className="ml-2 flex items-center">
-                    <span className="w-5 h-5 rounded-full bg-[#f5c518] text-white text-xs flex items-center justify-center font-bold">
-                      {chat.unreadCount}
-                    </span>
-                  </span>
+            {/* Chat list */}
+            <main className="flex-1 overflow-y-auto p-4 bg-white rounded-t-3xl -mt-4 z-20 relative">
+                {chats.length > 0 ? (
+                    <div className="space-y-2">
+                        {chats.map((chat) => (
+                            <div
+                                key={chat.id}
+                                className="flex items-center space-x-4 cursor-pointer p-3 rounded-2xl hover:bg-gray-50"
+                                onClick={() => handleChatSelect(chat.id)}
+                            >
+                                <div className="relative flex-shrink-0">
+                                    <Avatar className="w-14 h-14">
+                                        <AvatarImage src={chat.avatarUrl} alt={chat.name} className="object-cover" />
+                                        <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    {chat.unread && (
+                                        <span className="absolute bottom-1 right-1 block h-3 w-3 rounded-full bg-primary border-2 border-white"></span>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-bold text-gray-900 truncate">{chat.name}</span>
+                                        <span className="text-xs text-gray-500 flex-shrink-0 ml-2">{chat.timestamp}</span>
+                                    </div>
+                                    <p className="text-sm text-gray-500 truncate">{chat.lastMessage}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                        <img 
+                            src="https://ik.imagekit.io/storyset/illustrations/chatting/pana.svg" 
+                            alt="No messages" 
+                            className="w-64 h-64 mb-4"
+                        />
+                        <h2 className="text-xl font-semibold text-gray-800">ยังไม่มีข้อความ</h2>
+                        <p className="mt-2">เมื่อคุณเริ่มแชท ข้อความจะปรากฏที่นี่</p>
+                    </div>
                 )}
-              </div>
-            </div>
-            {/* Delete button */}
-            {chat.showDelete && (
-              <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-yellow-100 hover:bg-yellow-200 rounded-xl p-3 transition"
-                onClick={e => { e.stopPropagation(); /* handle delete here */ }}
-                aria-label="ลบแชท"
-              >
-                <Trash2 className="text-[#f5c518]" size={22} />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+            </main>
+        </div>
+    );
 };
 
 export default ChatHistoryPage;

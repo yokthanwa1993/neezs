@@ -20,7 +20,7 @@ export default function Home() {
                 เข้าสู่ระบบ
               </Link>
               <Link 
-                href="/jobs" 
+                href="/seeker/jobs" 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 หางาน
@@ -44,7 +44,7 @@ export default function Home() {
           <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
             <div className="rounded-md shadow">
               <Link
-                href="/jobs"
+                href="/seeker/jobs"
                 className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
               >
                 เริ่มหางาน
@@ -140,8 +140,8 @@ export default function Home() {
             <div>
               <h4 className="text-white text-sm font-semibold mb-4">สำหรับผู้หางาน</h4>
               <ul className="space-y-2">
-                <li><Link href="/jobs" className="text-gray-300 hover:text-white text-sm">ค้นหางาน</Link></li>
-                <li><Link href="/profile" className="text-gray-300 hover:text-white text-sm">โปรไฟล์</Link></li>
+                <li><Link href="/seeker/jobs" className="text-gray-300 hover:text-white text-sm">ค้นหางาน</Link></li>
+                <li><Link href="/seeker/profile" className="text-gray-300 hover:text-white text-sm">โปรไฟล์</Link></li>
                 <li><Link href="/applications" className="text-gray-300 hover:text-white text-sm">งานที่สมัคร</Link></li>
               </ul>
             </div>

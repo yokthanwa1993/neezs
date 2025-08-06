@@ -18,7 +18,7 @@ const ApplicantDashboard: React.FC = () => {
       description: 'หางานที่เหมาะกับคุณ',
       icon: Search,
       path: '/applicant/jobs',
-      color: 'bg-blue-500',
+      color: 'bg-primary',
     },
     {
       title: 'งานที่สมัคร',
@@ -74,8 +74,8 @@ const ApplicantDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-primary" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">งานที่สมัคร</p>
@@ -141,4 +141,4 @@ const ApplicantDashboard: React.FC = () => {
   );
 };
 
-export default ApplicantDashboard; 
+export default ApplicantDashboard;

@@ -1,55 +1,117 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+  LogIn,
+  Users,
+  ClipboardList,
+  Settings,
+  Home,
+  Search,
+  Briefcase,
+  FileText,
+  Calendar,
+  Wallet as WalletIcon,
+  MessageSquare,
+  Send,
+  Bell,
+  UserCircle,
+  Building2,
+  PlusSquare,
+  UserCog,
+  Shield,
+} from 'lucide-react';
 import { useDevMode } from '@/contexts/DevModeContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Shield } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+
+type MenuItem = {
+  title: string;
+  path: string;
+  icon: React.ElementType;
+  color: string;
+};
+
+const sharedPages: MenuItem[] = [
+  { title: 'Login', path: '/login', icon: LogIn, color: 'bg-green-500' },
+  { title: 'Role Selection', path: '/role-selection', icon: Users, color: 'bg-blue-500' },
+  { title: 'Onboarding', path: '/onboarding', icon: ClipboardList, color: 'bg-yellow-500' },
+  { title: 'Settings', path: '/settings', icon: Settings, color: 'bg-gray-500' },
+];
+
+const applicantPages: MenuItem[] = [
+  { title: 'Seeker Home', path: '/home', icon: Home, color: 'bg-sky-500' },
+  { title: 'Job Feed', path: '/jobs', icon: Search, color: 'bg-indigo-500' },
+  { title: 'Full-Time Jobs', path: '/full-time-jobs', icon: Briefcase, color: 'bg-violet-500' },
+  { title: 'Job Detail (Sample)', path: '/job/1', icon: FileText, color: 'bg-purple-500' },
+  { title: 'My Shifts', path: '/my-shifts', icon: Calendar, color: 'bg-fuchsia-500' },
+  { title: 'Wallet', path: '/wallet', icon: WalletIcon, color: 'bg-pink-500' },
+  { title: 'Chat History', path: '/chat-history', icon: MessageSquare, color: 'bg-rose-500' },
+  { title: 'Chat (Sample)', path: '/chat/1', icon: Send, color: 'bg-red-500' },
+  { title: 'Notifications', path: '/notifications', icon: Bell, color: 'bg-orange-500' },
+  { title: 'Profile', path: '/profile', icon: UserCircle, color: 'bg-amber-500' },
+];
+
+const employerPages: MenuItem[] = [
+  { title: 'Employer Home', path: '/employer/home', icon: Building2, color: 'bg-lime-500' },
+  { title: 'Post Job', path: '/employer/add-job', icon: PlusSquare, color: 'bg-emerald-500' },
+  { title: 'My Jobs', path: '/employer/my-jobs', icon: Briefcase, color: 'bg-teal-500' },
+  { title: 'Employer Chats', path: '/employer/chats', icon: MessageSquare, color: 'bg-cyan-500' },
+  { title: 'Employer Chat (Sample)', path: '/employer/chat/1', icon: Send, color: 'bg-sky-600' },
+  { title: 'Employer Notifications', path: '/employer/notifications', icon: Bell, color: 'bg-blue-600' },
+  { title: 'Employer Profile', path: '/employer/profile', icon: UserCog, color: 'bg-indigo-600' },
+];
+
+const MenuCard = ({ item }: { item: MenuItem }) => (
+  <Link to={item.path} className="text-center group flex flex-col items-center">
+    <div className={`w-full aspect-square rounded-2xl flex items-center justify-center ${item.color} shadow-lg group-hover:scale-105 transition-transform duration-200`}>
+      <item.icon className="w-1/2 h-1/2 text-white" strokeWidth={1.5} />
+    </div>
+    <p className="mt-2 text-sm font-medium text-slate-700 group-hover:text-slate-900 truncate w-full">{item.title}</p>
+  </Link>
+);
 
 const DevPage: React.FC = () => {
   const { isDevMode, toggleDevMode } = useDevMode();
-  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Shield className="mr-2 h-6 w-6 text-red-500" />
-            Developer Mode
-          </CardTitle>
-          <CardDescription>
-            สลับโหมดนักพัฒนาเพื่อทดสอบฟีเจอร์ต่างๆ ไม่ควรเปิดใช้งานในเวอร์ชันจริง
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label htmlFor="dev-mode-switch" className="text-base">
-                ข้ามการล็อกอิน
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                เปิดเพื่อเข้าถึงหน้าที่มีการป้องกันโดยไม่ต้องล็อกอิน
-              </p>
-            </div>
+    <div className="min-h-screen bg-white text-slate-900 p-4 sm:p-6">
+      <div className="w-full">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
+          <h1 className="text-3xl font-bold text-slate-900">Developer Menu</h1>
+          <div className="flex items-center space-x-3 bg-slate-100 p-2 rounded-lg">
+            <Shield className="w-5 h-5 text-primary" />
+            <Label htmlFor="dev-mode-switch" className="text-slate-700 font-medium">
+              Bypass Login
+            </Label>
             <Switch
               id="dev-mode-switch"
               checked={isDevMode}
               onCheckedChange={toggleDevMode}
-              aria-label="Toggle developer mode"
             />
           </div>
-          {isDevMode && (
-            <div className="mt-4 rounded-md bg-yellow-50 p-4 text-sm text-yellow-800">
-              <p><strong>คำเตือน:</strong> โหมดนักพัฒนาทำงานอยู่ การตรวจสอบการล็อกอินถูกปิดใช้งานชั่วคราว</p>
-            </div>
-          )}
-           <Button onClick={() => navigate('/')} className="w-full mt-4">
-            กลับหน้าแรก
-          </Button>
-        </CardContent>
-      </Card>
+        </div>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-primary mb-4 border-b border-slate-200 pb-2">Shared Pages</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-6">
+            {sharedPages.map(item => <MenuCard key={item.path} item={item} />)}
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold text-primary mb-4 border-b border-slate-200 pb-2">Applicant Pages</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-6">
+            {applicantPages.map(item => <MenuCard key={item.path} item={item} />)}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold text-primary mb-4 border-b border-slate-200 pb-2">Employer Pages</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-6">
+            {employerPages.map(item => <MenuCard key={item.path} item={item} />)}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

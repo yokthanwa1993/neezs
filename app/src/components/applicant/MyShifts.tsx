@@ -30,7 +30,7 @@ const MyShifts = () => {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">กำลังโหลด...</p>
         </div>
       </div>
@@ -80,7 +80,7 @@ const MyShifts = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed': return 'text-green-600';
-      case 'pending': return 'text-yellow-600';
+      case 'pending': return 'text-primary';
       case 'completed': return 'text-gray-600';
       default: return '';
     }
@@ -129,7 +129,7 @@ const MyShifts = () => {
                 <button className="flex-1 bg-gray-100 rounded-full py-2 text-sm">
                   ดูรายละเอียด
                 </button>
-                <button className="flex-1 bg-[#f5c518] rounded-full py-2 text-sm font-bold">
+                <button className="flex-1 bg-primary rounded-full py-2 text-sm font-bold text-primary-foreground">
                   ติดต่อผู้จ้างงาน
                 </button>
               </div>

@@ -20,7 +20,7 @@ const Onboarding = () => {
         <div className="flex items-center justify-between mb-2">
           <button 
             onClick={prevStep}
-            className={`text-sm ${step === 1 ? 'text-gray-400' : 'text-[#f5c518]'}`}
+            className={`text-sm ${step === 1 ? 'text-gray-400' : 'text-primary'}`}
             disabled={step === 1}
           >
             ย้อนกลับ
@@ -29,7 +29,7 @@ const Onboarding = () => {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div 
-            className="bg-[#f5c518] h-2 rounded-full" 
+            className="bg-primary h-2 rounded-full" 
             style={{ width: `${(step / totalSteps) * 100}%` }}
           ></div>
         </div>
@@ -47,7 +47,7 @@ const Onboarding = () => {
       <div className="p-4 bg-white border-t">
         <button 
           onClick={nextStep}
-          className="bg-[#f5c518] w-full rounded-full py-3 font-bold text-black"
+          className="bg-primary w-full rounded-full py-3 font-bold text-primary-foreground"
         >
           {step === totalSteps ? 'เริ่มใช้งาน' : 'ถัดไป'}
         </button>
@@ -67,7 +67,7 @@ const PersonalInfoStep = () => {
         <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-4">
           <Camera className="text-gray-500" size={32} />
         </div>
-        <button className="bg-[#f5c518] text-black px-4 py-2 rounded-md text-sm">
+        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm">
           อัปโหลดรูปโปรไฟล์
         </button>
       </div>
@@ -186,7 +186,7 @@ const SkillsStep = () => {
             onClick={() => toggleSkill(skill)}
             className={`px-4 py-2 rounded-full text-sm ${
               selectedSkills.includes(skill)
-                ? 'bg-[#f5c518] text-black'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-gray-100 text-gray-800'
             }`}
           >
@@ -210,7 +210,7 @@ const DocumentsStep = () => {
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <Camera className="mx-auto text-gray-400 mb-2" size={32} />
             <p className="text-gray-500 text-sm mb-3">อัปโหลดรูปภาพบัตรประชาชน</p>
-            <button className="bg-[#f5c518] text-black px-4 py-2 rounded-md text-sm">
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm">
               เลือกไฟล์
             </button>
           </div>
@@ -221,7 +221,7 @@ const DocumentsStep = () => {
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <Briefcase className="mx-auto text-gray-400 mb-2" size={32} />
             <p className="text-gray-500 text-sm mb-3">อัปโหลดใบสมัครงาน (ถ้ามี)</p>
-            <button className="bg-[#f5c518] text-black px-4 py-2 rounded-md text-sm">
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm">
               เลือกไฟล์
             </button>
           </div>

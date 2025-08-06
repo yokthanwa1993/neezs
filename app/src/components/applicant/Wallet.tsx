@@ -73,7 +73,7 @@ const Wallet = () => {
       <div className="p-4">
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <div className="flex items-center mb-4">
-            <WalletIcon className="text-[#f5c518] mr-2" size={24} />
+            <WalletIcon className="text-primary mr-2" size={24} />
             <h2 className="font-bold text-lg">ยอดเงินคงเหลือ</h2>
           </div>
           <p className="text-3xl font-bold mb-2">{balance.toLocaleString()} บาท</p>
@@ -83,7 +83,7 @@ const Wallet = () => {
         {/* Withdraw Button */}
         <button 
           onClick={handleWithdraw}
-          className="flex items-center justify-center bg-[#f5c518] w-full rounded-full py-3 font-bold text-black mb-6"
+          className="flex items-center justify-center bg-primary w-full rounded-full py-3 font-bold text-primary-foreground mb-6"
         >
           <ArrowUpCircle className="mr-2" size={20} />
           ถอนเงินเข้าบัญชี

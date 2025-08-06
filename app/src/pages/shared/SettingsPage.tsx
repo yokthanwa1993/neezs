@@ -1,22 +1,28 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Shield, User, LogOut, Moon, Sun, HelpCircle, Mail, Lock } from 'lucide-react';
+import { Bell, User, LogOut, Sun, HelpCircle, Mail, Lock, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const SettingsPage = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?')) {
+      // In a real app, this would clear authentication tokens and navigate
       navigate('/');
-      // In a real app, this would clear authentication tokens
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white p-4 shadow-sm sticky top-0 z-10 flex items-center">
+        <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate(-1)}>
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <h1 className="text-xl font-bold text-gray-800">ตั้งค่า</h1>
+      </header>
       
-      
-      <div className="p-4">
+      <div className="p-4 pb-20">
         {/* Account Settings */}
         <div className="bg-white rounded-xl shadow-sm mb-4">
           <h2 className="font-bold text-lg p-4 border-b border-gray-200">บัญชี</h2>
@@ -58,7 +64,7 @@ const SettingsPage = () => {
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" defaultChecked />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
           </div>

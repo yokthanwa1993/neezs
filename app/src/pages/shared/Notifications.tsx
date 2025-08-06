@@ -126,7 +126,7 @@ const Notifications = () => {
       case 'like':
         return <Heart className="w-4 h-4 text-red-500 fill-red-500" />;
       case 'follow':
-        return <UserPlus className="w-4 h-4 text-blue-500" />;
+        return <UserPlus className="w-4 h-4 text-primary" />;
       case 'mention':
         return <MessageCircle className="w-4 h-4 text-green-500" />;
       default:
@@ -154,7 +154,7 @@ const Notifications = () => {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className="text-sm">
-              <span className="font-semibold text-blue-600">{notification.user.name}</span>
+              <span className="font-semibold text-primary">{notification.user.name}</span>
               <span className="text-gray-600 ml-1">{notification.action}</span>
               {notification.target && (
                 <span className="text-gray-800 ml-1">{notification.target}</span>
@@ -189,7 +189,7 @@ const Notifications = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Notifications</h1>
             <p className="text-gray-500">
-              You have <span className="text-blue-600 font-semibold">{unreadCount} Notifications</span> today.
+              You have <span className="text-primary font-semibold">{unreadCount} Notifications</span> today.
             </p>
           </div>
           <div className="bg-gray-100 p-3 rounded-full">

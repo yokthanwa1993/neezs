@@ -7,11 +7,11 @@ const Index = () => {
   const { user } = useAuth();
 
   const features = [
-    { name: "ค้นหางาน", path: "/jobs", description: "ค้นหางานที่ตรงกับทักษะของคุณ" },
-    { name: "งานของฉัน", path: "/my-shifts", description: "ดูงานที่คุณได้สมัครไว้", requireAuth: true },
-    { name: "กระเป๋าเงิน", path: "/wallet", description: "จัดการรายได้และการเงิน", requireAuth: true },
-    { name: "โปรไฟล์", path: "/profile", description: "จัดการข้อมูลส่วนตัวของคุณ", requireAuth: true },
-    { name: "การลงทะเบียน", path: "/onboarding", description: "ขั้นตอนการเริ่มต้นใช้งาน", requireAuth: true },
+    { name: "ค้นหางาน", path: "/seeker/jobs", description: "ค้นหางานที่ตรงกับทักษะของคุณ" },
+    { name: "งานของฉัน", path: "/seeker/my-shifts", description: "ดูงานที่คุณได้สมัครไว้", requireAuth: true },
+    { name: "กระเป๋าเงิน", path: "/seeker/wallet", description: "จัดการรายได้และการเงิน", requireAuth: true },
+    { name: "โปรไฟล์", path: "/seeker/profile", description: "จัดการข้อมูลส่วนตัวของคุณ", requireAuth: true },
+    { name: "การลงทะเบียน", path: "/seeker/onboarding", description: "ขั้นตอนการเริ่มต้นใช้งาน", requireAuth: true },
   ];
 
   return (
@@ -58,7 +58,7 @@ const Index = () => {
                       to={feature.path}
                       className="block bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors"
                     >
-                      <h3 className="font-bold text-lg text-[#f5c518]">{feature.name}</h3>
+                      <h3 className="font-bold text-lg text-primary">{feature.name}</h3>
                       <p className="text-gray-600 text-sm">{feature.description}</p>
                     </Link>
                   )}
