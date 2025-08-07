@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
+import { useAddJobDialog } from '@/contexts/AddJobDialogContext';
 
 const mockJobs = {
   active: [
@@ -67,7 +67,7 @@ const JobCard = ({ job }: { job: any }) => {
 };
 
 const EmployerMyJobsPage = () => {
-  const navigate = useNavigate();
+  const { openAddJobDialog } = useAddJobDialog();
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 relative">
@@ -103,13 +103,11 @@ const EmployerMyJobsPage = () => {
       </div>
       
       <Button 
-        onClick={() => navigate('/employer/add-job')} 
+        onClick={openAddJobDialog} 
         className="absolute bottom-24 right-4 rounded-full w-16 h-16 shadow-lg bg-primary hover:bg-primary/90 flex items-center justify-center"
       >
         <Plus size={32} className="text-primary-foreground" />
       </Button>
-
-      <EmployerBottomNavigation />
     </div>
   );
 };

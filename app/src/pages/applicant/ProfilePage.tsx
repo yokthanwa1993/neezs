@@ -1,129 +1,124 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Settings, 
-  Camera, 
-  Mail, 
-  Phone, 
-  MessageSquare,
+  Share,
+  Pencil,
+  User,
+  Briefcase,
+  Star
 } from 'lucide-react';
 import BottomNavigation from '../../components/shared/BottomNavigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import ProfileAboutTab from '@/components/applicant/ProfileAboutTab';
+import ProfileExperienceTab from '@/components/applicant/ProfileExperienceTab';
+import ProfileReviewsTab from '@/components/applicant/ProfileReviewsTab';
+
+const TabButton = ({ icon: Icon, isActive, onClick }: { icon: React.ElementType, isActive: boolean, onClick: () => void }) => (
+  <button onClick={onClick} className={`py-4 flex-1 flex justify-center items-center transition-all duration-200 border-b-2 ${isActive ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500 hover:bg-gray-100'}`}>
+    <Icon className={`h-6 w-6`} />
+  </button>
+);
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('about');
 
-  // Mock data, can be replaced with real data later
   const profileData = {
-    title: 'พนักงานบริการ',
-    rating: 4.8,
-    reviews: 128,
-    joinDate: 'ม.ค. 2020',
-    phone: '081-234-5678',
-    jobsCompleted: 42,
+    username: 'tanwa_p',
     profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
+    jobsApplied: 15,
+    rating: 4.8,
+    savedJobs: 5,
+    bio: 'นักศึกษาจบใหม่ มีความสนใจในงานบริการและงานขาย มีความกระตือรือร้นและพร้อมเรียนรู้งาน',
   };
 
-  const stats = [
-    { label: 'งานที่ทำสำเร็จ', value: profileData.jobsCompleted },
-    { label: 'คะแนนรีวิว', value: `${profileData.rating} ★` },
-    { label: 'เข้าร่วมเมื่อ', value: profileData.joinDate },
-  ];
+  const handleShare = async () => {
+    const shareData = {
+      title: `โปรไฟล์ของ ${user?.name}`,
+      text: `ดูโปรไฟล์ของ ${user?.name} บนแอปของเราสิ!`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback for browsers that don't support navigator.share
+        await navigator.clipboard.writeText(window.location.href);
+        alert('คัดลอกลิงก์โปรไฟล์แล้ว!');
+      }
+    } catch (error) {
+      console.error('Error sharing profile:', error);
+      alert('ไม่สามารถแชร์โปรไฟล์ได้');
+    }
+  };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="pb-24"> {/* Padding for bottom nav */}
+    <div className="bg-white min-h-screen">
+      <div className="pb-24">
         {/* Header */}
-        <div className="bg-white p-4 pt-12 pb-6 rounded-b-3xl shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-gray-800 font-bold text-2xl">โปรไฟล์</h1>
-            <button onClick={() => navigate('/settings')} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
-              <Settings className="h-5 w-5 text-gray-600" />
-            </button>
-          </div>
-          
-          {/* Profile Info */}
-          <div className="flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-3 relative">
-              <Avatar className="w-24 h-24 border-4 border-white shadow-md">
-                <AvatarImage src={user?.picture || profileData.profileImage} alt={user?.name} />
-                <AvatarFallback className="text-primary font-bold text-3xl bg-primary/20">
-                  {user?.name?.charAt(0) || 'A'}
-                </AvatarFallback>
-              </Avatar>
-              <button className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-1.5 border-4 border-white hover:bg-primary/90 transition-colors">
-                <Camera className="h-4 w-4" />
-              </button>
-            </div>
-            <h2 className="text-gray-900 font-bold text-xl">{user?.name || 'Username'}</h2>
-            <p className="text-gray-500 text-sm">{profileData.title}</p>
+        <div className="flex items-center justify-between mb-4 px-4 pt-10">
+          <div className="w-10"></div> {/* Spacer */}
+          <h1 className="text-gray-800 font-bold text-lg">@{profileData.username}</h1>
+          <div className="flex items-center space-x-1">
+            <Button onClick={handleShare} variant="ghost" size="icon" className="rounded-full">
+              <Share className="h-5 w-5 text-gray-700" />
+            </Button>
+            <Button onClick={() => navigate('/settings')} variant="ghost" size="icon" className="rounded-full">
+              <Settings className="h-5 w-5 text-gray-700" />
+            </Button>
           </div>
         </div>
         
+        <div className="px-4">
+          {/* Profile Summary */}
+          <div className="flex items-center space-x-5 mb-4">
+            <Avatar className="w-24 h-24 border-2 border-white shadow-sm">
+              <AvatarImage src={user?.picture || profileData.profileImage} alt={user?.name} />
+              <AvatarFallback className="text-primary font-bold text-3xl bg-primary/10">
+                {user?.name?.charAt(0) || 'A'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex items-center space-x-6 text-center">
+              <div><p className="font-bold text-lg">{profileData.jobsApplied}</p><p className="text-sm text-gray-500">สมัครงาน</p></div>
+              <div><p className="font-bold text-lg">{profileData.rating} ★</p><p className="text-sm text-gray-500">คะแนน</p></div>
+              <div><p className="font-bold text-lg">{profileData.savedJobs}</p><p className="text-sm text-gray-500">บันทึก</p></div>
+            </div>
+          </div>
+
+          {/* Name and Bio */}
+          <div className="mb-4">
+            <h2 className="text-gray-900 font-bold text-xl">{user?.name || 'Username'}</h2>
+            <div className="flex items-start text-gray-600 mt-1 cursor-pointer group" onClick={() => navigate('/profile/edit')}>
+              <p className="text-sm">{profileData.bio || 'เพิ่มคำอธิบายตัวตนของคุณ...'}</p>
+              <Pencil className="h-3 w-3 ml-2 mt-1 flex-shrink-0 text-gray-400 group-hover:text-primary" />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-3 mb-6">
+            <Button variant="outline" className="flex-1 font-semibold bg-gray-100 border-gray-200" onClick={() => navigate('/profile/edit')}>แก้ไขโปรไฟล์</Button>
+            <Button variant="outline" className="flex-1 font-semibold bg-gray-100 border-gray-200" onClick={handleShare}>แชร์โปรไฟล์</Button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-y border-gray-200">
+          <div className="flex justify-around">
+            <TabButton icon={User} isActive={activeTab === 'about'} onClick={() => setActiveTab('about')} />
+            <TabButton icon={Briefcase} isActive={activeTab === 'experience'} onClick={() => setActiveTab('experience')} />
+            <TabButton icon={Star} isActive={activeTab === 'reviews'} onClick={() => setActiveTab('reviews')} />
+          </div>
+        </div>
+
+        {/* Tab Content */}
         <div className="p-4">
-          {/* Account Stats */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            {stats.map(stat => (
-              <div key={stat.label} className="bg-white rounded-xl p-3 flex flex-col items-center shadow-sm border border-gray-100">
-                <p className="text-gray-500 text-xs mb-1">{stat.label}</p>
-                <p className="text-gray-800 font-bold text-sm sm:text-base">{stat.value}</p>
-              </div>
-            ))}
-          </div>
-          
-          {/* Account Details */}
-          <div className="mb-6">
-            <h3 className="text-gray-500 text-sm font-medium mb-2 px-2">ข้อมูลบัญชี</h3>
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="flex items-center p-4 border-b border-gray-100">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                  <Mail className="h-5 w-5 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">อีเมล</p>
-                  <p className="text-gray-800 font-medium">{user?.email || 'ไม่ระบุ'}</p>
-                </div>
-              </div>
-              <div className="flex items-center p-4">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-4">
-                  <Phone className="h-5 w-5 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-gray-500 text-xs">เบอร์โทรศัพท์</p>
-                  <p className="text-gray-800 font-medium">{profileData.phone}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Linked Accounts */}
-          <div className="mb-6">
-            <h3 className="text-gray-500 text-sm font-medium mb-2 px-2">บัญชีที่เชื่อมต่อ</h3>
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mr-4">
-                    <MessageSquare className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-gray-800 font-medium">LINE</span>
-                </div>
-                <span className="bg-green-100 text-green-700 text-xs py-1 px-2 rounded-full font-semibold">เชื่อมต่อแล้ว</span>
-              </div>
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center mr-4">
-                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.19,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.19,22C17.6,22 21.54,18.33 21.54,12.81C21.54,11.76 21.35,11.1 21.35,11.1Z" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-800 font-medium">Google</span>
-                </div>
-                <button className="bg-gray-200 text-gray-700 text-xs py-1 px-3 rounded-full hover:bg-gray-300 font-semibold">เชื่อมต่อ</button>
-              </div>
-            </div>
-          </div>
+          {activeTab === 'about' && <ProfileAboutTab />}
+          {activeTab === 'experience' && <ProfileExperienceTab />}
+          {activeTab === 'reviews' && <ProfileReviewsTab />}
         </div>
       </div>
       

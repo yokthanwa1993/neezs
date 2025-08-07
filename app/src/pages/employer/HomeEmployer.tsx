@@ -1,20 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, ChevronRight, User, MoreHorizontal, X } from 'lucide-react';
+import { Search, MapPin, ChevronRight, User, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import AddJobForm from '@/components/employer/AddJobForm';
-
+import { useAddJobDialog } from '@/contexts/AddJobDialogContext';
 
 const categories = [
   { name: 'บัญชีและการเงิน', emoji: '📊' },
@@ -27,7 +17,7 @@ const categories = [
 
 const HomeEmployer: React.FC = () => {
   const navigate = useNavigate();
-  const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+  const { openAddJobDialog } = useAddJobDialog();
 
   return (
     <div className="min-h-screen bg-gray-100 pb-20">
@@ -83,32 +73,16 @@ const HomeEmployer: React.FC = () => {
               <p className="text-gray-600 mt-1 mb-6">
                 ดึงดูดผู้สมัครที่มีคุณภาพด้วยการลงประกาศงานฟรี
               </p>
-              <Dialog open={isAddJobOpen} onOpenChange={setIsAddJobOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-xl"
-                  >
-                    ลงประกาศงาน
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="w-full h-full max-w-none max-h-none p-0 flex flex-col border-none rounded-none">
-                  <DialogHeader className="p-4 pb-3 flex flex-row items-center justify-between sticky top-0 bg-white z-10 shadow-sm">
-                    <DialogTitle className="text-lg font-bold">ลงประกาศงานใหม่</DialogTitle>
-                    <DialogClose asChild>
-                      <Button variant="ghost" size="icon" className="rounded-full">
-                        <X className="h-5 w-5" />
-                      </Button>
-                    </DialogClose>
-                  </DialogHeader>
-                  <AddJobForm onFinished={() => setIsAddJobOpen(false)} />
-                </DialogContent>
-              </Dialog>
+              <Button
+                onClick={openAddJobDialog}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-xl"
+              >
+                ลงประกาศงาน
+              </Button>
             </CardContent>
           </Card>
         </section>
       </main>
-
-      <EmployerBottomNavigation />
     </div>
   );
 };

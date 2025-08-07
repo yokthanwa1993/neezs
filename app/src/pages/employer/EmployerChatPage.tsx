@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
 import { Send } from 'lucide-react';
 
 interface Message {
@@ -93,7 +92,6 @@ const EmployerChatPage: React.FC = () => {
           </button>
         </div>
       </div>
-      <EmployerBottomNavigation />
     </div>
   );
 };

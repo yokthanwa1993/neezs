@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BottomNavigation from '../shared/BottomNavigation';
 
 interface Message {
   id: number;
@@ -38,7 +39,7 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-gray-100 pb-20">
       
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -67,7 +68,7 @@ const ChatPage: React.FC = () => {
         ))}
       </div>
       
-      <div className="bg-white p-4 border-t">
+      <div className="bg-white p-4 border-t sticky bottom-20">
         <div className="flex items-center">
           <textarea
             value={newMessage}
@@ -88,6 +89,7 @@ const ChatPage: React.FC = () => {
           </button>
         </div>
       </div>
+      <BottomNavigation />
     </div>
   );
 };

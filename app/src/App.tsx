@@ -19,7 +19,6 @@ import NotificationsPage from './pages/shared/NotificationsPage';
 import FullTimeJobs from './pages/applicant/FullTimeJobs';
 import LineCallback from './components/shared/LineCallback';
 import DevPage from './pages/shared/DevPage';
-import EmployerAddJobPage from './pages/employer/EmployerAddJobPage';
 import HomeEmployer from './pages/employer/HomeEmployer';
 import EmployerChatHistoryPage from './pages/employer/EmployerChatHistoryPage';
 import EmployerChatPage from './pages/employer/EmployerChatPage';
@@ -33,6 +32,7 @@ import TeamManagementPage from './pages/employer/TeamManagementPage';
 import BillingPage from './pages/employer/BillingPage';
 import SecurityPage from './pages/employer/SecurityPage';
 import SupportPage from './pages/shared/SupportPage';
+import EmployerLayout from './pages/employer/EmployerLayout';
 
 const AppContent = () => {
   const { user, isLoading } = useAuth();
@@ -79,17 +79,18 @@ const AppContent = () => {
           <Route path="/notifications" element={protectedRoute(<NotificationsPage />)} />
           
           {/* Employer Routes */}
-          <Route path="/employer/home" element={protectedRoute(<HomeEmployer />)} />
-          <Route path="/employer/add-job" element={protectedRoute(<EmployerAddJobPage />)} />
-          <Route path="/employer/chats" element={protectedRoute(<EmployerChatHistoryPage />)} />
-          <Route path="/employer/chat/:id" element={protectedRoute(<EmployerChatPage />)} />
-          <Route path="/employer/my-jobs" element={protectedRoute(<EmployerMyJobsPage />)} />
-          <Route path="/employer/notifications" element={protectedRoute(<EmployerNotificationsPage />)} />
-          <Route path="/employer/profile" element={protectedRoute(<EmployerProfile />)} />
-          <Route path="/employer/edit-profile" element={protectedRoute(<EditProfilePage />)} />
-          <Route path="/employer/team" element={protectedRoute(<TeamManagementPage />)} />
-          <Route path="/employer/billing" element={protectedRoute(<BillingPage />)} />
-          <Route path="/employer/security" element={protectedRoute(<SecurityPage />)} />
+          <Route path="/employer" element={protectedRoute(<EmployerLayout />)}>
+            <Route path="home" element={<HomeEmployer />} />
+            <Route path="my-jobs" element={<EmployerMyJobsPage />} />
+            <Route path="chats" element={<EmployerChatHistoryPage />} />
+            <Route path="chat/:id" element={<EmployerChatPage />} />
+            <Route path="notifications" element={<EmployerNotificationsPage />} />
+            <Route path="profile" element={<EmployerProfile />} />
+            <Route path="edit-profile" element={<EditProfilePage />} />
+            <Route path="team" element={<TeamManagementPage />} />
+            <Route path="billing" element={<BillingPage />} />
+            <Route path="security" element={<SecurityPage />} />
+          </Route>
         </Routes>
       </div>
     </div>

@@ -1,24 +1,41 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, MessageSquare, Briefcase, Bell, User } from 'lucide-react';
+import { Home, MessageSquare, User, Plus, Briefcase } from 'lucide-react';
+import { useAddJobDialog } from '@/contexts/AddJobDialogContext';
 
 const EmployerBottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { openAddJobDialog } = useAddJobDialog();
 
   const navItems = [
     { path: '/employer/home', label: 'Home', icon: Home },
-    { path: '/employer/chats', label: 'Chats', icon: MessageSquare },
     { path: '/employer/my-jobs', label: 'My Jobs', icon: Briefcase },
-    { path: '/employer/notifications', label: 'Notifications', icon: Bell, badge: 2 },
+    { path: 'add-job-trigger', icon: Plus, isCentral: true },
+    { path: '/employer/chats', label: 'Chats', icon: MessageSquare },
     { path: '/employer/profile', label: 'Profile', icon: User },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 shadow-[0_-1px_4px_rgba(0,0,0,0.05)]">
       <div className="w-full max-w-sm mx-auto">
-        <div className="grid grid-cols-5 h-[60px]">
+        <div className="grid grid-cols-5 h-[60px] items-center">
           {navItems.map((item) => {
+            if ('isCentral' in item && item.isCentral) {
+              const IconComponent = item.icon;
+              return (
+                <div 
+                  key={item.path}
+                  className="flex justify-center"
+                  onClick={openAddJobDialog}
+                >
+                  <div className="relative -top-4 flex items-center justify-center h-16 w-16 bg-yellow-400 rounded-full cursor-pointer shadow-lg hover:bg-yellow-500 transition-all duration-200 border-4 border-white">
+                    <IconComponent className="text-black" size={32} strokeWidth={2.5} />
+                  </div>
+                </div>
+              );
+            }
+
             const IconComponent = item.icon;
             const isActive = location.pathname === item.path;
             
@@ -37,13 +54,15 @@ const EmployerBottomNavigation = () => {
                     }`}
                     fill={isActive ? 'hsl(var(--primary))' : 'none'}
                   />
+                  {/* @ts-ignore */}
                   {item.badge && (
                     <span className="absolute -top-1 -right-2 bg-primary text-primary-foreground text-[11px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+                      {/* @ts-ignore */}
                       {item.badge}
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-gray-900 font-bold">
+                <span className={`text-xs font-bold ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
                   {item.label}
                 </span>
               </div>

@@ -12,7 +12,6 @@ import {
   UserCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -119,8 +118,6 @@ const EmployerProfile: React.FC = () => {
           ออกจากระบบ
         </Button>
       </div>
-
-      <EmployerBottomNavigation />
     </div>
   );
 };

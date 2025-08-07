@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pencil, Search } from 'lucide-react';
-import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -132,8 +131,6 @@ const EmployerChatHistoryPage: React.FC = () => {
       <Button className="absolute bottom-24 right-4 rounded-full w-14 h-14 shadow-lg bg-primary hover:bg-primary/90">
         <Pencil size={24} className="text-primary-foreground" />
       </Button>
-
-      <EmployerBottomNavigation />
     </div>
   );
 };

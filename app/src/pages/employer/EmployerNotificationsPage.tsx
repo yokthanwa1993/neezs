@@ -1,6 +1,5 @@
 import React from 'react';
 import { UserPlus, MessageSquare, Eye } from 'lucide-react';
-import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -83,8 +82,6 @@ const EmployerNotificationsPage = () => {
           ))}
         </div>
       </div>
-
-      <EmployerBottomNavigation />
     </div>
   );
 };

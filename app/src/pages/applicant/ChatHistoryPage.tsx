@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import BottomNavigation from '@/components/shared/BottomNavigation';
 
 // อัปเดตข้อมูล mock ให้ใช้รูปภาพจริงและชื่อภาษาไทย
 const chats = [
@@ -43,7 +44,7 @@ const ChatHistoryPage: React.FC = () => {
             </header>
 
             {/* Chat list */}
-            <main className="flex-1 overflow-y-auto p-4 bg-white rounded-t-3xl -mt-4 z-20 relative">
+            <main className="flex-1 overflow-y-auto p-4 bg-white rounded-t-3xl -mt-4 z-20 relative pb-20">
                 {chats.length > 0 ? (
                     <div className="space-y-2">
                         {chats.map((chat) => (
@@ -83,6 +84,7 @@ const ChatHistoryPage: React.FC = () => {
                     </div>
                 )}
             </main>
+            <BottomNavigation />
         </div>
     );
 };
