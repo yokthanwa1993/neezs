@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { apiClient } from '@neeiz/api-client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const TOTAL_STEPS = 4;
 
@@ -15,6 +17,7 @@ interface AddJobFormProps {
 
 const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
   const [step, setStep] = useState(1);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     jobTitle: '',
     description: '',
@@ -25,14 +28,34 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
     images: '',
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
-    } else {
-      // Handle final submission
-      console.log('Form Submitted:', formData);
-      alert('ลงประกาศงานเรียบร้อยแล้ว!'); // Placeholder
-      onFinished(); // Close the dialog
+      return;
+    }
+
+    // Final submission -> call API
+    try {
+      const salaryNumber = formData.salary ? Number(formData.salary) : 0;
+      await apiClient.post('/api/jobs', {
+        title: formData.jobTitle,
+        description: formData.description,
+        category: formData.category,
+        location: formData.location,
+        salary: salaryNumber,
+        jobType: formData.jobType || 'full-time',
+        status: 'active',
+        employerId: user?.id || 'unknown',
+        images: formData.images
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean),
+      });
+      alert('ลงประกาศงานเรียบร้อยแล้ว!');
+      onFinished();
+    } catch (error) {
+      console.error('Failed to post job:', error);
+      alert('เกิดข้อผิดพลาดในการลงประกาศงาน กรุณาลองใหม่');
     }
   };
 
@@ -128,6 +151,10 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
                         <SelectItem value="freelance">ฟรีแลนซ์</SelectItem>
                     </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="images" className="font-semibold">รูปภาพ (URL ทีละบรรทัด)</Label>
+                <Textarea id="images" name="images" value={formData.images} onChange={handleChange} placeholder="https://...\nhttps://..." className="mt-1" rows={4}/>
               </div>
             </div>
           </div>
