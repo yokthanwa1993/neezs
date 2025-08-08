@@ -10,7 +10,7 @@ RUN npm install -g pnpm
 
 # Copy dependency definition files (workspace-aware)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY ../packages ./packages
+COPY packages ./packages
 
 # Install ALL dependencies (including devDependencies for build) using workspace lockfile
 RUN pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
