@@ -24,6 +24,7 @@ const AddJob: React.FC = () => {
     location: '',
     salary: '',
     jobType: '',
+    images: ''
   });
 
   const handleNext = async () => {
@@ -44,6 +45,10 @@ const AddJob: React.FC = () => {
         jobType: formData.jobType || 'full-time',
         status: 'active',
         employerId: user?.id || 'unknown',
+        images: formData.images
+          .split('\n')
+          .map(s => s.trim())
+          .filter(Boolean),
       });
       navigate('/employer/home');
     } catch (error) {
@@ -190,6 +195,10 @@ const AddJob: React.FC = () => {
                         <div>
                             <span className="text-gray-500">Description</span>
                             <p className="mt-1 text-sm font-semibold whitespace-pre-wrap">{formData.description || '-'}</p>
+                        </div>
+                        <div>
+                            <span className="text-gray-500">Images (URLs, 1 per line)</span>
+                            <p className="mt-1 text-sm font-mono whitespace-pre-wrap">{formData.images || '-'}</p>
                         </div>
                     </CardContent>
                 </Card>

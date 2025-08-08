@@ -22,6 +22,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
     location: '',
     salary: '',
     jobType: '',
+    images: '',
   });
 
   const handleNext = () => {
@@ -157,6 +158,10 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
                     <div className="flex justify-between">
                         <span className="text-gray-500">ประเภทงาน:</span>
                         <span className="font-semibold text-right">{formData.jobType || '-'}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500">รูปภาพ (URL, ใส่ทีละบรรทัด)</span>
+                        <p className="mt-1 font-mono whitespace-pre-wrap">{formData.images || '-'}</p>
                     </div>
                 </CardContent>
             </Card>

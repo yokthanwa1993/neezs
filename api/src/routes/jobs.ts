@@ -25,7 +25,7 @@ router.get('/', async (req: Request, res: Response) => {
 // POST /api/jobs
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { title, description, category, location, salary, jobType, status, employerId } = req.body;
+    const { title, description, category, location, salary, jobType, status, employerId, images } = req.body;
 
     if (!title || !description) {
       return res.status(400).json({ message: 'Missing required fields: title, description' });
@@ -40,6 +40,7 @@ router.post('/', async (req: Request, res: Response) => {
       jobType: jobType || 'full-time',
       status: status || 'active',
       employerId: employerId || 'unknown',
+      images: Array.isArray(images) ? images.filter(Boolean) : [],
       createdAt: new Date(),
     };
 

@@ -93,7 +93,7 @@ const HomeSeeker = () => {
                 onClick={() => setSelectedJob(job)}
               >
                 <div className="relative">
-                  <img src={'/placeholder.svg'} alt={job.title} className="w-full h-48 object-cover" />
+                  <img src={(job as any).images?.[0] || '/placeholder.svg'} alt={job.title} className="w-full h-48 object-cover" />
                   <div 
                     className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full cursor-pointer z-10"
                     onClick={(e) => e.stopPropagation()}
@@ -136,7 +136,7 @@ const HomeSeeker = () => {
                   </button>
                   <Carousel className="w-full" opts={{ loop: true, duration: 0 }}>
                     <CarouselContent>
-                      {selectedJob.images.map((img, index) => (
+                      {(selectedJob.images || []).map((img, index) => (
                         <CarouselItem key={index}>
                           <img src={img.replace('w=400&h=300', 'w=800&h=600')} alt={`${selectedJob.title} ${index + 1}`} className="w-full h-64 object-cover" />
                         </CarouselItem>
