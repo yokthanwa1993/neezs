@@ -22,6 +22,21 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/jobs/:id
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const doc = await db.collection('jobs').doc(id).get();
+    if (!doc.exists) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    return res.status(200).json({ id: doc.id, ...doc.data() });
+  } catch (error: any) {
+    console.error('GET /api/jobs/:id error:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // POST /api/jobs
 router.post('/', async (req: Request, res: Response) => {
   try {

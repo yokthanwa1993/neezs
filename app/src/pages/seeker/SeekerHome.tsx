@@ -10,15 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import BottomNavigation from '../../components/shared/BottomNavigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import SearchView from '../../components/shared/SearchView';
 import { apiClient } from '@neeiz/api-client';
 
@@ -38,7 +30,6 @@ const HomeSeeker = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [location] = useState<string>('กรุงเทพมหานคร');
-  const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [jobs, setJobs] = useState<JobDoc[]>([]);
 
@@ -90,7 +81,7 @@ const HomeSeeker = () => {
               <Card 
                 key={job.id}
                 className="overflow-hidden rounded-2xl shadow-lg border-none group w-full cursor-pointer"
-                onClick={() => setSelectedJob(job)}
+                onClick={() => navigate(`/job/${job.id}`)}
               >
                 <div className="relative">
                   <img src={(job as any).images?.[0] || '/placeholder.svg'} alt={job.title} className="w-full h-48 object-cover" />
@@ -108,7 +99,7 @@ const HomeSeeker = () => {
                     <span className="text-xl font-bold text-[#DA291C]">฿{(job as any).salary?.toLocaleString?.() || 0}</span>
                     <button 
                       className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-base font-semibold"
-                      onClick={(e) => { e.stopPropagation(); setSelectedJob(job); }}
+                      onClick={(e) => { e.stopPropagation(); navigate(`/job/${job.id}`); }}
                     >
                       สมัคร
                     </button>
@@ -121,61 +112,6 @@ const HomeSeeker = () => {
       </main>
 
       <BottomNavigation />
-
-      <Dialog open={!!selectedJob} onOpenChange={(isOpen) => !isOpen && setSelectedJob(null)}>
-        <DialogContent className="p-0 h-full w-full max-w-full flex flex-col bg-white rounded-none sm:rounded-2xl sm:max-w-lg sm:h-auto sm:max-h-[90vh]">
-          {selectedJob && (
-            <>
-              <div className="flex-grow overflow-y-auto">
-                <div className="relative flex-shrink-0">
-                  <button 
-                    onClick={() => setSelectedJob(null)} 
-                    className="absolute top-4 left-4 z-20 p-2 bg-white/80 backdrop-blur-sm rounded-full sm:hidden"
-                  >
-                    <ArrowLeft className="w-6 h-6 text-gray-800" />
-                  </button>
-                  <Carousel className="w-full" opts={{ loop: true, duration: 0 }}>
-                    <CarouselContent>
-                      {(selectedJob.images || []).map((img, index) => (
-                        <CarouselItem key={index}>
-                          <img src={img.replace('w=400&h=300', 'w=800&h=600')} alt={`${selectedJob.title} ${index + 1}`} className="w-full h-64 object-cover" />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="absolute left-4" />
-                    <CarouselNext className="absolute right-4" />
-                  </Carousel>
-                </div>
-                <div className="p-6 bg-white">
-                  <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-bold text-gray-900">{selectedJob.title}</DialogTitle>
-                    <p className="text-md text-gray-500 pt-1">{selectedJob.company}</p>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="font-bold text-[#DA291C] text-2xl">{selectedJob.salary}</div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 mb-2 text-lg">รายละเอียดงาน</h3>
-                      <p className="text-base text-gray-600 leading-relaxed">{selectedJob.description}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 mb-2 text-lg">คุณสมบัติ</h3>
-                      <ul className="list-disc list-inside text-base text-gray-600 space-y-1">
-                        {selectedJob.qualifications?.map((q, i) => <li key={i}>{q}</li>)}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <DialogFooter className="p-4 flex-shrink-0 border-t bg-white">
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 h-12 rounded-xl text-lg font-bold">
-                  สมัครงานนี้
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {isSearching && <SearchView onClose={() => setIsSearching(false)} />}
     </div>

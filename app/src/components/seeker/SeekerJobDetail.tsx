@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Calendar, User, Phone, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import BottomNavigation from '../shared/BottomNavigation';
+import { apiClient } from '@neeiz/api-client';
 
 const JobDetail = () => {
   const { id } = useParams();
@@ -10,28 +11,19 @@ const JobDetail = () => {
   const { user } = useAuth();
   const [isApplied, setIsApplied] = useState(false);
   
-  // Mock job data
-  const job = {
-    id: 1,
-    title: 'พนักงานเสิร์ฟ',
-    company: 'ร้านอาหารสยาม',
-    location: 'สยามสแควร์',
-    salary: '150-200 บาท/ชั่วโมง',
-    time: '10:00-14:00',
-    date: '15 พ.ย. 2023',
-    description: 'รับผิดชอบเสิร์ฟอาหารและเครื่องดื่มให้ลูกค้า ทำความสะอาดโต๊ะ และดูแลความสะอาดของร้านอาหาร',
-    requirements: [
-      'มีประสบการณ์ทำงานในร้านอาหารอย่างน้อย 1 ปี',
-      'สามารถทำงานในวันหยุดและวันเทศกาลได้',
-      'มีทักษะการสื่อสารที่ดี',
-      'มีความรับผิดชอบสูง'
-    ],
-    benefits: [
-      'อาหารฟรีระหว่างทำงาน',
-      'โบนัสประจำเดือนสำหรับพนักงานยอดเยี่ยม',
-      'โอกาสในการพัฒนาอาชีพ'
-    ]
-  };
+  const [job, setJob] = useState<any | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      if (!id) return;
+      try {
+        const res = await apiClient.get(`/api/jobs/${id}`);
+        setJob(res.data);
+      } catch (e) {
+        navigate(-1);
+      }
+    })();
+  }, [id, navigate]);
 
   const handleApply = () => {
     if (!user) {
@@ -53,35 +45,40 @@ const JobDetail = () => {
       
       {/* Job Details */}
       <div className="p-4">
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-0 mb-6 overflow-hidden">
+          {job?.images?.[0] && (
+            <img src={job.images[0]} alt={job.title} className="w-full h-56 object-cover" />
+          )}
+          <div className="p-4">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="font-bold text-lg mb-2">รายละเอียดงาน</h2>
-              <p className="text-gray-700">{job.description}</p>
+              <p className="text-gray-700">{job?.description}</p>
             </div>
-            <span className="text-primary font-bold text-lg">{job.salary}</span>
+            <span className="text-primary font-bold text-lg">{job?.salary}</span>
           </div>
 
           <div className="space-y-3">
             <div className="flex items-center">
               <MapPin className="text-gray-500 mr-2" size={18} />
-              <span>{job.location}</span>
+              <span>{job?.location}</span>
             </div>
             <div className="flex items-center">
               <Clock className="text-gray-500 mr-2" size={18} />
-              <span>{job.time}</span>
+              <span>{job?.time || '-'}</span>
             </div>
             <div className="flex items-center">
               <Calendar className="text-gray-500 mr-2" size={18} />
-              <span>{job.date}</span>
+              <span>{job?.date || '-'}</span>
             </div>
+          </div>
           </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
           <h2 className="font-bold text-lg mb-3">คุณสมบัติที่ต้องการ</h2>
           <ul className="space-y-2">
-            {job.requirements.map((req, index) => (
+            {(job?.requirements || []).map((req: string, index: number) => (
               <li key={index} className="flex items-start">
                 <span className="text-primary mr-2">•</span>
                 <span className="text-gray-700">{req}</span>
@@ -93,7 +90,7 @@ const JobDetail = () => {
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
           <h2 className="font-bold text-lg mb-3">สวัสดิการ</h2>
           <ul className="space-y-2">
-            {job.benefits.map((benefit, index) => (
+            {(job?.benefits || []).map((benefit: string, index: number) => (
               <li key={index} className="flex items-start">
                 <span className="text-primary mr-2">•</span>
                 <span className="text-gray-700">{benefit}</span>
