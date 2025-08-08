@@ -32,17 +32,14 @@ jobs:
       - name: Build application
         run: pnpm run build
 
-      - name: Create deployment tar
+      - name: Create deployment tar (include workspace packages)
         run: |
-          # Create a clean directory for deployment
           mkdir -p ../deploy_temp
-          cp -r * ../deploy_temp/
+          cp -r . ../deploy_temp/
+          cp -r ../packages ../deploy_temp/packages
+          cp ../pnpm-workspace.yaml ../deploy_temp/pnpm-workspace.yaml
           cd ../deploy_temp
-          
-          # Remove unnecessary files
           rm -rf node_modules .git dist .pnpm-store .DS_Store
-          
-          # Create tar file in the workspace root where CapRover expects it
           tar -czf ../deploy.tar .
           cd ..
           rm -rf deploy_temp
@@ -52,5 +49,4 @@ jobs:
         with:
           server: '${{ secrets.CAPROVER_SERVER }}'
           app: 'neeiz-api'
-          token: '${{ secrets.CAPROVER_NEEIZ_API_TOKEN }}' 
-          tarFile: './deploy.tar'
+          token: '${{ secrets.CAPROVER_NEEIZ_API_TOKEN }}'

@@ -27,17 +27,19 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build application
         run: pnpm run build
 
-      - name: Create deployment tar
+      - name: Create deployment tar (include workspace packages)
         run: |
           mkdir -p ../deploy_temp
-          cp -r * ../deploy_temp/
+          cp -r . ../deploy_temp/
+          cp -r ../packages ../deploy_temp/packages
+          cp ../pnpm-workspace.yaml ../deploy_temp/pnpm-workspace.yaml
           cd ../deploy_temp
-          rm -rf node_modules .git .next .DS_Store
+          rm -rf node_modules .git .next .pnpm-store .DS_Store
           tar -czf ../deploy.tar .
           cd ..
           rm -rf deploy_temp
@@ -47,5 +49,4 @@ jobs:
         with:
           server: '${{ secrets.CAPROVER_SERVER }}'
           app: 'neeiz-web'
-          token: '${{ secrets.CAPROVER_NEEIZ_WEB_TOKEN }}' 
-          tarFile: './deploy.tar'
+          token: '${{ secrets.CAPROVER_NEEIZ_WEB_TOKEN }}'
