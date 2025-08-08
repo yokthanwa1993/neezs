@@ -8,11 +8,12 @@ RUN apk add --no-cache python3 g++ make
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy dependency definition files
-COPY package.json pnpm-lock.yaml ./
+# Copy dependency definition files (workspace-aware)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY ../packages ./packages
 
-# Install ALL dependencies (including devDependencies for build)
-RUN pnpm install
+# Install ALL dependencies (including devDependencies for build) using workspace lockfile
+RUN pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
 
 # Copy the rest of the source code
 COPY . .
