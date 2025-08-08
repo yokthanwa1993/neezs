@@ -5,11 +5,12 @@ WORKDIR /usr/src/app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy dependency definition files
-COPY package.json pnpm-lock.yaml ./
+# Copy dependency definition files (workspace-aware)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages ./packages
 
-# Install dependencies
-RUN pnpm install
+# Install dependencies using workspace lockfile
+RUN pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
 
 # Copy the rest of the source code
 COPY . .
