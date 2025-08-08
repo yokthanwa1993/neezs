@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   MapPin, 
   Bookmark,
@@ -20,137 +20,42 @@ import {
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import SearchView from '../../components/shared/SearchView';
+import { db } from '@/lib/firebase';
+import { collection, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 
-type Job = {
-  id: number;
+type JobDoc = {
+  id: string;
   title: string;
-  company: string;
-  images: string[];
-  salary: string;
-  location: string;
   description: string;
-  qualifications: string[];
+  category: string;
+  location: string;
+  salary: number;
+  jobType: string;
+  status: string;
+  employerId: string;
 };
 
 const HomeSeeker = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [location] = useState<string>('กรุงเทพมหานคร');
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [jobs, setJobs] = useState<JobDoc[]>([]);
 
-  const jobTemplates = [
-    { 
-      title: 'พนักงานเสิร์ฟ', 
-      company: 'Siam Restaurant', 
-      images: [
-        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1592861956120-e524fc739696?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=400&h=300&fit=crop'
-      ] 
-    },
-    { 
-      title: 'บาริสต้า', 
-      company: 'Coffee Corner', 
-      images: [
-        'https://images.unsplash.com/photo-1511920183353-3c7c95a5742c?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1525803377221-4213da3d3512?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop'
-      ] 
-    },
-    { 
-      title: 'พนักงานทำความสะอาด', 
-      company: 'Clean Co.', 
-      images: [
-        'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1603712725038-92c104815203?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1562886838-633576457a2a?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1541123437800-1a7302143b49?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1628177242233-a859805936a8?w=400&h=300&fit=crop'
-      ] 
-    },
-    { 
-      title: 'พนักงานต้อนรับ', 
-      company: 'Grand Hotel', 
-      images: [
-        'https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=300&fit=crop'
-      ] 
-    },
-    { 
-      title: 'ผู้ช่วยครัว', 
-      company: 'Kitchen Express', 
-      images: [
-        'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1604332436015-a83854a4a753?w=400&h=300&fit=crop', 
-        'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1495195129352-aeb3c5e281e5?w=400&h=300&fit=crop'
-      ] 
-    },
-    {
-      title: 'พนักงานขาย',
-      company: 'Fashion Outlet',
-      images: [
-        'https://images.unsplash.com/photo-1556742111-a3297a0d56d6?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1560250056-07ba64664864?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1579548122204-e7812a1b4a2a?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1586429209134-1b65b05b625b?w=400&h=300&fit=crop'
-      ]
-    },
-    {
-      title: 'พนักงานแคชเชียร์',
-      company: 'SuperMart',
-      images: [
-        'https://images.unsplash.com/photo-1557821552-17105176677c?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1583324132598-3383a45555b6?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1609950564924-1fb11d78321b?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1599425137027-a855d444a170?w=400&h=300&fit=crop'
-      ]
-    },
-    {
-      title: 'พนักงานรักษาความปลอดภัย',
-      company: 'Secure Corp',
-      images: [
-        'https://images.unsplash.com/photo-1571942674907-213a0201816f?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1616594199393-a11a94d4dc9b?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1559532293-1d19c4e3de38?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1621992130821-b150f62141e5?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1519756301029-33fefb07cdba?w=400&h=300&fit=crop'
-      ]
-    },
-    {
-      title: 'พนักงานส่งของ',
-      company: 'Express Delivery',
-      images: [
-        'https://images.unsplash.com/photo-1591700541393-95e4205663a6?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1617978241112-898785df45b5?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1586455122341-927f2dec0691?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1599255095433-e2513a123d81?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1620327467561-1e9161666c62?w=400&h=300&fit=crop'
-      ]
-    },
-    {
-      title: 'พนักงานทั่วไป',
-      company: 'Warehouse Hub',
-      images: [
-        'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1517995103993-73e4e3a31f19?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1621905251918-48416d8574a8?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1540479859555-1ac74b49a241?w=400&h=300&fit=crop',
-        'https://images.unsplash.com/photo-1534275339504-913cda30e04d?w=400&h=300&fit=crop'
-      ]
-    }
-  ];
+  useEffect(() => {
+    const q = query(
+      collection(db, 'jobs'),
+      where('status', '==', 'active'),
+      orderBy('createdAt', 'desc'),
+      limit(100)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      setJobs(items as any);
+    });
+    return () => unsub();
+  }, []);
 
   const featuredJobs: Job[] = Array.from({ length: 100 }, (_, i) => {
     const template = jobTemplates[i % jobTemplates.length];
@@ -192,31 +97,23 @@ const HomeSeeker = () => {
 
       {/* Main Content */}
       <main className="flex-grow pb-[76px] flex flex-col bg-white">
-        {/* Featured Jobs List */}
+        {/* Featured Jobs List (from Firestore) */}
         <section className="pt-6 pb-6 px-4">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800">งานใน{location}ใกล้คุณ</h2>
+            <h2 className="text-lg font-bold text-gray-800">งานล่าสุดใน{location}</h2>
             <button onClick={() => navigate('/jobs')} className="text-sm text-primary font-semibold">
               ดูเพิ่มเติม
             </button>
           </div>
           <div className="flex flex-col gap-4">
-            {featuredJobs.map((job) => (
+            {jobs.map((job) => (
               <Card 
-                key={job.id} 
+                key={job.id}
                 className="overflow-hidden rounded-2xl shadow-lg border-none group w-full cursor-pointer"
                 onClick={() => setSelectedJob(job)}
               >
                 <div className="relative">
-                  <Carousel className="w-full" opts={{ loop: true, duration: 0 }}>
-                    <CarouselContent>
-                      {job.images.map((img, index) => (
-                        <CarouselItem key={index}>
-                          <img src={img} alt={`${job.title} ${index + 1}`} className="w-full h-48 object-cover" />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                  </Carousel>
+                  <img src={'/placeholder.svg'} alt={job.title} className="w-full h-48 object-cover" />
                   <div 
                     className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full cursor-pointer z-10"
                     onClick={(e) => e.stopPropagation()}
@@ -226,9 +123,9 @@ const HomeSeeker = () => {
                 </div>
                 <CardContent className="p-4 bg-white">
                   <h3 className="font-bold text-lg text-gray-800 truncate">{job.title}</h3>
-                  <p className="text-base text-gray-500 mb-3">{job.company}</p>
+                  <p className="text-base text-gray-500 mb-3">{job.location}</p>
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-bold text-[#DA291C]">{job.salary}</span>
+                    <span className="text-xl font-bold text-[#DA291C]">฿{(job as any).salary?.toLocaleString?.() || 0}</span>
                     <button 
                       className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-base font-semibold"
                       onClick={(e) => { e.stopPropagation(); setSelectedJob(job); }}

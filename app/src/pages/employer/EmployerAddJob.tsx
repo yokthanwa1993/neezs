@@ -8,11 +8,15 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { db } from '@/lib/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 
 const TOTAL_STEPS = 4;
 
 const AddJob: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     jobTitle: '',
@@ -23,14 +27,30 @@ const AddJob: React.FC = () => {
     jobType: '',
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
-    } else {
-      // Handle final submission
-      console.log('Form Submitted:', formData);
-      alert('Job posted successfully!'); // Placeholder for success feedback
+      return;
+    }
+
+    // Final submission: save to Firestore
+    try {
+      const salaryNumber = formData.salary ? Number(formData.salary) : 0;
+      await addDoc(collection(db, 'jobs'), {
+        title: formData.jobTitle,
+        description: formData.description,
+        category: formData.category,
+        location: formData.location,
+        salary: salaryNumber,
+        jobType: formData.jobType || 'full-time',
+        status: 'active',
+        employerId: user?.uid || 'unknown',
+        createdAt: serverTimestamp(),
+      });
       navigate('/employer/home');
+    } catch (error) {
+      console.error('Failed to post job:', error);
+      alert('เกิดข้อผิดพลาดในการลงประกาศงาน กรุณาลองใหม่');
     }
   };
 
