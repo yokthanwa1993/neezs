@@ -49,19 +49,7 @@ const HomeSeeker = () => {
     })();
   }, []);
 
-  const featuredJobs: Job[] = Array.from({ length: 100 }, (_, i) => {
-    const template = jobTemplates[i % jobTemplates.length];
-    return {
-      id: i + 1,
-      title: template.title,
-      company: `${template.company} #${Math.floor(i / jobTemplates.length) + 1}`,
-      images: template.images.map(img => `${img}&random=${i}`),
-      salary: `฿${150 + (i % 10) * 5}/ชม.`,
-      location: 'กรุงเทพมหานคร',
-      description: `เรากำลังมองหา ${template.title} ที่มีความมุ่งมั่นและใจรักในบริการเพื่อร่วมเป็นส่วนหนึ่งของทีมของเราที่ ${template.company}. ผู้สมัครจะรับผิดชอบในการให้บริการลูกค้าอย่างยอดเยี่ยมและดูแลความเรียบร้อยในพื้นที่ทำงาน`,
-      qualifications: ['มีประสบการณ์จะพิจารณาเป็นพิเศษ', 'สามารถทำงานเป็นกะได้', 'มีทัศนคติที่ดีและพร้อมเรียนรู้'],
-    };
-  });
+  // legacy mock removed
 
   return (
     <div className="min-h-screen bg-white flex flex-col h-screen">

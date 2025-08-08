@@ -43,7 +43,7 @@ const AddJob: React.FC = () => {
         salary: salaryNumber,
         jobType: formData.jobType || 'full-time',
         status: 'active',
-        employerId: user?.uid || 'unknown',
+        employerId: user?.id || 'unknown',
       });
       navigate('/employer/home');
     } catch (error) {
