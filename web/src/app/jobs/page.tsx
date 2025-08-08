@@ -1,6 +1,17 @@
 import Link from "next/link";
+import { apiClient } from "@neeiz/api-client";
 
-export default function JobsPage() {
+async function getHealth() {
+  try {
+    const res = await apiClient.get("/");
+    return res.data;
+  } catch (e) {
+    return { status: "error" };
+  }
+}
+
+export default async function JobsPage() {
+  const apiHealth = await getHealth();
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -80,6 +91,9 @@ export default function JobsPage() {
       </div>
 
       {/* Job Listings */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <pre className="text-xs bg-gray-100 p-2 rounded">{JSON.stringify(apiHealth, null, 2)}</pre>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Job Cards */}

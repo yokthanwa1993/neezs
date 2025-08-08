@@ -7,6 +7,12 @@ export default defineConfig(() => ({
   server: {
     host: "::",
     port: 32100,
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_URL || "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [dyadComponentTagger(), react()],
   resolve: {

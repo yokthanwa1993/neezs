@@ -7,7 +7,28 @@ import authRouter from './routes/auth';
 const app = express();
 
 // Middlewares
-app.use(cors({ origin: '*' })); // Allow all origins for now
+const defaultAllowedOrigins = [
+  'http://localhost:32100', // Vite dev (app)
+  'http://localhost:3000', // Next.js dev (web)
+  'capacitor://localhost', // iOS/Android Capacitor
+  'http://localhost',
+  'https://localhost',
+];
+
+const allowedOrigins = (process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
+  : defaultAllowedOrigins);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('CORS not allowed'), false);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Routes

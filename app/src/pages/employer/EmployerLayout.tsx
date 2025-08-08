@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
 import { AddJobDialogProvider } from '@/contexts/AddJobDialogContext';
 
-const EmployerLayout = () => {
+const EmployerLayout = ({ children }: { children?: ReactNode }) => {
   return (
     <AddJobDialogProvider>
       <div className="min-h-screen bg-gray-50">
-        <Outlet />
+        {children ?? <Outlet />}
         <EmployerBottomNavigation />
       </div>
     </AddJobDialogProvider>

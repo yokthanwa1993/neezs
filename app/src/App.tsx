@@ -1,25 +1,25 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { LiffProvider } from './contexts/LiffContext';
-import { DevModeProvider, useDevMode } from './contexts/DevModeContext';
-import { RoleProvider, useRole } from './contexts/RoleContext';
+import { useAuth } from './contexts/AuthContext';
+import { useDevMode } from './contexts/DevModeContext';
+import { useRole } from './contexts/RoleContext';
+import { AppProviders } from '@/providers/AppProviders';
 import LineLogin from './components/shared/LineLogin';
-import ProfilePage from './pages/applicant/ProfilePage';
-import Wallet from './components/applicant/Wallet';
-import MyShifts from './components/applicant/MyShifts';
+import SeekerProfilePage from './pages/seeker/SeekerProfilePage';
+import SeekerWallet from './components/seeker/SeekerWallet';
+import SeekerMyShifts from './components/seeker/SeekerMyShifts';
 import Onboarding from './components/shared/Onboarding';
-import JobDetail from './components/applicant/JobDetail';
-import JobFeed from './components/applicant/JobFeed';
-import HomeSeeker from './pages/applicant/HomeSeeker';
-import ChatPage from './components/applicant/ChatPage';
+import SeekerJobDetail from './components/seeker/SeekerJobDetail';
+import SeekerJobFeed from './components/seeker/SeekerJobFeed';
+import SeekerHome from './pages/seeker/SeekerHome';
+import SeekerChatPage from './components/seeker/SeekerChatPage';
 import SettingsPage from './pages/shared/SettingsPage';
-import ChatHistoryPage from './pages/applicant/ChatHistoryPage';
+import SeekerChatHistoryPage from './pages/seeker/SeekerChatHistoryPage';
 import NotificationsPage from './pages/shared/NotificationsPage';
-import FullTimeJobs from './pages/applicant/FullTimeJobs';
+import SeekerFullTimeJobs from './pages/seeker/SeekerFullTimeJobs';
 import LineCallback from './components/shared/LineCallback';
 import DevPage from './pages/shared/DevPage';
-import HomeEmployer from './pages/employer/HomeEmployer';
+import EmployerHome from './pages/employer/EmployerHome';
 import EmployerChatHistoryPage from './pages/employer/EmployerChatHistoryPage';
 import EmployerChatPage from './pages/employer/EmployerChatPage';
 import EmployerMyJobsPage from './pages/employer/EmployerMyJobsPage';
@@ -27,12 +27,13 @@ import EmployerNotificationsPage from './pages/employer/EmployerNotificationsPag
 import EmployerProfile from './pages/employer/EmployerProfile';
 import RoleSelection from './pages/shared/RoleSelection';
 import MapView from './pages/shared/MapView';
-import EditProfilePage from './pages/employer/EditProfilePage';
-import TeamManagementPage from './pages/employer/TeamManagementPage';
-import BillingPage from './pages/employer/BillingPage';
-import SecurityPage from './pages/employer/SecurityPage';
+import EmployerEditProfilePage from './pages/employer/EmployerEditProfilePage';
+import EmployerTeamManagementPage from './pages/employer/EmployerTeamManagementPage';
+import EmployerBillingPage from './pages/employer/EmployerBillingPage';
+import EmployerSecurityPage from './pages/employer/EmployerSecurityPage';
 import SupportPage from './pages/shared/SupportPage';
 import EmployerLayout from './pages/employer/EmployerLayout';
+import EmployerAddJob from './pages/employer/EmployerAddJob';
 
 const AppContent = () => {
   const { user, isLoading } = useAuth();
@@ -67,30 +68,31 @@ const AppContent = () => {
           <Route path="/support" element={protectedRoute(<SupportPage />)} />
           
           {/* Seeker Routes (no /seeker prefix) */}
-          <Route path="/home" element={<HomeSeeker />} />
-          <Route path="/profile" element={protectedRoute(<ProfilePage />)} />
-          <Route path="/wallet" element={protectedRoute(<Wallet />)} />
-          <Route path="/my-shifts" element={protectedRoute(<MyShifts />)} />
-          <Route path="/job/:id" element={<JobDetail />} />
-          <Route path="/jobs" element={<JobFeed />} />
-          <Route path="/full-time-jobs" element={<FullTimeJobs />} />
-          <Route path="/chat" element={protectedRoute(<ChatHistoryPage />)} />
-          <Route path="/chat/:id" element={protectedRoute(<ChatPage />)} />
+          <Route path="/home" element={<SeekerHome />} />
+          <Route path="/profile" element={protectedRoute(<SeekerProfilePage />)} />
+          <Route path="/wallet" element={protectedRoute(<SeekerWallet />)} />
+          <Route path="/my-shifts" element={protectedRoute(<SeekerMyShifts />)} />
+          <Route path="/job/:id" element={<SeekerJobDetail />} />
+          <Route path="/jobs" element={<SeekerJobFeed />} />
+          <Route path="/full-time-jobs" element={<SeekerFullTimeJobs />} />
+          <Route path="/chat" element={protectedRoute(<SeekerChatHistoryPage />)} />
+          <Route path="/chat/:id" element={protectedRoute(<SeekerChatPage />)} />
           <Route path="/notifications" element={protectedRoute(<NotificationsPage />)} />
           
-          {/* Employer Routes */}
-          <Route path="/employer" element={protectedRoute(<EmployerLayout />)}>
-            <Route path="home" element={<HomeEmployer />} />
-            <Route path="my-jobs" element={<EmployerMyJobsPage />} />
-            <Route path="chats" element={<EmployerChatHistoryPage />} />
-            <Route path="chat/:id" element={<EmployerChatPage />} />
-            <Route path="notifications" element={<EmployerNotificationsPage />} />
-            <Route path="profile" element={<EmployerProfile />} />
-            <Route path="edit-profile" element={<EditProfilePage />} />
-            <Route path="team" element={<TeamManagementPage />} />
-            <Route path="billing" element={<BillingPage />} />
-            <Route path="security" element={<SecurityPage />} />
-          </Route>
+          {/* Employer Routes (absolute only, wrapped with layout) */}
+
+          {/* Absolute aliases for employer routes (helps dev switcher that lists child paths relatively) */}
+          <Route path="/employer/home" element={protectedRoute(<EmployerLayout><EmployerHome /></EmployerLayout>)} />
+          <Route path="/employer/my-jobs" element={protectedRoute(<EmployerLayout><EmployerMyJobsPage /></EmployerLayout>)} />
+          <Route path="/employer/chats" element={protectedRoute(<EmployerLayout><EmployerChatHistoryPage /></EmployerLayout>)} />
+          <Route path="/employer/chat/:id" element={protectedRoute(<EmployerLayout><EmployerChatPage /></EmployerLayout>)} />
+          <Route path="/employer/add-job" element={protectedRoute(<EmployerLayout><EmployerAddJob /></EmployerLayout>)} />
+          <Route path="/employer/notifications" element={protectedRoute(<EmployerLayout><EmployerNotificationsPage /></EmployerLayout>)} />
+          <Route path="/employer/profile" element={protectedRoute(<EmployerLayout><EmployerProfile /></EmployerLayout>)} />
+          <Route path="/employer/edit-profile" element={protectedRoute(<EmployerLayout><EmployerEditProfilePage /></EmployerLayout>)} />
+          <Route path="/employer/team" element={protectedRoute(<EmployerLayout><EmployerTeamManagementPage /></EmployerLayout>)} />
+          <Route path="/employer/billing" element={protectedRoute(<EmployerLayout><EmployerBillingPage /></EmployerLayout>)} />
+          <Route path="/employer/security" element={protectedRoute(<EmployerLayout><EmployerSecurityPage /></EmployerLayout>)} />
         </Routes>
       </div>
     </div>
@@ -100,15 +102,9 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <DevModeProvider>
-        <AuthProvider>
-          <RoleProvider>
-            <LiffProvider>
-              <AppContent />
-            </LiffProvider>
-          </RoleProvider>
-        </AuthProvider>
-      </DevModeProvider>
+      <AppProviders>
+        <AppContent />
+      </AppProviders>
     </Router>
   );
 }

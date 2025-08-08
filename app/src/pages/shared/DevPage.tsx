@@ -32,33 +32,33 @@ type MenuItem = {
 };
 
 const sharedPages: MenuItem[] = [
-  { title: 'Login', path: '/login', icon: LogIn, color: 'bg-green-500' },
-  { title: 'Role Selection', path: '/role-selection', icon: Users, color: 'bg-blue-500' },
-  { title: 'Onboarding', path: '/onboarding', icon: ClipboardList, color: 'bg-yellow-500' },
-  { title: 'Settings', path: '/settings', icon: Settings, color: 'bg-gray-500' },
+  { title: 'Shared: Login', path: '/login', icon: LogIn, color: 'bg-green-500' },
+  { title: 'Shared: Role Selection', path: '/role-selection', icon: Users, color: 'bg-blue-500' },
+  { title: 'Shared: Onboarding', path: '/onboarding', icon: ClipboardList, color: 'bg-yellow-500' },
+  { title: 'Shared: Settings', path: '/settings', icon: Settings, color: 'bg-gray-500' },
 ];
 
 const applicantPages: MenuItem[] = [
-  { title: 'Seeker Home', path: '/home', icon: Home, color: 'bg-sky-500' },
-  { title: 'Job Feed', path: '/jobs', icon: Search, color: 'bg-indigo-500' },
-  { title: 'Full-Time Jobs', path: '/full-time-jobs', icon: Briefcase, color: 'bg-violet-500' },
-  { title: 'Job Detail (Sample)', path: '/job/1', icon: FileText, color: 'bg-purple-500' },
-  { title: 'My Shifts', path: '/my-shifts', icon: Calendar, color: 'bg-fuchsia-500' },
-  { title: 'Wallet', path: '/wallet', icon: WalletIcon, color: 'bg-pink-500' },
-  { title: 'Chat History', path: '/chat-history', icon: MessageSquare, color: 'bg-rose-500' },
-  { title: 'Chat (Sample)', path: '/chat/1', icon: Send, color: 'bg-red-500' },
-  { title: 'Notifications', path: '/notifications', icon: Bell, color: 'bg-orange-500' },
-  { title: 'Profile', path: '/profile', icon: UserCircle, color: 'bg-amber-500' },
+  { title: 'Seeker: Home', path: '/home', icon: Home, color: 'bg-sky-500' },
+  { title: 'Seeker: Job Feed', path: '/jobs', icon: Search, color: 'bg-indigo-500' },
+  { title: 'Seeker: Full-Time Jobs', path: '/full-time-jobs', icon: Briefcase, color: 'bg-violet-500' },
+  { title: 'Seeker: Job Detail (Sample)', path: '/job/1', icon: FileText, color: 'bg-purple-500' },
+  { title: 'Seeker: My Shifts', path: '/my-shifts', icon: Calendar, color: 'bg-fuchsia-500' },
+  { title: 'Seeker: Wallet', path: '/wallet', icon: WalletIcon, color: 'bg-pink-500' },
+  { title: 'Seeker: Chat History', path: '/chat', icon: MessageSquare, color: 'bg-rose-500' },
+  { title: 'Seeker: Chat (Sample)', path: '/chat/1', icon: Send, color: 'bg-red-500' },
+  { title: 'Seeker: Notifications', path: '/notifications', icon: Bell, color: 'bg-orange-500' },
+  { title: 'Seeker: Profile', path: '/profile', icon: UserCircle, color: 'bg-amber-500' },
 ];
 
 const employerPages: MenuItem[] = [
-  { title: 'Employer Home', path: '/employer/home', icon: Building2, color: 'bg-lime-500' },
-  { title: 'Post Job', path: '/employer/add-job', icon: PlusSquare, color: 'bg-emerald-500' },
-  { title: 'My Jobs', path: '/employer/my-jobs', icon: Briefcase, color: 'bg-teal-500' },
-  { title: 'Employer Chats', path: '/employer/chats', icon: MessageSquare, color: 'bg-cyan-500' },
-  { title: 'Employer Chat (Sample)', path: '/employer/chat/1', icon: Send, color: 'bg-sky-600' },
-  { title: 'Employer Notifications', path: '/employer/notifications', icon: Bell, color: 'bg-blue-600' },
-  { title: 'Employer Profile', path: '/employer/profile', icon: UserCog, color: 'bg-indigo-600' },
+  { title: 'Employer: Home', path: '/employer/home', icon: Building2, color: 'bg-lime-500' },
+  { title: 'Employer: Add Job', path: '/employer/add-job', icon: PlusSquare, color: 'bg-emerald-500' },
+  { title: 'Employer: My Jobs', path: '/employer/my-jobs', icon: Briefcase, color: 'bg-teal-500' },
+  { title: 'Employer: Chats', path: '/employer/chats', icon: MessageSquare, color: 'bg-cyan-500' },
+  { title: 'Employer: Chat (Sample)', path: '/employer/chat/1', icon: Send, color: 'bg-sky-600' },
+  { title: 'Employer: Notifications', path: '/employer/notifications', icon: Bell, color: 'bg-blue-600' },
+  { title: 'Employer: Profile', path: '/employer/profile', icon: UserCog, color: 'bg-indigo-600' },
 ];
 
 const MenuCard = ({ item }: { item: MenuItem }) => (

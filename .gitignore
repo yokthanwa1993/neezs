@@ -10,6 +10,7 @@ dist/
 build/
 .next/
 out/
+.turbo/
 
 # Environment variables
 .env
@@ -17,6 +18,7 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*.local
 
 # IDE
 .vscode/
@@ -54,3 +56,6 @@ ui-debug.log
 # Capacitor
 android/
 ios/ 
+app/dist/
+app/android/app/build/
+app/ios/Pods/

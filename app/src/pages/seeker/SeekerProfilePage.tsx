@@ -12,9 +12,9 @@ import BottomNavigation from '../../components/shared/BottomNavigation';
 import { useAuth } from '../../contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import ProfileAboutTab from '@/components/applicant/ProfileAboutTab';
-import ProfileExperienceTab from '@/components/applicant/ProfileExperienceTab';
-import ProfileReviewsTab from '@/components/applicant/ProfileReviewsTab';
+import ProfileAboutTab from '@/components/seeker/SeekerProfileAboutTab';
+import ProfileExperienceTab from '@/components/seeker/SeekerProfileExperienceTab';
+import ProfileReviewsTab from '@/components/seeker/SeekerProfileReviewsTab';
 
 const TabButton = ({ icon: Icon, isActive, onClick }: { icon: React.ElementType, isActive: boolean, onClick: () => void }) => (
   <button onClick={onClick} className={`py-4 flex-1 flex justify-center items-center transition-all duration-200 border-b-2 ${isActive ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500 hover:bg-gray-100'}`}>
