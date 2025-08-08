@@ -14,7 +14,7 @@ router.get('/', async (req: Request, res: Response) => {
       .limit(limit)
       .get();
 
-    const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const items = snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() }));
     res.status(200).json({ items });
   } catch (error: any) {
     console.error('GET /api/jobs error:', error);

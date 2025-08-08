@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /jobs/{jobId} {
+      // Readable by anyone
+      allow read: if true;
+      // Writeable by logged-in users (relax first). Tighten to employer role later.
+      allow create, update, delete: if request.auth != null;
+    }
+  }
+}
+
+
