@@ -53,3 +53,4 @@ jobs:
           server: '${{ secrets.CAPROVER_SERVER }}'
           app: 'neeiz-api'
           token: '${{ secrets.CAPROVER_NEEIZ_API_TOKEN }}' 
+          tarFile: './deploy.tar'

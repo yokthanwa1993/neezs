@@ -48,3 +48,4 @@ jobs:
           server: '${{ secrets.CAPROVER_SERVER }}'
           app: 'neeiz-web'
           token: '${{ secrets.CAPROVER_NEEIZ_WEB_TOKEN }}' 
+          tarFile: './deploy.tar'
