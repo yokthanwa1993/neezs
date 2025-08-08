@@ -14,6 +14,8 @@ const defaultAllowedOrigins = [
   'capacitor://localhost', // iOS/Android Capacitor
   'http://localhost',
   'https://localhost',
+  'https://neeiz-app.lslly.com', // Production App
+  'https://neeiz-web.lslly.com', // Production Web (if any)
 ];
 
 const allowedOrigins = (process.env.CORS_ORIGINS
