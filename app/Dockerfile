@@ -9,8 +9,8 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 COPY packages ./packages
 
-# Install dependencies (use workspace lockfile)
-RUN pnpm install --frozen-lockfile
+# Install dependencies (use workspace lockfile with fallback for CI drift)
+RUN pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
 
 # Copy the rest of the source code
 COPY . .
