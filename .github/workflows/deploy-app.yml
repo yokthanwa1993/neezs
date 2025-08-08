@@ -39,8 +39,8 @@ jobs:
           # Copy app sources
           cp -r . ../deploy_temp/
           # Include workspace files needed for workspace:* deps
-          cp -r ../../packages ../deploy_temp/packages
-          cp ../../pnpm-workspace.yaml ../deploy_temp/pnpm-workspace.yaml
+          cp -r ../packages ../deploy_temp/packages || true
+          cp ../pnpm-workspace.yaml ../deploy_temp/pnpm-workspace.yaml || true
           cd ../deploy_temp
           
           # Remove unnecessary files

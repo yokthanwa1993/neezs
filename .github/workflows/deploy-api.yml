@@ -37,8 +37,8 @@ jobs:
           mkdir -p ../deploy_temp
           cp -r . ../deploy_temp/
           # copy workspace root files and packages into app build context dir
-          cp -r ../../packages ../deploy_temp/packages
-          cp ../../pnpm-workspace.yaml ../deploy_temp/pnpm-workspace.yaml
+          cp -r ../packages ../deploy_temp/packages
+          cp ../pnpm-workspace.yaml ../deploy_temp/pnpm-workspace.yaml
           cd ../deploy_temp
           rm -rf node_modules .git dist .pnpm-store .DS_Store
           tar -czf ../deploy.tar .
