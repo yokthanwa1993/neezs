@@ -8,8 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { apiClient } from '@neeiz/api-client';
 import { useAuth } from '@/contexts/AuthContext';
 
 const TOTAL_STEPS = 4;
@@ -36,7 +35,7 @@ const AddJob: React.FC = () => {
     // Final submission: save to Firestore
     try {
       const salaryNumber = formData.salary ? Number(formData.salary) : 0;
-      await addDoc(collection(db, 'jobs'), {
+      await apiClient.post('/api/jobs', {
         title: formData.jobTitle,
         description: formData.description,
         category: formData.category,
@@ -45,7 +44,6 @@ const AddJob: React.FC = () => {
         jobType: formData.jobType || 'full-time',
         status: 'active',
         employerId: user?.uid || 'unknown',
-        createdAt: serverTimestamp(),
       });
       navigate('/employer/home');
     } catch (error) {

@@ -3,6 +3,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import './firebase'; // Initialize Firebase Admin
 import authRouter from './routes/auth';
+import jobsRouter from './routes/jobs';
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRouter);
+app.use('/api/jobs', jobsRouter);
 
 // Health check route
 app.get('/', (req: Request, res: Response) => {

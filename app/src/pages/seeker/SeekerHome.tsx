@@ -20,8 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import SearchView from '../../components/shared/SearchView';
-import { db } from '@/lib/firebase';
-import { collection, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { apiClient } from '@neeiz/api-client';
 
 type JobDoc = {
   id: string;
@@ -44,17 +43,10 @@ const HomeSeeker = () => {
   const [jobs, setJobs] = useState<JobDoc[]>([]);
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'jobs'),
-      where('status', '==', 'active'),
-      orderBy('createdAt', 'desc'),
-      limit(100)
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-      setJobs(items as any);
-    });
-    return () => unsub();
+    (async () => {
+      const res = await apiClient.get('/api/jobs?limit=100');
+      setJobs(res.data.items || []);
+    })();
   }, []);
 
   const featuredJobs: Job[] = Array.from({ length: 100 }, (_, i) => {
