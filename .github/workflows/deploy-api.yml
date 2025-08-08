@@ -1,11 +1,14 @@
 name: Deploy neeiz-api to CapRover
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - main
     paths:
       - 'api/**'
+      - 'packages/**'
+      - 'pnpm-workspace.yaml'
       - '.github/workflows/deploy-api.yml'
 
 jobs:
