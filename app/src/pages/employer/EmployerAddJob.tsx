@@ -24,8 +24,9 @@ const AddJob: React.FC = () => {
     location: '',
     salary: '',
     jobType: '',
-    images: ''
+    images: '',
   });
+  const [uploading, setUploading] = useState(false);
 
   const handleNext = async () => {
     if (step < TOTAL_STEPS) {
@@ -72,6 +73,26 @@ const AddJob: React.FC = () => {
   
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading(true);
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await apiClient.post('/api/jobs/upload', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const url = res.data.url as string;
+      setFormData(prev => ({ ...prev, images: prev.images ? prev.images + '\n' + url : url }));
+    } catch (err) {
+      alert('อัปโหลดรูปไม่สำเร็จ');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   const progress = (step / TOTAL_STEPS) * 100;
@@ -147,7 +168,7 @@ const AddJob: React.FC = () => {
                     <Label htmlFor="salary" className="font-semibold">Salary (THB per month)</Label>
                     <Input id="salary" name="salary" type="number" value={formData.salary} onChange={handleChange} placeholder="e.g. 25000" className="mt-1"/>
                   </div>
-                  <div>
+              <div>
                     <Label className="font-semibold">Job Type</Label>
                     <Select name="jobType" onValueChange={handleSelectChange('jobType')} value={formData.jobType}>
                         <SelectTrigger className="mt-1">
@@ -162,6 +183,14 @@ const AddJob: React.FC = () => {
                         </SelectContent>
                     </Select>
                   </div>
+              <div className="space-y-2">
+                <Label htmlFor="images" className="font-semibold">Images</Label>
+                <div className="flex gap-2">
+                  <Input type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                  <Button type="button" variant="secondary" onClick={() => document.getElementById('images-textarea')?.scrollIntoView({ behavior: 'smooth' })}>ดู/แก้ไข URL</Button>
+                </div>
+                <Textarea id="images-textarea" name="images" value={formData.images} onChange={handleChange} placeholder="https://...\nhttps://..." className="mt-1" rows={4}/>
+              </div>
                 </div>
               </div>
             )}
