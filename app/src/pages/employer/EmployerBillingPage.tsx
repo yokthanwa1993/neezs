@@ -1,85 +1,174 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Star } from 'lucide-react';
+import { Wallet, PlusCircle, CreditCard, History, X, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
-const BillingPage: React.FC = () => {
+const EmployerBillingPage: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(500);
+  const [customAmount, setCustomAmount] = useState('');
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+
+  const predefinedAmounts = [300, 500, 1000, 2000];
+
+  const handleSelectAmount = (amount: number) => {
+    setSelectedAmount(amount);
+    setCustomAmount('');
+  };
+
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setCustomAmount(value);
+    setSelectedAmount(null);
+  };
+
+  const finalAmount = selectedAmount || (customAmount ? parseInt(customAmount, 10) : 0);
+
+  const handleTopUp = () => {
+    if (finalAmount > 0) {
+      setIsQrDialogOpen(true);
+    }
+  };
+
+  const transactionHistory = [
+    { id: 1, type: 'เติมเงิน', amount: 500, date: '15 พ.ย. 2023' },
+    { id: 2, type: 'ค่าลงประกาศงาน', amount: -50, date: '14 พ.ย. 2023', details: 'ตำแหน่งบาริสต้า' },
+    { id: 3, type: 'ค่าลงประกาศงาน', amount: -50, date: '12 พ.ย. 2023', details: 'ตำแหน่งพนักงานทำความสะอาด' },
+    { id: 4, type: 'เติมเงิน', amount: 300, date: '10 พ.ย. 2023' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white p-4 shadow-sm sticky top-0 z-10 flex items-center">
-        <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-xl font-bold text-gray-800">การชำระเงินและแพ็กเกจ</h1>
-      </header>
-      <main className="p-4 space-y-6">
-        <Card className="border-primary border-2">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>แพ็กเกจปัจจุบันของคุณ</CardTitle>
-              <Badge className="bg-primary/20 text-primary">ฟรี</Badge>
-            </div>
-            <CardDescription>คุณกำลังใช้แพ็กเกจฟรี</CardDescription>
+      <main className="p-4 space-y-6 pb-24">
+        {/* Wallet Balance Card */}
+        <Card className="bg-gradient-to-br from-yellow-400 to-yellow-500 text-gray-800 shadow-xl overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-700">ยอดเงินคงเหลือ</CardTitle>
+            <Wallet className="h-5 w-5 text-gray-700" />
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-green-500" />ลงประกาศงานได้ 1 ตำแหน่ง/เดือน</li>
-              <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-green-500" />เข้าถึงผู้สมัครได้จำกัด</li>
-            </ul>
+            <div className="text-4xl font-bold">฿150.00</div>
+            <p className="text-xs text-gray-600 mt-1">เทียบเท่า 150 เครดิต</p>
           </CardContent>
         </Card>
 
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">อัปเกรดเพื่อเข้าถึงฟีเจอร์เพิ่มเติม</h2>
-          <p className="text-gray-500">เลือกแพ็กเกจที่เหมาะกับธุรกิจของคุณ</p>
-        </div>
+        {/* Top Up Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>เติมเงินเข้า Wallet</CardTitle>
+            <CardDescription>เลือกจำนวนเงินหรือระบุเอง</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {predefinedAmounts.map((amount) => (
+                <Button
+                  key={amount}
+                  variant="outline"
+                  onClick={() => handleSelectAmount(amount)}
+                  className={cn(
+                    "h-12 text-base border-2 font-semibold",
+                    selectedAmount === amount ? "border-yellow-500 text-yellow-600 bg-yellow-100" : "border-gray-200"
+                  )}
+                >
+                  ฿{amount.toLocaleString()}
+                </Button>
+              ))}
+            </div>
+            <div>
+              <Input
+                type="text"
+                inputMode="numeric"
+                placeholder="หรือระบุจำนวนเงินเอง"
+                value={customAmount}
+                onChange={handleCustomAmountChange}
+                onFocus={() => setSelectedAmount(null)}
+                className={cn(
+                  "text-center text-base h-12 bg-gray-100 focus:bg-white",
+                  customAmount && !selectedAmount && "border-primary ring-1 ring-primary"
+                )}
+              />
+            </div>
+            <Button
+                onClick={handleTopUp}
+                disabled={finalAmount <= 0}
+                className="w-full h-12 text-lg font-bold flex items-center justify-center gap-2 bg-yellow-400 text-gray-800 hover:bg-yellow-500 rounded-full"
+            >
+                <PlusCircle className="w-6 h-6" />
+                ยืนยัน ฿{finalAmount > 0 ? finalAmount.toLocaleString() : '0'}
+            </Button>
+            <Separator />
+            <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5" />
+                    <span>วิธีการชำระเงิน</span>
+                </div>
+                <span className="font-semibold">QR Code / Credit Card</span>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Transaction History */}
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <History className="w-5 h-5" />
+                    ประวัติการทำรายการ
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-1">
+                    {transactionHistory.map(tx => (
+                        <div key={tx.id} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50">
+                            <div className="flex items-center gap-3">
+                                {tx.amount > 0 ? (
+                                    <ArrowUpCircle className="w-6 h-6 text-green-500" />
+                                ) : (
+                                    <ArrowDownCircle className="w-6 h-6 text-red-500" />
+                                )}
+                                <div>
+                                    <p className="font-semibold">{tx.type}</p>
+                                    <p className="text-sm text-gray-500">{tx.details ? `${tx.details} - ${tx.date}` : tx.date}</p>
+                                </div>
+                            </div>
+                            <span className={`font-bold text-lg ${tx.amount > 0 ? 'text-green-600' : 'text-gray-800'}`}>
+                                {tx.amount > 0 ? '+' : '-'}฿{Math.abs(tx.amount).toLocaleString()}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="flex flex-col">
-            <CardHeader>
-              <CardTitle>Pro</CardTitle>
-              <CardDescription>สำหรับธุรกิจที่กำลังเติบโต</CardDescription>
-              <p className="text-3xl font-bold pt-2">฿999<span className="text-lg font-normal">/เดือน</span></p>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />ลงประกาศงานได้ 10 ตำแหน่ง/เดือน</li>
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />เข้าถึงผู้สมัครได้ไม่จำกัด</li>
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />โปรโมทประกาศงาน</li>
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />เครื่องมือจัดการผู้สมัคร</li>
-              </ul>
-            </CardContent>
-            <div className="p-6 pt-0">
-              <Button className="w-full">เลือกแพ็กเกจ Pro</Button>
-            </div>
-          </Card>
-          <Card className="border-primary border-2 relative flex flex-col">
-            <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground"><Star className="w-3 h-3 mr-1"/> ยอดนิยม</Badge>
-            <CardHeader>
-              <CardTitle>Enterprise</CardTitle>
-              <CardDescription>สำหรับองค์กรขนาดใหญ่</CardDescription>
-              <p className="text-3xl font-bold pt-2">ติดต่อเรา</p>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />ทุกอย่างใน Pro</li>
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />ลงประกาศงานไม่จำกัด</li>
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />สร้างแบรนด์บริษัท</li>
-                <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-primary" />การสนับสนุนระดับพรีเมียม</li>
-              </ul>
-            </CardContent>
-            <div className="p-6 pt-0">
-              <Button variant="outline" className="w-full">ติดต่อฝ่ายขาย</Button>
-            </div>
-          </Card>
-        </div>
       </main>
+      {/* Footer is removed to place the confirmation button directly in the card */}
+
+      <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">สแกนเพื่อชำระเงิน</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center">
+            <img 
+              src="https://iili.io/FDvZM1R.png" 
+              alt="Sample QR Code" 
+              className="mx-auto w-64 h-64"
+            />
+            <p className="mt-4 text-2xl font-bold">
+              ยอดชำระ: ฿{finalAmount.toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              กรุณาตรวจสอบยอดเงินก่อนทำการชำระเงิน
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-export default BillingPage;
+export default EmployerBillingPage;

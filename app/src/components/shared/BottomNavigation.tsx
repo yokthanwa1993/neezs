@@ -1,106 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { MessageSquare, User, Home, Bell } from 'lucide-react';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Bell, MessageSquare, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
-const BottomNavigation = () => {
-  const navigate = useNavigate();
+const BottomNavigation: React.FC = () => {
   const location = useLocation();
-  const [clickedItem, setClickedItem] = useState<string | null>(null);
-  const [pendingPath, setPendingPath] = useState<string | null>(null);
-
-  // ไม่แสดง bottom navigation ในหน้า notifications
-  if (location.pathname === '/notifications') {
-    return null;
-  }
+  const { user, firebaseUser } = useAuth();
 
   const navItems = [
-    { path: '/home', label: 'หน้าแรก', icon: Home },
-    { path: '/chat', label: 'ข้อความ', icon: MessageSquare },
-    { path: '/notifications', label: 'แจ้งเตือน', icon: Bell },
-    { path: '/profile', label: 'โปรไฟล์', icon: User },
+    { path: '/home', icon: Home, label: 'หน้าแรก' },
+    { path: '/chat', icon: MessageSquare, label: 'แชท' },
+    { path: '/notifications', icon: Bell, label: 'แจ้งเตือน' },
   ];
 
-  useEffect(() => {
-    if (pendingPath && location.pathname === pendingPath) {
-      setPendingPath(null);
+  const isActive = (path: string) => {
+    // Handle special case for home to not match other routes like /home/details
+    if (path === '/home') {
+      return location.pathname === path;
     }
-    // Reset animation after it has played
-    if (clickedItem) {
-      const timer = setTimeout(() => {
-        setClickedItem(null);
-      }, 400); // Duration of the animation
-      return () => clearTimeout(timer);
-    }
-  }, [location.pathname, clickedItem, pendingPath]);
-
-  const handleItemClick = (path: string) => {
-    // Set pending path immediately to change color
-    setPendingPath(path);
-
-    // Trigger animation after a short delay
-    setTimeout(() => {
-      setClickedItem(path);
-    }, 50);
-
-    // Navigate after a longer delay
-    if (location.pathname !== path) {
-      setTimeout(() => {
-        navigate(path);
-      }, 150);
-    }
+    return location.pathname.startsWith(path);
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[9999] shadow-lg">
-      <div className="w-full max-w-sm mx-auto">
-        <div className="grid grid-cols-4">
-          {navItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = location.pathname === item.path || pendingPath === item.path;
-            const isClicked = clickedItem === item.path;
+    <footer className="fixed bottom-0 left-0 right-0 z-50 w-full border-t bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 shadow-lg">
+      <div className="mx-auto w-full max-w-md flex h-20 items-center justify-between px-3">
+        {navItems.map((item) => {
+          const active = isActive(item.path);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center text-gray-600 transition-all duration-200 hover:bg-gray-50 active:scale-[0.98]"
+            >
+              <Icon
+                className={`h-8 w-8 ${active ? 'text-black' : 'text-gray-500'} transition-colors duration-200`}
+                fill={active ? 'hsl(var(--primary))' : 'none'}
+                strokeWidth={active ? 2 : 1.5}
+              />
+              <span className={`mt-1 text-sm ${active ? 'font-semibold text-black' : 'text-gray-500'}`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
 
-            return (
-              <div
-                key={item.path}
-                className={`flex flex-col items-center justify-center py-3 transition-all duration-300 cursor-pointer select-none ${
-                  isActive
-                    ? "text-primary"
-                    : "text-gray-600 hover:text-primary/80"
-                } ${isClicked ? 'nav-bounce' : ''}`}
-                onClick={() => handleItemClick(item.path)}
-              >
-                <div 
-                  className={`relative transition-all duration-200 ${
-                    isActive
-                      ? 'transform scale-110'
-                      : 'hover:scale-105'
-                  } ${isClicked ? 'nav-wiggle' : ''}`}
-                >
-                  <IconComponent
-                    size={28}
-                    className={`mb-1 transition-all duration-200 ${
-                      isActive
-                        ? 'icon-active drop-shadow-sm'
-                        : 'text-gray-600'
-                    }`}
-                    strokeWidth={isActive ? 2.5 : 2}
-                  />
-                </div>
-                <span 
-                  className={`text-xs leading-tight transition-all duration-200 ${
-                    isActive
-                      ? 'nav-text-active'
-                      : 'text-gray-600 font-medium'
-                  }`}
-                >
-                  {item.label}
-                </span>
+        {/* Profile Link */}
+        <Link
+          to="/profile"
+          className="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center text-gray-600 transition-all duration-200 hover:bg-gray-50 active:scale-[0.98]"
+          title="โปรไฟล์"
+        >
+          <div
+            className={`flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 transition-colors duration-200 ${
+              isActive('/profile') ? 'border-primary' : 'border-transparent'
+            }`}
+          >
+            {(user?.picture || firebaseUser?.photoURL || localStorage.getItem('liff_picture_url')) ? (
+              <img
+                src={user?.picture || firebaseUser?.photoURL || localStorage.getItem('liff_picture_url') || undefined}
+                alt="Profile"
+                className="h-full w-full object-cover"
+                onError={(e)=>{(e.currentTarget as HTMLImageElement).src='/placeholder.svg'}}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                <User className={`h-6 w-6 ${isActive('/profile') ? 'text-black' : 'text-gray-500'}`} />
               </div>
-            );
-          })}
-        </div>
+            )}
+          </div>
+          <span className={`mt-1 text-sm ${isActive('/profile') ? 'font-semibold text-black' : 'text-gray-500'}`}>โปรไฟล์</span>
+        </Link>
       </div>
-    </div>
+    </footer>
   );
 };
 

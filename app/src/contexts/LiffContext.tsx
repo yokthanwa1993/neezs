@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
+import { auth } from '@/lib/firebase';
+import { signInWithCustomToken } from 'firebase/auth';
 
 declare global {
   interface Window {
@@ -219,16 +221,11 @@ export const LiffProvider: React.FC<LiffProviderProps> = ({ children }) => {
 
   const authenticateWithBackend = async (idToken: string, profile: any) => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://neeiz-api.lslly.com';
-      
-      if (!apiUrl) {
-        console.error('❌ VITE_API_URL environment variable is not set');
-        return;
-      }
-      
-      console.log('🌐 Authenticating with backend:', apiUrl);
-      
-      const response = await fetch(`${apiUrl}/api/auth/line`, {
+      // Use same-origin endpoint so it works in both dev (Vite proxy) and prod (Hosting rewrites)
+      const endpoint = '/api/auth/line';
+      console.log('🌐 Authenticating with backend via', endpoint);
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -261,6 +258,14 @@ export const LiffProvider: React.FC<LiffProviderProps> = ({ children }) => {
       setUser(userObj);
       localStorage.setItem('auth_user', JSON.stringify(userObj));
       localStorage.setItem('auth_completed_at', new Date().toISOString());
+
+      // Silently sign in to Firebase using the custom token to avoid double login prompts
+      try {
+        await signInWithCustomToken(auth, customToken);
+        console.log('🔐 Firebase sign-in with custom token completed');
+      } catch (e) {
+        console.warn('⚠️ Firebase sign-in with custom token failed:', e);
+      }
 
       console.log('🎉 Authentication completed successfully!');
 

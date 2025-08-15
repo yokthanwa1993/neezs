@@ -25,8 +25,9 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
     location: '',
     salary: '',
     jobType: '',
-    images: '',
+    images: [] as string[],
   });
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleNext = async () => {
     if (step < TOTAL_STEPS) {
@@ -46,10 +47,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
         jobType: formData.jobType || 'full-time',
         status: 'active',
         employerId: user?.id || 'unknown',
-        images: formData.images
-          .split('\n')
-          .map((s) => s.trim())
-          .filter(Boolean),
+        images: formData.images,
       });
       alert('ลงประกาศงานเรียบร้อยแล้ว!');
       onFinished();
@@ -72,6 +70,34 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
   
   const handleSelectChange = (name: string) => (value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const uploadFile = async (file: File) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await apiClient.post('/api/jobs/upload', fd);
+    return res.data.url as string;
+  };
+
+  const handleImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setIsUploading(true);
+    try {
+      const uploaded = await Promise.all(files.map(uploadFile));
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...uploaded] }));
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('อัปโหลดรูปภาพไม่สำเร็จ กรุณาลองใหม่');
+    } finally {
+      setIsUploading(false);
+      // reset value to allow re-selecting the same file(s)
+      e.currentTarget.value = '';
+    }
+  };
+
+  const removeImageAt = (idx: number) => {
+    setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
   };
 
   const progress = (step / TOTAL_STEPS) * 100;
@@ -153,8 +179,22 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="images" className="font-semibold">รูปภาพ (URL ทีละบรรทัด)</Label>
-                <Textarea id="images" name="images" value={formData.images} onChange={handleChange} placeholder="https://...\nhttps://..." className="mt-1" rows={4}/>
+                <Label htmlFor="images" className="font-semibold">อัปโหลดรูปภาพงาน</Label>
+                <div className="mt-1">
+                  <Input id="images" name="images" type="file" accept="image/*" multiple onChange={handleImagesChange} />
+                  <p className="text-xs text-gray-500 mt-1">เลือกได้หลายรูป รองรับไฟล์ภาพจากเครื่องของคุณ</p>
+                </div>
+                {isUploading && <p className="text-sm text-gray-600 mt-2">กำลังอัปโหลดรูปภาพ...</p>}
+                {formData.images.length > 0 && (
+                  <div className="mt-3 grid grid-cols-4 gap-2">
+                    {formData.images.map((url, idx) => (
+                      <div key={idx} className="relative group">
+                        <img src={url} alt={`job-${idx}`} className="w-full h-20 object-cover rounded" onError={(e)=>{(e.currentTarget as HTMLImageElement).src='/placeholder.svg'}} />
+                        <button type="button" className="absolute top-1 right-1 bg-white/90 text-red-600 text-xs px-1 rounded opacity-0 group-hover:opacity-100" onClick={()=>removeImageAt(idx)}>ลบ</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

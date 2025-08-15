@@ -10,12 +10,15 @@ const DevModeContext = createContext<DevModeContextType | undefined>(undefined);
 export const DevModeProvider = ({ children }: { children: ReactNode }) => {
   const [isDevMode, setIsDevMode] = useState(() => {
     try {
+      const isHosted = typeof window !== 'undefined' && (window.location.hostname.endsWith('.web.app') || window.location.hostname.endsWith('.firebaseapp.com'));
+      if (isHosted) {
+        // ใน production ปิด dev mode เสมอ (ห้าม bypass)
+        return false;
+      }
       const item = window.localStorage.getItem('devMode');
-      // หากไม่มีค่าที่บันทึกไว้ ให้ใช้ค่าเริ่มต้นเป็น true (เปิด)
       return item ? JSON.parse(item) : true;
     } catch (error) {
       console.error("Error reading devMode from localStorage", error);
-      // หากเกิดข้อผิดพลาด ให้ใช้ค่าเริ่มต้นเป็น true (เปิด)
       return true;
     }
   });
@@ -29,6 +32,12 @@ export const DevModeProvider = ({ children }: { children: ReactNode }) => {
   }, [isDevMode]);
 
   const toggleDevMode = () => {
+    const isHosted = typeof window !== 'undefined' && (window.location.hostname.endsWith('.web.app') || window.location.hostname.endsWith('.firebaseapp.com'));
+    if (isHosted) {
+      // ใน production ไม่อนุญาตให้เปิด dev mode
+      setIsDevMode(false);
+      return;
+    }
     setIsDevMode(prevMode => !prevMode);
   };
 

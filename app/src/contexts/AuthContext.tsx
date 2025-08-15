@@ -23,6 +23,7 @@ interface AuthContextType {
   firebaseUser: FirebaseUser | null;
   setUser: (user: User | null) => void;
   logout: () => Promise<void>;
+  hardRefresh: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -80,7 +81,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await signOut(auth);
       setUser(null);
       setFirebaseUser(null);
-      localStorage.clear();
+      // Clear all web caches and local storage to ensure fresh UI next load
+      try {
+        localStorage.clear();
+      } catch {}
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch {}
+      try {
+        if (navigator.serviceWorker) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.unregister()));
+        }
+      } catch {}
       resetLiffState();
       if (window.liff) {
         window.liff.logout();
@@ -90,7 +106,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const exposedUser = isDevMode && !firebaseUser ? devUser : user;
+  const hardRefresh = async () => {
+    try {
+      try { if ('caches' in window) { const keys = await caches.keys(); await Promise.all(keys.map((k)=>caches.delete(k))); } } catch {}
+      try { if (navigator.serviceWorker) { const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map((r)=>r.unregister())); } } catch {}
+      // keep auth tokens, just reload ignoring cache
+      window.location.replace('/');
+    } catch (e) {
+      window.location.reload();
+    }
+  };
+
+  // ใน production (Firebase Hosting) ปิด dev user เสมอ
+  const isHosted = typeof window !== 'undefined' && (window.location.hostname.endsWith('.web.app') || window.location.hostname.endsWith('.firebaseapp.com'));
+  const exposedUser = (!isHosted && isDevMode && !firebaseUser) ? devUser : user;
 
   const value = {
     user: exposedUser,
@@ -104,6 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     },
     logout,
+    hardRefresh,
     isLoading,
   };
 

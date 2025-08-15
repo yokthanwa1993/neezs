@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { 
   MapPin, 
   Bookmark,
@@ -7,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLiff } from '@/contexts/LiffContext';
 import BottomNavigation from '../../components/shared/BottomNavigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,26 +30,50 @@ type JobDoc = {
 
 const HomeSeeker = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  const { isLiffLoading } = useLiff();
   const [location] = useState<string>('กรุงเทพมหานคร');
   const [isSearching, setIsSearching] = useState(false);
-  const [jobs, setJobs] = useState<JobDoc[]>([]);
+  const fetchJobs = async () => {
+    // Fetch only 10 jobs for the homepage for better performance
+    const res = await apiClient.get('/api/jobs?limit=10');
+    return res.data.items || [];
+  };
 
-  useEffect(() => {
-    (async () => {
-      const res = await apiClient.get('/api/jobs?limit=100');
-      setJobs(res.data.items || []);
-    })();
-  }, []);
+  const { data: jobs = [], isLoading: isLoadingJobs } = useQuery<JobDoc[]>({
+    queryKey: ['jobs', 'featured'],
+    queryFn: fetchJobs,
+  });
+
+  const handleLogoClick = () => {
+    window.location.reload();
+  };
 
   // legacy mock removed
+
+  // Show loading only while auth/LIFF is initializing; do not block on empty jobs
+  if (isLoading || isLiffLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-3"></div>
+          <div className="text-gray-600">กำลังเตรียมข้อมูล...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col h-screen">
       {/* Premium Header */}
       <header className="bg-white px-4 pt-4 pb-3 shadow-sm z-30 sticky top-0">
         <div className="flex items-center gap-4">
-          <span className="text-base font-extrabold text-gray-900 flex-shrink-0">NEEZS</span>
+          <span 
+            className="text-base font-extrabold text-gray-900 flex-shrink-0 cursor-pointer hover:text-primary transition-colors"
+            onClick={handleLogoClick}
+          >
+            NEEZS
+          </span>
           <div 
               className="flex-grow flex items-center p-3 bg-gray-100 rounded-full cursor-pointer"
               onClick={() => setIsSearching(true)}
@@ -77,7 +103,10 @@ const HomeSeeker = () => {
             </button>
           </div>
           <div className="flex flex-col gap-4">
-            {jobs.map((job) => (
+            {isLoadingJobs ? (
+              <p className="text-gray-500">กำลังโหลดงานล่าสุด...</p>
+            ) : (
+              jobs.map((job) => (
               <Card 
                 key={job.id}
                 className="overflow-hidden rounded-2xl shadow-lg border-none group w-full cursor-pointer"
@@ -106,7 +135,7 @@ const HomeSeeker = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            )))}
           </div>
         </section>
       </main>

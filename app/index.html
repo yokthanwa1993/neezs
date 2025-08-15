@@ -1,6 +1,23 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      // Force a hard reload if the cache-busting parameter is not present.
+      // This is the most aggressive way to ensure the latest version is loaded.
+      (function(){
+        try {
+          const param = 'v';
+          const url = new URL(location.href);
+          if (!url.searchParams.has(param)) {
+            url.searchParams.set(param, Date.now().toString());
+            window.location.replace(url.toString());
+          }
+        } catch (e) { /* no-op */ }
+      })();
+    </script>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
@@ -52,6 +69,8 @@
 
   <body>
     <div id="root"></div>
+    <!-- Runtime app config -->
+    <script src="/app-config.js"></script>
     <script>
       // ป้องกันการ zoom สำหรับ mini app
       document.addEventListener('gesturestart', function (e) {

@@ -9,8 +9,10 @@ export default defineConfig(() => ({
     port: 32100,
     proxy: {
       "/api": {
-        target: process.env.VITE_API_URL || "http://localhost:3001",
+        // Route dev API calls to production by default so local UI sees real data
+        target: process.env.VITE_API_URL || "https://neeiz-01.web.app",
         changeOrigin: true,
+        secure: true,
       },
     },
   },
@@ -26,6 +28,10 @@ export default defineConfig(() => ({
     sourcemap: false,
     rollupOptions: {
       output: {
+        // Disable hashing to simplify cache management for now
+        entryFileNames: `assets/index.js`,
+        chunkFileNames: `assets/chunk.js`,
+        assetFileNames: `assets/[name].[ext]`,
         manualChunks: undefined,
       },
     },

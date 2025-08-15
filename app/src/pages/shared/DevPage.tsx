@@ -93,21 +93,21 @@ const DevPage: React.FC = () => {
 
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-primary mb-4 border-b border-slate-200 pb-2">Shared Pages</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-6">
+          <div className="grid grid-cols-4 sm:grid-cols-5 gap-x-4 gap-y-6">
             {sharedPages.map(item => <MenuCard key={item.path} item={item} />)}
           </div>
         </section>
 
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-primary mb-4 border-b border-slate-200 pb-2">Applicant Pages</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-6">
+          <div className="grid grid-cols-4 sm:grid-cols-5 gap-x-4 gap-y-6">
             {applicantPages.map(item => <MenuCard key={item.path} item={item} />)}
           </div>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold text-primary mb-4 border-b border-slate-200 pb-2">Employer Pages</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-6">
+          <div className="grid grid-cols-4 sm:grid-cols-5 gap-x-4 gap-y-6">
             {employerPages.map(item => <MenuCard key={item.path} item={item} />)}
           </div>
         </section>

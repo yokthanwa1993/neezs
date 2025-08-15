@@ -1,36 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Calendar, User, Phone, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import BottomNavigation from '../shared/BottomNavigation';
 import { apiClient } from '@neeiz/api-client';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchJobDetail = async (jobId: string) => {
+  const { data } = await apiClient.get(`/api/jobs/${jobId}`);
+  return data;
+};
+
+const JobDetailSkeleton = () => (
+  <div className="min-h-screen bg-gray-50 pb-20 animate-pulse">
+    <div className="p-4">
+      <div className="bg-white rounded-xl shadow-sm p-0 mb-6 overflow-hidden">
+        <div className="w-full h-56 bg-gray-300"></div>
+        <div className="p-4">
+          <div className="h-6 bg-gray-300 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div className="h-6 bg-gray-300 rounded w-1/2 mb-4"></div>
+        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-full"></div>
+      </div>
+    </div>
+  </div>
+);
 
 const JobDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isApplied, setIsApplied] = useState(false);
-  
-  const [job, setJob] = useState<any | null>(null);
+
+  const { data: job, isLoading, isError } = useQuery({
+    queryKey: ['job', id],
+    queryFn: () => fetchJobDetail(id!),
+    enabled: !!id,
+  });
 
   useEffect(() => {
-    (async () => {
-      if (!id) return;
-      try {
-        const res = await apiClient.get(`/api/jobs/${id}`);
-        setJob(res.data);
-      } catch (e) {
-        navigate(-1);
-      }
-    })();
-  }, [id, navigate]);
+    if (isError) {
+      navigate(-1);
+    }
+  }, [isError, navigate]);
 
   const handleApply = () => {
     if (!user) {
-      // Show login prompt
-      if (confirm('คุณต้องเข้าสู่ระบบก่อนสมัครงาน ต้องการเข้าสู่ระบบตอนนี้หรือไม่?')) {
-        navigate('/');
-      }
+      navigate('/login');
       return;
     }
     
@@ -39,16 +60,29 @@ const JobDetail = () => {
     alert('สมัครงานเรียบร้อยแล้ว!');
   };
 
+  // no swipe-back gesture; navigation ผ่านปุ่มเท่านั้น
+
+  if (isLoading) {
+    return <JobDetailSkeleton />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      
-      
+    <div 
+      className="min-h-screen bg-gray-50 pb-20"
+    >
       {/* Job Details */}
       <div className="p-4">
         <div className="bg-white rounded-xl shadow-sm p-0 mb-6 overflow-hidden">
-          {job?.images?.[0] && (
-            <img src={job.images[0]} alt={job.title} className="w-full h-56 object-cover" />
-          )}
+          <img
+            src={job?.images?.[0] || '/placeholder.svg'}
+            alt={job?.title || 'Job image'}
+            className="w-full h-56 object-cover"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              if (target.src.endsWith('/placeholder.svg')) return;
+              target.src = '/placeholder.svg';
+            }}
+          />
           <div className="p-4">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -131,12 +165,7 @@ const JobDetail = () => {
               : 'bg-primary hover:bg-primary/90'
           }`}
         >
-          {isApplied 
-            ? 'สมัครงานแล้ว' 
-            : user 
-              ? 'สมัครงานนี้' 
-              : 'เข้าสู่ระบบเพื่อสมัครงาน'
-          }
+          {isApplied ? 'สมัครงานแล้ว' : 'สมัครงาน'}
         </button>
       </div>
 

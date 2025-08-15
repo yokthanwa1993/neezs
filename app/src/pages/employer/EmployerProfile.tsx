@@ -1,122 +1,95 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Building, 
-  Edit, 
-  Users, 
-  CreditCard, 
-  Shield, 
-  HelpCircle, 
-  LogOut,
-  Briefcase,
-  UserCheck
+  Settings, 
+  Share,
+  Pencil
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import EmployerProfileSettingsTab from './EmployerProfileSettingsTab';
 
 const EmployerProfile: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const companyProfile = {
-    name: 'Tech Solutions Co.',
+    name: 'เทค โซลูชั่นส์ จำกัด',
     logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop&crop=center',
-    owner: user?.name || 'ผู้จัดการ',
+    bio: 'สร้างสรรค์โซลูชั่นดิจิทัลนวัตกรรมสำหรับธุรกิจทั่วโลก เรากำลังมองหาคนรุ่นใหม่มาร่วมทีม!',
     stats: {
       jobsPosted: 15,
-      totalApplicants: 258,
+      rating: 4.8,
+      applicants: 258,
     },
   };
 
-  const handleLogout = async () => {
-    if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?')) {
-      await logout();
-      navigate('/');
+  const handleShare = async () => {
+    const shareData = {
+      title: `โปรไฟล์บริษัท ${companyProfile.name}`,
+      text: `ดูโปรไฟล์ของ ${companyProfile.name} และตำแหน่งงานที่เปิดรับสมัคร`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('คัดลอกลิงก์โปรไฟล์แล้ว!');
+      }
+    } catch (error) {
+      console.error('Error sharing profile:', error);
+      alert('ไม่สามารถแชร์โปรไฟล์ได้');
     }
   };
 
-  const menuItems = [
-    { icon: Edit, text: 'แก้ไขข้อมูลบริษัท', path: '/employer/edit-profile' },
-    { icon: Users, text: 'จัดการทีม', path: '/employer/team' },
-    { icon: CreditCard, text: 'การชำระเงินและแพ็กเกจ', path: '/employer/billing' },
-    { icon: Shield, text: 'ความปลอดภัย', path: '/employer/security' },
-    { icon: HelpCircle, text: 'ศูนย์ช่วยเหลือ', path: '/support' },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="p-4 pt-8">
-        {/* Company Info Card */}
-        <Card className="mb-6 shadow-md">
-          <CardContent className="p-4 flex items-center space-x-4">
-            <Avatar className="w-20 h-20 border-4 border-primary/20">
-              <AvatarImage src={companyProfile.logo} alt={companyProfile.name} />
-              <AvatarFallback>
-                <Building className="w-8 h-8 text-gray-400" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">{companyProfile.name}</h2>
-              <p className="text-gray-600">บริหารโดย: {companyProfile.owner}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <Card>
-            <CardContent className="p-4 flex flex-col items-center justify-center">
-              <Briefcase className="w-6 h-6 text-primary mb-2" />
-              <p className="text-2xl font-bold">{companyProfile.stats.jobsPosted}</p>
-              <p className="text-sm text-gray-500">งานที่ประกาศ</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 flex flex-col items-center justify-center">
-              <UserCheck className="w-6 h-6 text-green-500 mb-2" />
-              <p className="text-2xl font-bold">{companyProfile.stats.totalApplicants}</p>
-              <p className="text-sm text-gray-500">ผู้สมัครทั้งหมด</p>
-            </CardContent>
-          </Card>
+      <div className="px-4 pt-8 space-y-4">
+        {/* Profile Info */}
+        <div className="flex items-center space-x-5 p-4 bg-white rounded-xl shadow-sm">
+          <Avatar className="w-24 h-24 border-2 border-white shadow-sm">
+            <AvatarImage src={companyProfile.logo} alt={companyProfile.name} />
+            <AvatarFallback>{companyProfile.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex items-center space-x-6 text-center">
+            <div><p className="font-bold text-lg">{companyProfile.stats.jobsPosted}</p><p className="text-sm text-gray-500">ประกาศ</p></div>
+            <div><p className="font-bold text-lg">{companyProfile.stats.rating} ★</p><p className="text-sm text-gray-500">คะแนน</p></div>
+            <div><p className="font-bold text-lg">{companyProfile.stats.applicants}</p><p className="text-sm text-gray-500">ผู้สมัคร</p></div>
+          </div>
         </div>
 
-        {/* Menu */}
-        <Card className="shadow-sm">
-          <CardContent className="p-2">
-            <div className="divide-y divide-gray-100">
-              {menuItems.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={index}
-                    onClick={() => navigate(item.path)}
-                    className="w-full flex items-center justify-between p-3 text-left hover:bg-primary/10 rounded-lg transition-colors group"
-                  >
-                    <div className="flex items-center">
-                      <Icon className="w-5 h-5 text-gray-500 mr-4 group-hover:text-primary" />
-                      <span className="text-gray-700 font-medium group-hover:text-primary">{item.text}</span>
-                    </div>
-                    <svg className="w-4 h-4 text-gray-400 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Name and Bio */}
+        <div className="p-4 bg-white rounded-xl shadow-sm">
+          <h2 className="text-gray-900 font-bold text-xl">{companyProfile.name}</h2>
+          <div className="flex items-start text-gray-600 mt-1 cursor-pointer group" onClick={() => navigate('/employer/edit-profile')}>
+            <p className="text-sm">{companyProfile.bio}</p>
+            <Pencil className="h-3 w-3 ml-2 mt-1 flex-shrink-0 text-gray-400 group-hover:text-primary" />
+          </div>
+        </div>
 
-        {/* Logout Button */}
-        <Button
-          onClick={handleLogout}
-          variant="destructive"
-          className="w-full mt-6 bg-red-50 text-red-600 hover:bg-red-100"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          ออกจากระบบ
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          <Button 
+            className="flex-1 bg-black text-white font-semibold hover:bg-black/80" 
+            onClick={() => navigate('/employer/edit-profile')}
+          >
+            แก้ไขโปรไฟล์
+          </Button>
+          <Button 
+            className="flex-1 bg-black text-white font-semibold hover:bg-black/80"
+            onClick={handleShare}
+          >
+            <Share className="w-4 h-4 mr-2" />
+            แชร์โปรไฟล์
+          </Button>
+        </div>
+      </div>
+
+      {/* Settings Content */}
+      <div className="p-4">
+        <EmployerProfileSettingsTab />
       </div>
     </div>
   );

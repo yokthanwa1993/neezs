@@ -1,19 +1,26 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, MessageSquare, User, Plus, Briefcase } from 'lucide-react';
-import { useAddJobDialog } from '@/contexts/AddJobDialogContext';
+import { User, Plus, Briefcase, Bell, MessageCircle } from 'lucide-react';
+// No longer uses AddJobDialog; navigate to full-page route instead
 
 const EmployerBottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { openAddJobDialog } = useAddJobDialog();
+  
+  // Hide bottom nav on full-screen flow pages
+  if (location.pathname.startsWith('/employer/add-job')) {
+    return null;
+  }
+
+  // ตัวอย่างจำนวนแจ้งเตือนค้างอ่าน (ภายหลังสามารถเชื่อมต่อ API/สถานะจริงได้)
+  const unreadNotifications = 3;
 
   const navItems = [
-    { path: '/employer/home', label: 'Home', icon: Home },
-    { path: '/employer/my-jobs', label: 'My Jobs', icon: Briefcase },
+    { path: '/employer/home', label: 'JOBS', icon: Briefcase }, // เปลี่ยน path ตรงนี้
+    { path: '/employer/chat', label: 'แชท', icon: MessageCircle },
     { path: 'add-job-trigger', icon: Plus, isCentral: true },
-    { path: '/employer/chats', label: 'Chats', icon: MessageSquare },
-    { path: '/employer/profile', label: 'Profile', icon: User },
+    { path: '/employer/notifications', label: 'แจ้งเตือน', icon: Bell, badge: unreadNotifications },
+    { path: '/employer/profile', label: 'โปรไฟล์', icon: User },
   ];
 
   return (
@@ -27,7 +34,7 @@ const EmployerBottomNavigation = () => {
                 <div 
                   key={item.path}
                   className="flex justify-center"
-                  onClick={openAddJobDialog}
+                  onClick={() => navigate('/employer/add-job')}
                 >
                   <div className="relative -top-6 flex items-center justify-center h-16 w-16 bg-yellow-400 rounded-full cursor-pointer shadow-lg hover:bg-yellow-500 transition-all duration-200 border-4 border-white">
                     <IconComponent className="text-black" size={32} strokeWidth={2.5} />

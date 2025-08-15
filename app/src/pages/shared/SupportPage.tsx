@@ -1,6 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -8,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import BottomNavbar from '@/components/BottomNavbar';
 
 const faqItems = [
   {
@@ -29,16 +29,8 @@ const faqItems = [
 ]
 
 const SupportPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white p-4 shadow-sm sticky top-0 z-10 flex items-center">
-        <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <h1 className="text-xl font-bold text-gray-800">ศูนย์ช่วยเหลือ</h1>
-      </header>
+    <div className="min-h-screen bg-gray-50 pb-24">
       <main className="p-4 space-y-6">
         <div className="text-center">
           <h2 className="text-2xl font-bold">คำถามที่พบบ่อย</h2>
@@ -64,6 +56,7 @@ const SupportPage: React.FC = () => {
             </Button>
         </div>
       </main>
+      <BottomNavbar />
     </div>
   );
 };

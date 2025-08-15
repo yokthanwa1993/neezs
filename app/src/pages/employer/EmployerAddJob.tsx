@@ -1,248 +1,373 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { apiClient } from '@neeiz/api-client';
-import { useAuth } from '@/contexts/AuthContext';
+import { Input } from '@/components/ui/input';
+import { Bot, X, MapPin, Pencil, Home, Globe, Search, ArrowLeft, Loader2, LocateFixed } from 'lucide-react';
+import { GoogleMap, LoadScript, useLoadScript } from '@react-google-maps/api';
+import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
+import { runtimeConfig } from '@/lib/runtimeConfig';
 
-const TOTAL_STEPS = 4;
+
+const libraries: ('places')[] = ['places'];
+
+const SearchOverlay: React.FC<{ onSelectPlace: (address: string) => void; onBack: () => void; }> = ({ onSelectPlace, onBack }) => {
+    const {
+        ready,
+        value,
+        suggestions: { status, data },
+        setValue,
+        clearSuggestions,
+    } = usePlacesAutocomplete({
+        requestOptions: { componentRestrictions: { country: 'th' } },
+        debounce: 300,
+    });
+
+    return (
+        <div className="fixed inset-0 bg-white z-50 flex flex-col">
+            <header className="flex items-center p-2 border-b shrink-0 gap-2">
+                <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back">
+                    <ArrowLeft className="h-6 w-6" />
+                </Button>
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        disabled={!ready}
+                        placeholder="ค้นหาที่อยู่..."
+                        className="w-full pl-10"
+                        autoFocus
+                    />
+                    {value && (
+                        <Button variant="ghost" size="icon" onClick={() => setValue('')} className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8">
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
+            </header>
+            <main className="flex-1 overflow-y-auto">
+                {status === 'OK' && (
+                <ul>
+                    {data.map(({ place_id, description, structured_formatting }) => (
+                    <li key={place_id} onClick={() => onSelectPlace(description)} className="p-4 border-b cursor-pointer hover:bg-gray-50">
+                        <p className="font-semibold">{structured_formatting.main_text}</p>
+                        <p className="text-sm text-gray-600">{structured_formatting.secondary_text}</p>
+                    </li>
+                    ))}
+                </ul>
+                )}
+            </main>
+        </div>
+    )
+}
 
 const AddJob: React.FC = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    jobTitle: '',
-    description: '',
-    category: '',
-    location: '',
-    salary: '',
-    jobType: '',
-    images: '',
-  });
-  const [uploading, setUploading] = useState(false);
+    const [step, setStep] = useState(1);
+    const [locationMode, setLocationMode] = useState<'onsite' | 'online' | null>(null);
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [locationDetails, setLocationDetails] = useState<{ lat: number; lng: number; address: string } | null>(null);
+    const [mapCenter, setMapCenter] = useState({ lat: 13.736717, lng: 100.523186 });
+    const [isSearching, setIsSearching] = useState(false);
+    const navigate = useNavigate();
+    const mapRef = useRef<google.maps.Map | null>(null);
+    const debounceTimer = useRef<NodeJS.Timeout>();
 
-  const handleNext = async () => {
-    if (step < TOTAL_STEPS) {
-      setStep(step + 1);
-      return;
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: runtimeConfig.googleMapsApiKey,
+        libraries,
+        language: 'th',
+    });
+
+    const handleLocationUpdate = (lat: number, lng: number, address?: string) => {
+        setMapCenter({ lat, lng });
+        if (address) {
+             setLocationDetails({ lat, lng, address });
+             return;
+        }
+
+        clearTimeout(debounceTimer.current);
+        debounceTimer.current = setTimeout(() => {
+            const geocoder = new window.google.maps.Geocoder();
+            geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                if (status === 'OK' && results && results[0]) {
+                    setLocationDetails({ lat, lng, address: results[0].formatted_address });
+                } else {
+                    setLocationDetails({ lat, lng, address: 'ไม่สามารถระบุที่อยู่ได้' });
+                }
+            });
+        }, 500);
+    };
+
+    const handleSelectPlace = async (address: string) => {
+        try {
+            const results = await getGeocode({ address });
+            const { lat, lng } = await getLatLng(results[0]);
+            handleLocationUpdate(lat, lng, address);
+            setIsSearching(false);
+        } catch (error) {
+            console.error('Error: ', error);
+        }
+    };
+    
+    const requestCurrentLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => handleLocationUpdate(position.coords.latitude, position.coords.longitude),
+                () => alert('Could not get current location')
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (isLoaded && !locationDetails) {
+            requestCurrentLocation();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoaded]);
+
+    const handleNext = () => {
+        if (isSearching) return;
+
+        if (step === 1) {
+            setStep(2);
+            return;
+        }
+        
+        if (step === 2) {
+            if (locationMode === 'onsite') {
+                setStep(3);
+            } else if (locationMode === 'online') {
+                navigate('/employer/job-schedule', {
+                    state: {
+                        aiPrompt,
+                        locationMode,
+                        locationDetails: null
+                    }
+                });
+            }
+        } else if (step === 3) {
+             if (locationDetails) {
+                navigate('/employer/job-schedule', {
+                    state: {
+                        aiPrompt,
+                        locationMode,
+                        locationDetails
+                    }
+                });
+            } else {
+                alert('กรุณาเลือกตำแหน่งบนแผนที่');
+            }
+        }
+    };
+
+    const handleOnlineJobNext = () => {
+        navigate('/employer/job-schedule', {
+            state: {
+                aiPrompt,
+                locationMode: 'online',
+                locationDetails: null
+            }
+        });
+    };
+
+    const handleClose = () => {
+        if (isSearching) return;
+
+        if (step === 3) {
+            setStep(2);
+        } else if (step === 2) {
+            setStep(1);
+            setLocationMode(null);
+        } else {
+            navigate(-1);
+        }
+    };
+    
+    if (step === 3) {
+        if (loadError) return <div>เกิดข้อผิดพลาดในการโหลดแผนที่</div>;
+        if (!isLoaded) return <div className="fixed inset-0 bg-white z-50 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+
+        return (
+            <>
+            {isSearching && <SearchOverlay onSelectPlace={handleSelectPlace} onBack={() => setIsSearching(false)} />}
+            <div className="fixed inset-0 bg-white flex flex-col">
+                <div className="flex-1 min-h-0 flex flex-col">
+                    <div className="p-4 pb-2">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                            <Input
+                                readOnly
+                                placeholder="ค้นหาที่อยู่หรือสถานที่"
+                                onClick={() => setIsSearching(true)}
+                                className="w-full cursor-pointer pl-10"
+                            />
+                        </div>
+                    </div>
+                    <div className="relative flex-grow">
+                        <GoogleMap
+                            mapContainerStyle={{ height: '100%', width: '100%' }}
+                            center={mapCenter}
+                            zoom={17}
+                            onDragEnd={() => {
+                                if (mapRef.current) {
+                                    const newCenter = mapRef.current.getCenter();
+                                    if(newCenter) handleLocationUpdate(newCenter.lat(), newCenter.lng());
+                                }
+                            }}
+                            options={{ disableDefaultUI: true, gestureHandling: 'greedy' }}
+                            onLoad={(map) => { mapRef.current = map; }}
+                        >
+                        </GoogleMap>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ pointerEvents: 'none' }}>
+                            <MapPin className="h-12 w-12 fill-yellow-500 stroke-black" style={{ transform: 'translateY(-50%)' }} strokeWidth={1} />
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={requestCurrentLocation}
+                            className="absolute bottom-4 right-4 bg-white rounded-full shadow-lg h-12 w-12"
+                        >
+                            <LocateFixed className="h-6 w-6 text-gray-700" />
+                        </Button>
+                    </div>
+                </div>
+                <footer className="w-full border-t p-4 bg-white shrink-0">
+                    <div className="mb-3">
+                        <p className="font-semibold text-lg">Delivery address</p>
+                        <div className="flex justify-between items-start mt-1">
+                            <p className="text-gray-700 pr-4">{locationDetails?.address || 'กำลังค้นหา...'}</p>
+                            <Button variant="ghost" size="icon" className="text-gray-500">
+                                <Pencil className="h-5 w-5"/>
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex gap-3 w-full items-center">
+                        <Button
+                            onClick={handleClose}
+                            className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center p-0 hover:bg-black/90"
+                            type="button"
+                            style={{ minWidth: 56, minHeight: 56 }}
+                        >
+                            <X className="w-9 h-9 font-bold" strokeWidth={3} />
+                        </Button>
+                        <Button
+                            onClick={handleNext}
+                            className="h-14 flex-1 text-lg font-bold"
+                            disabled={!locationDetails}
+                            type="button"
+                        >
+                            Confirm this address
+                        </Button>
+                    </div>
+                </footer>
+            </div>
+            </>
+        );
     }
 
-    // Final submission: save to Firestore
-    try {
-      const salaryNumber = formData.salary ? Number(formData.salary) : 0;
-      await apiClient.post('/api/jobs', {
-        title: formData.jobTitle,
-        description: formData.description,
-        category: formData.category,
-        location: formData.location,
-        salary: salaryNumber,
-        jobType: formData.jobType || 'full-time',
-        status: 'active',
-        employerId: user?.id || 'unknown',
-        images: formData.images
-          .split('\n')
-          .map(s => s.trim())
-          .filter(Boolean),
-      });
-      navigate('/employer/home');
-    } catch (error) {
-      console.error('Failed to post job:', error);
-      alert('เกิดข้อผิดพลาดในการลงประกาศงาน กรุณาลองใหม่');
-    }
-  };
-
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    } else {
-      navigate(-1); // Go back to the previous page (HomeEmployer)
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSelectChange = (name: string) => (value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      setUploading(true);
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await apiClient.post('/api/jobs/upload', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const url = res.data.url as string;
-      setFormData(prev => ({ ...prev, images: prev.images ? prev.images + '\n' + url : url }));
-    } catch (err) {
-      alert('อัปโหลดรูปไม่สำเร็จ');
-    } finally {
-      setUploading(false);
-      e.target.value = '';
-    }
-  };
-
-  const progress = (step / TOTAL_STEPS) * 100;
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white p-4 flex items-center border-b sticky top-0 z-10">
-        <Button variant="ghost" size="icon" onClick={handleBack}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex flex-col ml-4">
-            <h1 className="text-lg font-semibold">Post a Job</h1>
-            <p className="text-sm text-gray-500">Step {step} of {TOTAL_STEPS}</p>
+    return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
+            <div className="w-full max-w-md flex-1 flex flex-col justify-center">
+                {step === 1 && (
+                    <>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow">
+                                <Bot className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold">วันนี้คุณต้องการทำงานอะไร?</h1>
+                                <p className="text-sm text-gray-600">พิมพ์สิ่งที่ต้องการ เดี๋ยว AI ช่วยจัดการต่อให้</p>
+                            </div>
+                        </div>
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm">
+                            <Textarea
+                            value={aiPrompt}
+                            onChange={(e) => setAiPrompt(e.target.value)}
+                            placeholder="เช่น ต้องการบาริสต้าพาร์ทไทม์ วันเสาร์-อาทิตย์ ที่สุขุมวิท"
+                            rows={10}
+                            className="resize-y text-base"
+                            />
+                        </div>
+                    </>
+                )}
+                {step === 2 && (
+                    <div className="mt-6 w-full">
+                        <div className="mb-3 font-semibold flex items-center gap-2 text-2xl">
+                        <MapPin className="w-7 h-7 text-primary" />
+                        <span>คุณต้องการให้ทำงานที่ไหน?</span>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 mt-4">
+                        <button
+                            type="button"
+                            onClick={() => setLocationMode('onsite')}
+                            className={`border rounded-xl p-4 text-left transition shadow-sm hover:shadow-md ${
+                            locationMode === 'onsite' ? 'border-primary ring-2 ring-primary/30' : 'border-gray-200'
+                            }`}
+                        >
+                            <div className="flex items-center gap-4">
+                            <Home className="w-8 h-8 text-primary" />
+                            <div>
+                                <div className="font-semibold text-lg">สถานที่จริง (ออนไซต์)</div>
+                                <div className="text-sm text-gray-600">ต้องปักหมุดตำแหน่งในแผนที่</div>
+                            </div>
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setLocationMode('online');
+                                handleOnlineJobNext();
+                            }}
+                            className={`border rounded-xl p-4 text-left transition shadow-sm hover:shadow-md ${
+                            locationMode === 'online' ? 'border-primary ring-2 ring-primary/30' : 'border-gray-200'
+                            }`}
+                        >
+                            <div className="flex items-center gap-4">
+                            <Globe className="w-8 h-8 text-primary" />
+                            <div>
+                                <div className="font-semibold text-lg">ออนไลน์ / ฟรีแลนซ์</div>
+                                <div className="text-sm text-gray-600">ไม่ต้องระบุตำแหน่งสถานที่</div>
+                            </div>
+                            </div>
+                        </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <footer className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto w-full">
+                <div className="flex gap-3 w-full items-center">
+                <Button
+                    onClick={() => navigate(-1)}
+                    className="h-14 w-14 rounded-full bg-gray-200 text-black flex items-center justify-center p-0 hover:bg-gray-300"
+                    type="button"
+                    style={{ minWidth: 56, minHeight: 56 }}
+                >
+                    <ArrowLeft className="w-9 h-9 font-bold" strokeWidth={3} />
+                </Button>
+                <Button
+                    onClick={handleClose}
+                    className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center p-0 hover:bg-black/90"
+                    type="button"
+                    style={{ minWidth: 56, minHeight: 56 }}
+                >
+                    <X className="w-9 h-9 font-bold" strokeWidth={3} />
+                </Button>
+                <Button
+                    onClick={handleNext}
+                    className="h-14 flex-1 text-lg font-bold"
+                    disabled={
+                        (step === 1 && !aiPrompt.trim()) ||
+                        (step === 2 && !locationMode)
+                    }
+                    type="button"
+                >
+                    {step === 2 && locationMode === 'onsite' ? 'ยืนยัน' : 'ถัดไป'}
+                </Button>
+                </div>
+            </footer>
         </div>
-      </header>
-      
-      <div className="px-4 pt-2">
-        <Progress value={progress} className="w-full h-2" />
-      </div>
-
-      <main className="flex-grow p-4">
-        <div className="w-full max-w-md mx-auto">
-            {step === 1 && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">First, let's get the basics down.</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="jobTitle" className="font-semibold">Job Title</Label>
-                    <Input id="jobTitle" name="jobTitle" value={formData.jobTitle} onChange={handleChange} placeholder="e.g. Barista, Graphic Designer" className="mt-1"/>
-                  </div>
-                  <div>
-                    <Label htmlFor="description" className="font-semibold">Job Description</Label>
-                    <Textarea id="description" name="description" value={formData.description} onChange={handleChange} placeholder="Describe the role, responsibilities, and requirements." className="mt-1" rows={6}/>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Next, categorize the job.</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label className="font-semibold">Category</Label>
-                     <Select name="category" onValueChange={handleSelectChange('category')} value={formData.category}>
-                        <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="accounting">Accounting & Finance</SelectItem>
-                            <SelectItem value="animal-care">Animal Care</SelectItem>
-                            <SelectItem value="arts-design">Arts & Design</SelectItem>
-                            <SelectItem value="babysitting">Babysitting</SelectItem>
-                            <SelectItem value="beauty-wellness">Beauty & Wellness</SelectItem>
-                            <SelectItem value="cleaning">Cleaning</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="location" className="font-semibold">Location</Label>
-                    <Input id="location" name="location" value={formData.location} onChange={handleChange} placeholder="e.g. Bangkok, Samut Prakan" className="mt-1"/>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Let's talk about compensation.</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="salary" className="font-semibold">Salary (THB per month)</Label>
-                    <Input id="salary" name="salary" type="number" value={formData.salary} onChange={handleChange} placeholder="e.g. 25000" className="mt-1"/>
-                  </div>
-              <div>
-                    <Label className="font-semibold">Job Type</Label>
-                    <Select name="jobType" onValueChange={handleSelectChange('jobType')} value={formData.jobType}>
-                        <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Select job type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="full-time">Full-time</SelectItem>
-                            <SelectItem value="part-time">Part-time</SelectItem>
-                            <SelectItem value="contract">Contract</SelectItem>
-                            <SelectItem value="internship">Internship</SelectItem>
-                            <SelectItem value="freelance">Freelance</SelectItem>
-                        </SelectContent>
-                    </Select>
-                  </div>
-              <div className="space-y-2">
-                <Label htmlFor="images" className="font-semibold">Images</Label>
-                <div className="flex gap-2">
-                  <Input type="file" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
-                  <Button type="button" variant="secondary" onClick={() => document.getElementById('images-textarea')?.scrollIntoView({ behavior: 'smooth' })}>ดู/แก้ไข URL</Button>
-                </div>
-                <Textarea id="images-textarea" name="images" value={formData.images} onChange={handleChange} placeholder="https://...\nhttps://..." className="mt-1" rows={4}/>
-              </div>
-                </div>
-              </div>
-            )}
-
-            {step === 4 && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Ready to post?</h2>
-                <p>Review the details below before posting your job.</p>
-                <Card className="bg-white">
-                    <CardContent className="p-4 space-y-3">
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Title</span>
-                            <span className="font-semibold text-right">{formData.jobTitle || '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Category</span>
-                            <span className="font-semibold text-right">{formData.category || '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Location</span>
-                            <span className="font-semibold text-right">{formData.location || '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Salary</span>
-                            <span className="font-semibold text-right">{formData.salary ? `${formData.salary} THB` : '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Job Type</span>
-                            <span className="font-semibold text-right">{formData.jobType || '-'}</span>
-                        </div>
-                        <div>
-                            <span className="text-gray-500">Description</span>
-                            <p className="mt-1 text-sm font-semibold whitespace-pre-wrap">{formData.description || '-'}</p>
-                        </div>
-                        <div>
-                            <span className="text-gray-500">Images (URLs, 1 per line)</span>
-                            <p className="mt-1 text-sm font-mono whitespace-pre-wrap">{formData.images || '-'}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-              </div>
-            )}
-        </div>
-      </main>
-
-      <footer className="p-4 bg-white border-t sticky bottom-0">
-        <Button onClick={handleNext} className="w-full max-w-md mx-auto flex py-6 text-lg">
-          {step === TOTAL_STEPS ? 'Confirm and Post Job' : 'Next Step'}
-        </Button>
-      </footer>
-    </div>
-  );
+    );
 };
 
 export default AddJob;

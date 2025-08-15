@@ -69,14 +69,13 @@ const LineLogin: React.FC<LineLoginProps> = ({ onLoginSuccess }) => {
         throw new Error('LIFF SDK not loaded');
       }
 
-      const redirectUri = import.meta.env.VITE_LINE_REDIRECT_URI || 'https://neeiz-app.lslly.com/callback';
+      const redirectUri = new URL('/callback', window.location.origin).toString();
       
       if (!redirectUri) {
         throw new Error('VITE_LINE_REDIRECT_URI environment variable is not set');
       }
       
       console.log('🚀 Starting LINE login with redirect:', redirectUri);
-      console.log('🔧 Environment check - VITE_LINE_REDIRECT_URI:', import.meta.env.VITE_LINE_REDIRECT_URI);
 
       // Store login attempt timestamp
       localStorage.setItem('liff_login_attempt', new Date().toISOString());

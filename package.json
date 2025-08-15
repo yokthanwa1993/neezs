@@ -3,12 +3,10 @@
   "private": true,
   "packageManager": "pnpm@10.13.1",
   "scripts": {
-    "dev": "concurrently -k \"pnpm -C api dev\" \"pnpm -C app dev\" \"pnpm -C web dev\"",
-    "dev:api": "pnpm -C api dev",
+    "dev": "concurrently -k \"pnpm -C app dev\" \"pnpm -C web dev\"",
     "dev:app": "pnpm -C app dev",
     "dev:web": "pnpm -C web dev",
-    "build": "pnpm -C api build && pnpm -C app build && pnpm -C web build",
-    "build:api": "pnpm -C api build",
+    "build": "pnpm -C app build && pnpm -C web build",
     "build:app": "pnpm -C app build",
     "build:web": "pnpm -C web build"
   },

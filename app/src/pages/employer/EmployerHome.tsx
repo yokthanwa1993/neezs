@@ -1,90 +1,109 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, ChevronRight, User, MoreHorizontal } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { useAddJobDialog } from '@/contexts/AddJobDialogContext';
+import { useNavigate } from 'react-router-dom';
+import { useJobs, Job } from '@/contexts/JobContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const categories = [
-  { name: 'บัญชีและการเงิน', emoji: '📊' },
-  { name: 'ดูแลสัตว์', emoji: '🐶' },
-  { name: 'ศิลปะและการออกแบบ', emoji: '🎨' },
-  { name: 'ดูแลเด็ก', emoji: '👶' },
-  { name: 'ความงามและสุขภาพ', emoji: '💅' },
-  { name: 'ทำความสะอาด', emoji: '🧹' },
-];
+type JobType = Job;
 
-const HomeEmployer: React.FC = () => {
+const JobVerticalCard = ({
+  job,
+  onClick,
+}: {
+  job: JobType;
+  onClick: () => void;
+}) => (
+  <div
+    className="bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer transition hover:shadow-lg"
+    onClick={onClick}
+  >
+    <div className="relative">
+      <div className="flex overflow-x-auto no-scrollbar">
+        {job.images.map((img, idx) => (
+          <img
+            key={idx}
+            src={img}
+            alt={job.title}
+            className="w-full h-56 object-cover flex-shrink-0"
+            style={{ minWidth: '100%' }}
+          />
+        ))}
+      </div>
+      <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2">
+        <Bookmark className="text-yellow-400" fill="#fde047" size={28} />
+      </div>
+    </div>
+    <div className="p-6 pb-5">
+      <h3 className="font-bold text-2xl text-gray-900 mb-1">{job.title}</h3>
+      <div className="text-gray-500 text-lg mb-4">{job.location}</div>
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-red-600 font-bold text-2xl">{job.price}</span>
+        <Button
+          className="bg-yellow-400 text-gray-900 font-bold rounded-xl px-8 py-2 text-lg hover:bg-yellow-300 transition"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+        >
+          ดูรายละเอียด
+        </Button>
+      </div>
+    </div>
+  </div>
+);
+
+const EmployerHome = () => {
   const navigate = useNavigate();
-  const { openAddJobDialog } = useAddJobDialog();
+  const { jobs, completedJobs } = useJobs();
+
+  const handleCardClick = (job: JobType) => {
+    navigate(`/employer/job/${job.id}/applicants`);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-20">
-      <div className="bg-white p-4 pb-4 shadow-sm">
-        <div className="relative mb-3">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-          <Input
-            placeholder="ค้นหา"
-            className="w-full rounded-lg border-gray-200 bg-gray-100 pl-12 h-12 focus:ring-2 focus:ring-primary"
-          />
-        </div>
-        <div className="flex items-center text-primary font-semibold cursor-pointer">
-          <MapPin className="w-5 h-5 mr-2" />
-          <span>สมุทรปราการ</span>
+    <div className="min-h-screen bg-[#F3F4F6] flex flex-col">
+      <div className="w-full flex-1 pb-24">
+        <div className="px-4 pt-6">
+          <Tabs defaultValue="online" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-200 rounded-full h-12 p-1">
+              <TabsTrigger value="online" className="rounded-full data-[state=active]:bg-yellow-400 data-[state=active]:text-black text-base font-bold">งานที่ออนไลน์</TabsTrigger>
+              <TabsTrigger value="completed" className="rounded-full data-[state=active]:bg-yellow-400 data-[state=active]:text-black text-base font-bold">งานที่จบแล้ว</TabsTrigger>
+              <TabsTrigger value="expired" className="rounded-full data-[state=active]:bg-yellow-400 data-[state=active]:text-black text-base font-bold">งานที่หมดเวลา</TabsTrigger>
+            </TabsList>
+            <TabsContent value="online">
+              <div className="space-y-4 mt-4">
+                {jobs.map((job) => (
+                  <JobVerticalCard
+                    key={job.id}
+                    job={job}
+                    onClick={() => handleCardClick(job)}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="completed">
+              <div className="space-y-4 mt-4">
+                {completedJobs.map((job) => (
+                  <JobVerticalCard
+                    key={job.id}
+                    job={job}
+                    onClick={() => handleCardClick(job)}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="expired">
+              <div className="space-y-4 mt-4">
+                {/* Placeholder for expired jobs */}
+                <p className="text-center text-gray-500 py-8">ไม่มีงานที่หมดเวลา</p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
-
-      <main className="p-4 space-y-6">
-        {/* Categories Section */}
-        <section>
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-lg font-bold text-gray-800">หมวดหมู่</h2>
-            <button className="flex items-center text-sm text-primary font-semibold">
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                className="flex-shrink-0 flex items-center gap-2 bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg">{category.emoji}</span>
-                <span className="text-sm font-medium text-gray-700">{category.name}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Are you hiring? Card */}
-        <section>
-          <Card className="bg-white rounded-2xl shadow-lg border-none overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <button>
-                  <MoreHorizontal className="w-6 h-6 text-gray-400" />
-                </button>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">คุณกำลังมองหาคนอยู่ใช่ไหม?</h2>
-              <p className="text-gray-600 mt-1 mb-6">
-                ดึงดูดผู้สมัครที่มีคุณภาพด้วยการลงประกาศงานฟรี
-              </p>
-              <Button
-                onClick={openAddJobDialog}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-xl"
-              >
-                ลงประกาศงาน
-              </Button>
-            </CardContent>
-          </Card>
-        </section>
-      </main>
     </div>
   );
 };
 
-export default HomeEmployer;
+export default EmployerHome;

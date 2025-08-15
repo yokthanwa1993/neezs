@@ -68,16 +68,11 @@ const LineCallback: React.FC = () => {
         console.warn('⚠️ Could not get LIFF profile:', profileError);
       }
 
-      // Send ID Token to backend to get Firebase Custom Token
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://neeiz-api.lslly.com';
+      // Send ID Token to backend (same-origin endpoint works in dev/prod)
+      const endpoint = '/api/auth/line';
+      console.log('🌐 Authenticating with backend via', endpoint);
       
-      if (!apiUrl) {
-        throw new Error('VITE_API_URL environment variable is not set');
-      }
-      
-      console.log('🌐 API URL:', apiUrl);
-      
-      const response = await fetch(`${apiUrl}/api/auth/line`, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

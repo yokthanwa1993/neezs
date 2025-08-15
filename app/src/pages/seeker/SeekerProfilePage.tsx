@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Settings, 
-  Share,
   Pencil,
   User,
   Briefcase,
-  Star
+  Star,
+  Wallet,
+  ChevronRight
 } from 'lucide-react';
 import BottomNavigation from '../../components/shared/BottomNavigation';
 import { useAuth } from '../../contexts/AuthContext';
@@ -23,7 +23,7 @@ const TabButton = ({ icon: Icon, isActive, onClick }: { icon: React.ElementType,
 );
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, firebaseUser, logout, hardRefresh } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('about');
 
@@ -36,6 +36,10 @@ const ProfilePage: React.FC = () => {
     bio: 'นักศึกษาจบใหม่ มีความสนใจในงานบริการและงานขาย มีความกระตือรือร้นและพร้อมเรียนรู้งาน',
   };
 
+  const walletData = {
+    balance: 7450,
+  };
+
   const handleShare = async () => {
     const shareData = {
       title: `โปรไฟล์ของ ${user?.name}`,
@@ -46,7 +50,6 @@ const ProfilePage: React.FC = () => {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // Fallback for browsers that don't support navigator.share
         await navigator.clipboard.writeText(window.location.href);
         alert('คัดลอกลิงก์โปรไฟล์แล้ว!');
       }
@@ -59,25 +62,11 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="bg-white min-h-screen">
       <div className="pb-24">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4 px-4 pt-10">
-          <div className="w-10"></div> {/* Spacer */}
-          <h1 className="text-gray-800 font-bold text-lg">@{profileData.username}</h1>
-          <div className="flex items-center space-x-1">
-            <Button onClick={handleShare} variant="ghost" size="icon" className="rounded-full">
-              <Share className="h-5 w-5 text-gray-700" />
-            </Button>
-            <Button onClick={() => navigate('/settings')} variant="ghost" size="icon" className="rounded-full">
-              <Settings className="h-5 w-5 text-gray-700" />
-            </Button>
-          </div>
-        </div>
-        
-        <div className="px-4">
+        <div className="px-4 pt-10">
           {/* Profile Summary */}
           <div className="flex items-center space-x-5 mb-4">
             <Avatar className="w-24 h-24 border-2 border-white shadow-sm">
-              <AvatarImage src={user?.picture || profileData.profileImage} alt={user?.name} />
+              <AvatarImage src={user?.picture || firebaseUser?.photoURL || localStorage.getItem('liff_picture_url') || profileData.profileImage} alt={user?.name || 'Guest'} />
               <AvatarFallback className="text-primary font-bold text-3xl bg-primary/10">
                 {user?.name?.charAt(0) || 'A'}
               </AvatarFallback>
@@ -91,7 +80,7 @@ const ProfilePage: React.FC = () => {
 
           {/* Name and Bio */}
           <div className="mb-4">
-            <h2 className="text-gray-900 font-bold text-xl">{user?.name || 'Username'}</h2>
+            <h2 className="text-gray-900 font-bold text-xl">{user?.name || firebaseUser?.displayName || 'ผู้เยี่ยมชม'}</h2>
             <div className="flex items-start text-gray-600 mt-1 cursor-pointer group" onClick={() => navigate('/profile/edit')}>
               <p className="text-sm">{profileData.bio || 'เพิ่มคำอธิบายตัวตนของคุณ...'}</p>
               <Pencil className="h-3 w-3 ml-2 mt-1 flex-shrink-0 text-gray-400 group-hover:text-primary" />
@@ -100,9 +89,31 @@ const ProfilePage: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex space-x-3 mb-6">
-            <Button variant="outline" className="flex-1 font-semibold bg-gray-100 border-gray-200" onClick={() => navigate('/profile/edit')}>แก้ไขโปรไฟล์</Button>
-            <Button variant="outline" className="flex-1 font-semibold bg-gray-100 border-gray-200" onClick={handleShare}>แชร์โปรไฟล์</Button>
+            <Button className="flex-1 font-semibold bg-black text-white hover:bg-black/90" onClick={() => navigate('/profile/edit')}>แก้ไขโปรไฟล์</Button>
+            <Button className="flex-1 font-semibold bg-black text-white hover:bg-black/90" onClick={handleShare}>แชร์โปรไฟล์</Button>
           </div>
+        </div>
+
+        {/* Wallet Section */}
+        <div className="px-4 mb-6">
+            <div 
+                onClick={() => navigate('/wallet')}
+                className="bg-gray-50 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+                <div className="flex items-center">
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-4">
+                        <Wallet className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                        <p className="font-bold text-gray-800">กระเป๋าเงิน</p>
+                        <p className="text-sm text-gray-500">ดูยอดเงินและธุรกรรม</p>
+                    </div>
+                </div>
+                <div className="flex items-center">
+                    <span className="font-bold text-gray-800 mr-2">฿{walletData.balance.toLocaleString()}</span>
+                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                </div>
+            </div>
         </div>
 
         {/* Tabs */}
@@ -120,6 +131,31 @@ const ProfilePage: React.FC = () => {
           {activeTab === 'experience' && <ProfileExperienceTab />}
           {activeTab === 'reviews' && <ProfileReviewsTab />}
         </div>
+
+        {/* Logout */}
+        {activeTab === 'about' && (
+          <div className="px-4 mb-4">
+            <Button
+              variant="destructive"
+              className="w-full bg-red-600 text-white hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+              onClick={async () => {
+                if (confirm('ต้องการออกจากระบบและล้างแคชทั้งหมดหรือไม่?')) {
+                  await logout();
+                  window.location.replace('/');
+                }
+              }}
+            >
+              ออกจากระบบ
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full mt-2"
+              onClick={async ()=>{ await hardRefresh(); }}
+            >
+              รีเฟรช (ล้างแคชหน้าเว็บ)
+            </Button>
+          </div>
+        )}
       </div>
       
       <BottomNavigation />

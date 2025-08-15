@@ -50,7 +50,7 @@ const EmployerNotificationsPage = () => {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20 overflow-x-hidden">
       <div className="p-4 pt-8">
         <div className="mb-4">
           <p className="text-sm text-gray-600">
@@ -72,7 +72,7 @@ const EmployerNotificationsPage = () => {
                     notification.icon
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-800 text-sm">{notification.title}</p>
                   <p className="text-sm text-gray-600">{notification.description}</p>
                   <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
