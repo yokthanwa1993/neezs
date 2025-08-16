@@ -114,7 +114,7 @@ const AddJob: React.FC = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => handleLocationUpdate(position.coords.latitude, position.coords.longitude),
-                () => alert('Could not get current location')
+                (error) => console.error('Could not get current location:', error)
             );
         }
     };

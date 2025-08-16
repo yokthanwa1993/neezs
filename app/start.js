@@ -580,6 +580,15 @@ app.get('/api/health', (req, res) => {
 // Serve static files from dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
+// Middleware to handle SPA routing
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.includes('.')) {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  } else {
+    next();
+  }
+});
+
 // Handle React Router (SPA)
 app.get('*', (req, res) => {
   // Skip API routes

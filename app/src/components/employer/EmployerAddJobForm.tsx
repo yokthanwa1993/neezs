@@ -11,11 +11,11 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const TOTAL_STEPS = 4;
 
-interface AddJobFormProps {
+interface EmployerAddJobFormProps {
   onFinished: () => void;
 }
 
-const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
+const EmployerAddJobForm: React.FC<EmployerAddJobFormProps> = ({ onFinished }) => {
   const [step, setStep] = useState(1);
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -250,4 +250,4 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onFinished }) => {
   );
 };
 
-export default AddJobForm;
+export default EmployerAddJobForm;

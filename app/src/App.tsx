@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { useDevMode } from './contexts/DevModeContext';
 import { AppProviders } from '@/providers/AppProviders';
 import LineLogin from './components/shared/LineLogin';
 import SeekerProfilePage from './pages/seeker/SeekerProfilePage';
+import SeekerProfileEditPage from './pages/seeker/SeekerProfileEditPage';
 import SeekerWallet from './components/seeker/SeekerWallet';
 import SeekerMyShifts from './components/seeker/SeekerMyShifts';
 import Onboarding from './components/shared/Onboarding';
@@ -42,13 +43,29 @@ import EmployerJobApplicants from './pages/employer/EmployerJobApplicants';
 import EmployerApplicantProfilePage from './pages/employer/EmployerApplicantProfilePage';
 import { JobProvider } from './contexts/JobContext';
 import EmployerJobSchedule from './pages/employer/EmployerJobSchedule';
-import EmployerJobPublish from './pages/employer/EmployerJobPublish';
-import EmployerJobUpload from './pages/employer/EmployerJobUpload';
+// import EmployerJobPublish from './pages/employer/EmployerJobPublish.tsx';
+import EmployerJobUpload from './pages/employer/EmployerJobUpload.tsx';
+import EmployerJobWage from './pages/employer/EmployerJobWage';
+import EmployerJobSummary from './pages/employer/EmployerJobSummary';
+import SeekerOtpVerification from './pages/seeker/apply/SeekerOtpVerification';
+import SeekerCategorySelection from './pages/seeker/apply/SeekerCategorySelection';
+import OnboardingFlow from './pages/shared/OnboardingFlow';
+import SeekerEkycId from './pages/seeker/apply/SeekerEkycId';
+import SeekerEkycFace from './pages/seeker/apply/SeekerEkycFace';
 
 const AppContent = () => {
   const { user, isLoading } = useAuth();
   const { isDevMode } = useDevMode();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+    if (!onboardingCompleted) {
+      navigate('/welcome', { replace: true });
+    }
+  }, [navigate]);
+
 
   if (isLoading) {
     return (
@@ -67,6 +84,7 @@ const AppContent = () => {
     <Routes>
       {/* Root and Shared Routes */}
       <Route path="/" element={<AppLayout><DevPage /></AppLayout>} />
+      <Route path="/welcome" element={<OnboardingFlow />} />
       <Route path="/login" element={<AppLayout><LineLogin onLoginSuccess={() => navigate('/role-selection')} /></AppLayout>} />
       <Route path="/callback" element={<AppLayout><LineCallback /></AppLayout>} />
       
@@ -79,11 +97,12 @@ const AppContent = () => {
       <Route path="/support" element={protectedRoute(<RoleLayoutWrapper><SupportPage /></RoleLayoutWrapper>)} />
       <Route path="/change-email" element={protectedRoute(<RoleLayoutWrapper><ChangeEmailPage /></RoleLayoutWrapper>)} />
       
-      <Route path="/map-view" element={<AppLayout><MapView /></AppLayout>} />
+      <Route path="/map-view" element={<MapView />} />
       
       {/* Seeker Routes wrapped in SeekerLayout */}
       <Route path="/home" element={<SeekerLayout><SeekerHome /></SeekerLayout>} />
       <Route path="/profile" element={<SeekerLayout><SeekerProfilePage /></SeekerLayout>} />
+      <Route path="/profile/edit" element={<SeekerLayout><SeekerProfileEditPage /></SeekerLayout>} />
       <Route path="/wallet" element={protectedRoute(<SeekerLayout><SeekerWallet /></SeekerLayout>)} />
       <Route path="/my-shifts" element={protectedRoute(<SeekerLayout><SeekerMyShifts /></SeekerLayout>)} />
       <Route path="/job/:id" element={<SeekerLayout><SeekerJobDetail /></SeekerLayout>} />
@@ -92,6 +111,12 @@ const AppContent = () => {
       <Route path="/chat" element={<SeekerLayout><SeekerChatHistoryPage /></SeekerLayout>} />
       <Route path="/chat/:id" element={<SeekerLayout><SeekerChatPage /></SeekerLayout>} />
       <Route path="/notifications" element={<SeekerLayout><NotificationsPage /></SeekerLayout>} />
+      
+      {/* Seeker Application Flow */}
+      <Route path="/seeker/apply/otp" element={<SeekerOtpVerification />} />
+      <Route path="/seeker/apply/select-category" element={<SeekerCategorySelection />} />
+      <Route path="/seeker/apply/ekyc-id" element={<SeekerEkycId />} />
+      <Route path="/seeker/apply/ekyc-face" element={<SeekerEkycFace />} />
       
       {/* Employer Routes (wrapped with layout, except add-job) */}
       <Route path="/employer/add-job" element={<EmployerAddJob />} />
@@ -107,9 +132,11 @@ const AppContent = () => {
       <Route path="/employer/team" element={<EmployerLayout><EmployerTeamManagementPage /></EmployerLayout>} />
       <Route path="/employer/billing" element={<EmployerLayout><EmployerBillingPage /></EmployerLayout>} />
       <Route path="/employer/security" element={<EmployerLayout><EmployerSecurityPage /></EmployerLayout>} />
-      <Route path="/employer/job-schedule" element={<EmployerJobSchedule />} />
-      <Route path="/employer/job-publish" element={<EmployerJobPublish />} />
+      <Route path="/employer/job-schedule" element={<EmployerLayout><EmployerJobSchedule /></EmployerLayout>} />
+      <Route path="/employer/job-wage" element={<EmployerLayout><EmployerJobWage /></EmployerLayout>} />
+      {/* <Route path="/employer/job-publish" element={<EmployerJobPublish />} /> */}
       <Route path="/employer/job-upload" element={<EmployerJobUpload />} />
+      <Route path="/employer/job-summary" element={<EmployerLayout><EmployerJobSummary /></EmployerLayout>} />
       <Route path="*" element={<AppLayout><NotFound /></AppLayout>} />
     </Routes>
   );

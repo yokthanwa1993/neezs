@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from "@/components/ui/use-toast"
 
-const EditProfilePage: React.FC = () => {
+const EmployerEditProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [companyData, setCompanyData] = useState({
@@ -117,4 +117,4 @@ const EditProfilePage: React.FC = () => {
   );
 };
 
-export default EditProfilePage;
+export default EmployerEditProfilePage;

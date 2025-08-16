@@ -4,6 +4,7 @@ import {
   Pencil,
   User,
   Briefcase,
+  Image,
   Star,
   Wallet,
   ChevronRight
@@ -14,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import ProfileAboutTab from '@/components/seeker/SeekerProfileAboutTab';
 import ProfileExperienceTab from '@/components/seeker/SeekerProfileExperienceTab';
+import ProfilePortfolioTab from '@/components/seeker/SeekerProfilePortfolioTab';
 import ProfileReviewsTab from '@/components/seeker/SeekerProfileReviewsTab';
 
 const TabButton = ({ icon: Icon, isActive, onClick }: { icon: React.ElementType, isActive: boolean, onClick: () => void }) => (
@@ -41,21 +43,52 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleShare = async () => {
+    const userName = user?.name || firebaseUser?.displayName || 'ผู้ใช้';
+    const userBio = profileData.bio || 'ดูโปรไฟล์ของฉันบนแอปของเราสิ!';
+    
     const shareData = {
-      title: `โปรไฟล์ของ ${user?.name}`,
-      text: `ดูโปรไฟล์ของ ${user?.name} บนแอปของเราสิ!`,
+      title: `โปรไฟล์ของ ${userName}`,
+      text: `${userBio}`,
       url: window.location.href,
     };
+
     try {
-      if (navigator.share) {
+      // ใช้ Web Share API ถ้ามี
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
-      } else {
+      } 
+      // ใช้ Clipboard API ถ้ามี
+      else if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(window.location.href);
-        alert('คัดลอกลิงก์โปรไฟล์แล้ว!');
+        alert('คัดลอกลิงก์โปรไฟล์แล้ว! คุณสามารถแชร์ลิงก์นี้ได้');
+      } 
+      // Fallback สำหรับเบราว์เซอร์เก่า
+      else {
+        // สร้าง input ซ่อนเพื่อคัดลอก
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('คัดลอกลิงก์โปรไฟล์แล้ว! คุณสามารถแชร์ลิงก์นี้ได้');
       }
     } catch (error) {
       console.error('Error sharing profile:', error);
-      alert('ไม่สามารถแชร์โปรไฟล์ได้');
+      
+      // Fallback สำหรับกรณีที่ Clipboard API ไม่ทำงาน
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('คัดลอกลิงก์โปรไฟล์แล้ว! คุณสามารถแชร์ลิงก์นี้ได้');
+      } catch (fallbackError) {
+        console.error('Fallback copy failed:', fallbackError);
+        alert('ไม่สามารถแชร์โปรไฟล์ได้ กรุณาลองใหม่อีกครั้ง');
+      }
     }
   };
 
@@ -121,6 +154,7 @@ const ProfilePage: React.FC = () => {
           <div className="flex justify-around">
             <TabButton icon={User} isActive={activeTab === 'about'} onClick={() => setActiveTab('about')} />
             <TabButton icon={Briefcase} isActive={activeTab === 'experience'} onClick={() => setActiveTab('experience')} />
+            <TabButton icon={Image} isActive={activeTab === 'portfolio'} onClick={() => setActiveTab('portfolio')} />
             <TabButton icon={Star} isActive={activeTab === 'reviews'} onClick={() => setActiveTab('reviews')} />
           </div>
         </div>
@@ -129,6 +163,7 @@ const ProfilePage: React.FC = () => {
         <div className="p-4">
           {activeTab === 'about' && <ProfileAboutTab />}
           {activeTab === 'experience' && <ProfileExperienceTab />}
+          {activeTab === 'portfolio' && <ProfilePortfolioTab />}
           {activeTab === 'reviews' && <ProfileReviewsTab />}
         </div>
 

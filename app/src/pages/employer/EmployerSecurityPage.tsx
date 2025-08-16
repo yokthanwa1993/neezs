@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
-const SecurityPage: React.FC = () => {
+const EmployerSecurityPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -79,4 +79,4 @@ const SecurityPage: React.FC = () => {
   );
 };
 
-export default SecurityPage;
+export default EmployerSecurityPage;

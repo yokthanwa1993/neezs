@@ -1,234 +1,175 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { MapPin, MoreHorizontal, Search, Filter, Users, Star, Clock, ArrowLeft, Check, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import StarRating from '@/components/StarRating';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Check, Clock, UserRound, Star, MapPin, XCircle, CheckCircle2 } from 'lucide-react';
 
-// Mock data for applicants
-const mockApplicants = [
-  {
-    id: '1',
-    name: 'น้องมายด์',
-    avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-    rating: 4.8,
-    distance: '1.2 km',
-    appliedDate: '2 วันที่แล้ว',
-    status: 'pending',
-    experience: '3 ปี',
-    skills: ['Video Editing', 'After Effects', 'Premiere Pro']
-  },
-  {
-    id: '2',
-    name: 'พี่เก่ง',
-    avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704e',
-    rating: 4.5,
-    distance: '3.5 km',
-    appliedDate: '1 วันที่แล้ว',
-    status: 'reviewed',
-    experience: '5 ปี',
-    skills: ['Video Production', 'Motion Graphics']
-  },
-  {
-    id: '3',
-    name: 'คุณสมศักดิ์',
-    avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704f',
-    rating: 5.0,
-    distance: '5.1 km',
-    appliedDate: '3 ชั่วโมงที่แล้ว',
-    status: 'pending',
-    experience: '7 ปี',
-    skills: ['Professional Editing', 'Color Grading', 'Sound Design']
-  },
-  {
-    id: '4',
-    name: 'น้องฝน',
-    avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704a',
-    rating: 4.2,
-    distance: '8.0 km',
-    appliedDate: '5 วันที่แล้ว',
-    status: 'pending',
-    experience: '2 ปี',
-    skills: ['Basic Editing', 'YouTube Content']
-  },
-  {
-    id: '5',
-    name: 'คุณวิชัย',
-    avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704b',
-    rating: 4.9,
-    distance: '0.8 km',
-    appliedDate: '1 วันที่แล้ว',
-    status: 'shortlisted',
-    experience: '6 ปี',
-    skills: ['Cinema 4D', 'Advanced Effects', 'Creative Direction']
-  },
-  {
-    id: '6',
-    name: 'น้องน้ำ',
-    avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704c',
-    rating: 4.7,
-    distance: '2.1 km',
-    appliedDate: '4 ชั่วโมงที่แล้ว',
-    status: 'pending',
-    experience: '4 ปี',
-    skills: ['Social Media Content', 'TikTok Editing']
-  },
+// Mock data to simulate job applicants (match reference UI)
+const applicants = [
+    {
+        id: '1',
+        name: 'น้องมายด์',
+        avatarUrl: 'https://i.pravatar.cc/150?u=applicant-1',
+        experienceYears: 3,
+        status: 'pending_review', // รอการตรวจสอบ
+        rating: 4.8,
+        distance: '1.2 km',
+        appliedAgo: 'สมัครเมื่อ 2 วันที่แล้ว',
+        skills: ['Video Editing', 'After Effects', 'Premiere Pro'],
+    },
+    {
+        id: '2',
+        name: 'พี่เก่ง',
+        avatarUrl: 'https://i.pravatar.cc/150?u=applicant-2',
+        experienceYears: 5,
+        status: 'verified', // ตรวจสอบแล้ว
+        rating: 4.5,
+        distance: '3.5 km',
+        appliedAgo: 'สมัครเมื่อ 1 วันที่แล้ว',
+        skills: ['Video Production', 'Motion Graphics'],
+    },
+    {
+        id: '3',
+        name: 'คุณสมศักดิ์',
+        avatarUrl: 'https://i.pravatar.cc/150?u=applicant-3',
+        experienceYears: 7,
+        status: 'pending_review',
+        rating: 5.0,
+        distance: '5.1 km',
+        appliedAgo: 'สมัครเมื่อ 3 ชั่วโมงที่แล้ว',
+        skills: ['Professional Editing', 'Color Grading', 'Sound Design'],
+    },
+    {
+        id: '4',
+        name: 'น้องฝน',
+        avatarUrl: 'https://i.pravatar.cc/150?u=applicant-4',
+        experienceYears: 2,
+        status: 'pending_review',
+        rating: 4.2,
+        distance: '8.0 km',
+        appliedAgo: 'สมัครเมื่อ 5 วันที่แล้ว',
+        skills: ['Basic Editing', 'YouTube Content'],
+    },
+    {
+        id: '5',
+        name: 'คุณวิชัย',
+        avatarUrl: 'https://i.pravatar.cc/150?u=applicant-5',
+        experienceYears: 6,
+        status: 'selected', // คัดเลือกแล้ว
+        rating: 4.9,
+        distance: '0.8 km',
+        appliedAgo: 'สมัครเมื่อ 1 วันที่แล้ว',
+        skills: ['Cinema 4D', 'Advanced Effects', 'Creative Direction'],
+    },
+    {
+        id: '6',
+        name: 'น้องน้ำ',
+        avatarUrl: 'https://i.pravatar.cc/150?u=applicant-6',
+        experienceYears: 4,
+        status: 'pending_review',
+        rating: 4.7,
+        distance: '2.1 km',
+        appliedAgo: 'สมัครเมื่อ 4 ชั่วโมงที่แล้ว',
+        skills: ['Social Media Content', 'TikTok Editing'],
+    },
 ];
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'reviewed': return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'shortlisted': return 'bg-green-100 text-green-800 border-green-200';
-    default: return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
+const EmployerJobApplicants: React.FC = () => {
+    const navigate = useNavigate();
 
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'pending': return 'รอการตรวจสอบ';
-    case 'reviewed': return 'ตรวจสอบแล้ว';
-    case 'shortlisted': return 'คัดเลือกแล้ว';
-    default: return 'ไม่ทราบสถานะ';
-  }
-};
+    const renderStatus = (status: string) => {
+        switch (status) {
+            case 'pending_review':
+                return (
+                    <div className="flex items-center text-amber-600 text-sm font-medium">
+                        <Clock className="w-4 h-4 mr-1" /> รอการตรวจสอบ
+                    </div>
+                );
+            case 'verified':
+                return (
+                    <div className="flex items-center text-emerald-700 text-sm font-medium">
+                        <Check className="w-4 h-4 mr-1" /> ตรวจสอบแล้ว
+                    </div>
+                );
+            case 'selected':
+                return (
+                    <div className="flex items-center text-blue-700 text-sm font-medium">
+                        <UserRound className="w-4 h-4 mr-1" /> คัดเลือกแล้ว
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
 
-const ApplicantCard = ({ applicant }: { applicant: typeof mockApplicants[0] }) => {
-  const navigate = useNavigate();
+    return (
+        <div className="min-h-screen bg-gray-50/50">
+            <header className="bg-white border-b sticky top-0 z-10">
+            </header>
+            <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24">
+                <div className="space-y-2">
+                    {applicants.map((applicant) => (
+                        <Card
+                            key={applicant.id}
+                            className="border rounded-xl overflow-hidden cursor-pointer"
+                            onClick={() => navigate(`/employer/applicant/${applicant.id}`)}
+                        >
+                            <CardContent className="p-4">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-16 h-28 flex-shrink-0">
+                                        <img 
+                                            src={applicant.avatarUrl} 
+                                            alt={applicant.name}
+                                            className="w-full h-full object-cover rounded-lg"
+                                        />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-bold text-gray-900 text-base">{applicant.name}</h3>
+                                            <span className="text-sm text-gray-600">ประสบการณ์ {applicant.experienceYears} ปี</span>
+                                        </div>
+                                        <div className="mt-1">{renderStatus(applicant.status)}</div>
 
-  return (
-    <div
-      className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group"
-    >
-      <div
-        className="cursor-pointer"
-        onClick={() => navigate(`/employer/applicant/${applicant.id}`)}
-      >
-        <div className="flex items-start gap-5">
-          <div className="relative">
-            <div className="w-16 h-[114px] overflow-hidden rounded-2xl bg-gray-200">
-              <img
-                src={applicant.avatarUrl}
-                alt={applicant.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-            <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-              applicant.status === 'shortlisted' ? 'bg-green-500' : 
-              applicant.status === 'reviewed' ? 'bg-blue-500' : 'bg-yellow-500'
-            }`}></div>
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <h3 className="font-bold text-lg text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                  {applicant.name}
-                </h3>
-                <p className="text-sm text-gray-500 mb-1">ประสบการณ์ {applicant.experience}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(applicant.status)}`}>
-                  {getStatusText(applicant.status)}
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4 mb-3">
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                <span className="text-sm font-medium text-gray-700">{applicant.rating}</span>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <MapPin size={14} />
-                <span>{applicant.distance}</span>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <Clock size={14} />
-                <span>สมัครเมื่อ {applicant.appliedDate}</span>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-1">
-              {applicant.skills.slice(0, 3).map((skill, index) => (
-                <span key={index} className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-md">
-                  {skill}
-                </span>
-              ))}
-              {applicant.skills.length > 3 && (
-                <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-md">
-                  +{applicant.skills.length - 3} เพิ่มเติม
-                </span>
-              )}
-            </div>
-          </div>
+                                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-700">
+                                            <div className="flex items-center gap-1">
+                                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                                <span className="font-medium">{applicant.rating}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <MapPin className="w-4 h-4 text-gray-500" />
+                                                <span>{applicant.distance}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-2 text-sm text-gray-700">
+                                            <span>{applicant.appliedAgo} </span>
+                                            <span className="whitespace-pre-wrap">{applicant.skills.join(' ')}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <button
+                                            className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg border text-sm text-gray-700 hover:bg-gray-50"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <XCircle className="w-4 h-4 mr-1" /> ปฏิเสธ
+                                        </button>
+                                        <button
+                                            className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-yellow-400 text-black text-sm font-semibold hover:bg-yellow-500"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <CheckCircle2 className="w-4 h-4 mr-1" /> ยืนยัน
+                                        </button>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </main>
         </div>
-      </div>
-      <div className="mt-4 pt-4 border-t border-gray-100 flex gap-3">
-        <Button 
-          variant="outline" 
-          className="w-full flex items-center justify-center gap-2 border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
-        >
-          <X className="w-4 h-4" />
-          <span>ปฏิเสธ</span>
-        </Button>
-        <Button 
-          className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white"
-        >
-          <Check className="w-4 h-4" />
-          <span>ยืนยัน</span>
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const EmployerJobApplicants = () => {
-  const { jobId } = useParams<{ jobId: string }>();
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-
-  const jobTitle = "ตัดต่อวีดีโอ";
-  
-  const filteredApplicants = mockApplicants.filter(applicant => {
-    const matchesSearch = applicant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         applicant.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesFilter = filterStatus === 'all' || applicant.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
-
-  const stats = {
-    total: mockApplicants.length,
-    pending: mockApplicants.filter(a => a.status === 'pending').length,
-    reviewed: mockApplicants.filter(a => a.status === 'reviewed').length,
-    shortlisted: mockApplicants.filter(a => a.status === 'shortlisted').length,
-  };
-
-  return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-
-      </div>
-
-      {/* Content */}
-      <main className="flex-1 overflow-y-auto p-6">
-        {filteredApplicants.length > 0 ? (
-          <div className="space-y-4">
-            {filteredApplicants.map((applicant) => (
-              <ApplicantCard key={applicant.id} applicant={applicant} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">ไม่พบผู้สมัครงาน</h3>
-            <p className="text-gray-500">ลองเปลี่ยนคำค้นหาหรือตัวกรองดู</p>
-          </div>
-        )}
-      </main>
-    </div>
-  );
+    );
 };
 
 export default EmployerJobApplicants;

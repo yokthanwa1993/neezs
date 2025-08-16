@@ -45,29 +45,19 @@ const EmployerJobUpload: React.FC = () => {
         setImages(prev => prev.filter((_, i) => i !== idx));
     };
 
-    const handlePostJob = () => {
-        const getWageTypeText = () => {
-            switch(wageType) {
-                case 'per_hour': return '/ชั่วโมง';
-                case 'per_day': return '/วัน';
-                case 'lump_sum': return 'เหมา';
-                default: return '';
-            }
-        }
-        
-        const newJob = {
-            title: aiPrompt.substring(0, 30) + (aiPrompt.length > 30 ? '...' : ''),
-            description: `${aiPrompt}\n\nวันที่: ${date ? format(date, "PPP", { locale: th }) : 'N/A'}\nเวลา: ${time || 'N/A'}`,
-            location: locationDetails?.address || 'Online',
-            price: `฿${wage} ${getWageTypeText()}`,
-            lat: locationDetails?.lat || 0,
-            lng: locationDetails?.lng || 0,
-            images,
-        };
-        
-        addJob(newJob);
-        alert('ประกาศงานเรียบร้อยแล้ว!');
-        navigate('/employer/home');
+    const handleNext = () => {
+        navigate('/employer/job-summary', {
+            state: {
+                aiPrompt,
+                locationMode: location.state.locationMode,
+                locationDetails: location.state.locationDetails,
+                wage: location.state.wage,
+                wageType: location.state.wageType,
+                date: location.state.date,
+                time: location.state.time,
+                images: images,
+            },
+        });
     };
 
     if (!aiPrompt) {
@@ -137,10 +127,10 @@ const EmployerJobUpload: React.FC = () => {
                         <X className="h-6 w-6" />
                     </Button>
                     <Button
-                        onClick={handlePostJob}
+                        onClick={handleNext}
                         className="w-full h-12 text-lg font-bold flex-1 bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg"
                     >
-                        ประกาศงาน
+                        ถัดไป
                     </Button>
                 </div>
             </footer>

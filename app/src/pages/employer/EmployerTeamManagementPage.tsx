@@ -12,7 +12,7 @@ const teamMembers = [
   { name: 'คุณวิชัย มีสุข', email: 'wichai.m@techsolutions.co', role: 'HR', avatar: 'https://i.pravatar.cc/150?u=wichai' },
 ];
 
-const TeamManagementPage: React.FC = () => {
+const EmployerTeamManagementPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -71,4 +71,4 @@ const TeamManagementPage: React.FC = () => {
   );
 };
 
-export default TeamManagementPage;
+export default EmployerTeamManagementPage;

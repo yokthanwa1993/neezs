@@ -23,10 +23,6 @@ const mapContainerStyle = {
 
 const mapOptions = {
   disableDefaultUI: true,
-  zoomControl: true,
-  fullscreenControl: false,
-  streetViewControl: false,
-  mapTypeControl: false,
 };
 
 export const JobsMap = ({ jobs, selectedJob, onSelectJob }: JobsMapProps) => {

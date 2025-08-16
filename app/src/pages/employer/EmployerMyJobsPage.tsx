@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import StoryCard from '@/components/StoryCard';
 import '@/styles/utilities.css';
 
-type Applicant = { src: string; rating?: number; name?: string };
+type Seeker = { src: string; rating?: number; name?: string };
 
 const mockJobs = {
   active: [
@@ -22,7 +22,7 @@ const mockJobs = {
         { src: 'https://i.pravatar.cc/150?u=c', rating: 4, name: 'gxlfntw6119' },
         { src: 'https://i.pravatar.cc/150?u=d', rating: 3, name: 'คมกริช จงไกรจักร' },
         { src: 'https://i.pravatar.cc/150?u=e', rating: 5, name: 'ปู ฟองเบียร์' },
-      ] as Applicant[], 
+      ] as Seeker[], 
       images: [
         'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80', 
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80'
@@ -38,7 +38,7 @@ const mockJobs = {
         { src: 'https://i.pravatar.cc/150?u=f', rating: 5, name: 'Nicha' },
         { src: 'https://i.pravatar.cc/150?u=g', rating: 3, name: 'Pattarawat' },
         { src: 'https://i.pravatar.cc/150?u=h', rating: 4, name: 'Saran' },
-      ] as Applicant[], 
+      ] as Seeker[], 
       images: [
         'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200&q=80', 
         'https://images.unsplash.com/photo-1603712725038-92c104815203?w=1200&q=80'
@@ -52,7 +52,7 @@ const mockJobs = {
       applicants: 0, 
       status: 'Draft', 
       location: 'เอ็มควอเทียร์', 
-      applicantAvatars: [] as Applicant[], 
+      applicantAvatars: [] as Seeker[], 
       images: [
         'https://images.unsplash.com/photo-1511920183276-5941b6fb4513?w=1200&q=80', 
         'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=1200&q=80'
@@ -69,7 +69,7 @@ const mockJobs = {
       applicantAvatars: [
         { src: 'https://i.pravatar.cc/150?u=i', rating: 5, name: 'Mild' },
         { src: 'https://i.pravatar.cc/150?u=j', rating: 4, name: 'June' },
-      ] as Applicant[], 
+      ] as Seeker[], 
       images: [
         'https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=1200&q=80', 
         'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1200&q=80'
@@ -133,7 +133,7 @@ const JobCard = ({ job }: { job: any }) => {
                       name="Create story"
                     />
                   </div>
-                  {job.applicantAvatars.map((app: Applicant, index: number) => (
+                  {job.applicantAvatars.map((app: Seeker, index: number) => (
                     <div key={index} style={{ flex: `0 0 ${basisValue}` }}>
                       <StoryCard
                         background={job.images[index % job.images.length]}

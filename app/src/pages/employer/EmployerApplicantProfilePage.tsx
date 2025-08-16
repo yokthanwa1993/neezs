@@ -6,26 +6,111 @@ import StarRating from '@/components/StarRating';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
-// Mock data for a detailed applicant profile
-const mockApplicantProfile = {
-  id: '1',
-  name: 'น้องมายด์',
-  avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-  rating: 4.8,
-  reviews: 25,
-  distance: '1.2 km',
-  location: 'กรุงเทพมหานคร',
-  title: 'นักตัดต่อวิดีโอ & ช่างภาพ',
-  bio: 'สวัสดีค่ะ มายด์เป็นฟรีแลนซ์ตัดต่อวิดีโอและช่างภาพ มีประสบการณ์ 3 ปีในการสร้างสรรค์คอนเทนต์สำหรับโซเชียลมีเดียและงานอีเวนต์ค่ะ',
-  skills: ['Video Editing', 'Photography', 'Premiere Pro', 'Photoshop', 'After Effects'],
-  portfolio: [
-    { type: 'image', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80' },
-    { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
-    { type: 'image', url: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=800&q=80' },
-    { type: 'video', url: 'https://videos.pexels.com/video-files/3209828/3209828-hd_1280_720_25fps.mp4', thumbnail: 'https://images.pexels.com/videos/3209828/pictures/preview.jpg' },
-    { type: 'image', url: 'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?w=800&q=80' },
-    { type: 'image', url: 'https://images.unsplash.com/photo-1509343256512-d77a5cb3791b?w=800&q=80' },
-  ]
+// Mock data for all applicants
+const applicantsData = {
+  '1': {
+    id: '1',
+    name: 'น้องมายด์',
+    avatarUrl: 'https://i.pravatar.cc/150?u=applicant-1',
+    rating: 4.8,
+    reviews: 25,
+    distance: '1.2 km',
+    location: 'กรุงเทพมหานคร',
+    title: 'นักตัดต่อวิดีโอ & ช่างภาพ',
+    bio: 'สวัสดีค่ะ มายด์เป็นฟรีแลนซ์ตัดต่อวิดีโอและช่างภาพ มีประสบการณ์ 3 ปีในการสร้างสรรค์คอนเทนต์สำหรับโซเชียลมีเดียและงานอีเวนต์ค่ะ',
+    skills: ['Video Editing', 'After Effects', 'Premiere Pro'],
+    portfolio: [
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=800&q=80' },
+      { type: 'video', url: 'https://videos.pexels.com/video-files/3209828/3209828-hd_1280_720_25fps.mp4', thumbnail: 'https://images.pexels.com/videos/3209828/pictures/preview.jpg' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1509343256512-d77a5cb3791b?w=800&q=80' },
+    ]
+  },
+  '2': {
+    id: '2',
+    name: 'พี่เก่ง',
+    avatarUrl: 'https://i.pravatar.cc/150?u=applicant-2',
+    rating: 4.5,
+    reviews: 18,
+    distance: '3.5 km',
+    location: 'กรุงเทพมหานคร',
+    title: 'นักผลิตวิดีโอ & Motion Graphics',
+    bio: 'สวัสดีครับ ผมเป็นนักผลิตวิดีโอและ Motion Graphics มีประสบการณ์ 5 ปี ทำงานกับบริษัทใหญ่หลายแห่งครับ',
+    skills: ['Video Production', 'Motion Graphics'],
+    portfolio: [
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=800&q=80' },
+    ]
+  },
+  '3': {
+    id: '3',
+    name: 'คุณสมศักดิ์',
+    avatarUrl: 'https://i.pravatar.cc/150?u=applicant-3',
+    rating: 5.0,
+    reviews: 32,
+    distance: '5.1 km',
+    location: 'กรุงเทพมหานคร',
+    title: 'ผู้เชี่ยวชาญการตัดต่อ & Color Grading',
+    bio: 'สวัสดีครับ ผมเป็นผู้เชี่ยวชาญด้านการตัดต่อวิดีโอและ Color Grading มีประสบการณ์ 7 ปี ทำงานในวงการภาพยนตร์ครับ',
+    skills: ['Professional Editing', 'Color Grading', 'Sound Design'],
+    portfolio: [
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=800&q=80' },
+    ]
+  },
+  '4': {
+    id: '4',
+    name: 'น้องฝน',
+    avatarUrl: 'https://i.pravatar.cc/150?u=applicant-4',
+    rating: 4.2,
+    reviews: 12,
+    distance: '8.0 km',
+    location: 'กรุงเทพมหานคร',
+    title: 'นักตัดต่อวิดีโอ & Content Creator',
+    bio: 'สวัสดีค่ะ ฝนเป็นนักตัดต่อวิดีโอและ Content Creator มีประสบการณ์ 2 ปี เน้นงาน YouTube และโซเชียลมีเดียค่ะ',
+    skills: ['Basic Editing', 'YouTube Content'],
+    portfolio: [
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
+    ]
+  },
+  '5': {
+    id: '5',
+    name: 'คุณวิชัย',
+    avatarUrl: 'https://i.pravatar.cc/150?u=applicant-5',
+    rating: 4.9,
+    reviews: 28,
+    distance: '0.8 km',
+    location: 'กรุงเทพมหานคร',
+    title: 'Creative Director & 3D Artist',
+    bio: 'สวัสดีครับ ผมเป็น Creative Director และ 3D Artist มีประสบการณ์ 6 ปี ทำงานในวงการโฆษณาและภาพยนตร์ครับ',
+    skills: ['Cinema 4D', 'Advanced Effects', 'Creative Direction'],
+    portfolio: [
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=800&q=80' },
+    ]
+  },
+  '6': {
+    id: '6',
+    name: 'น้องน้ำ',
+    avatarUrl: 'https://i.pravatar.cc/150?u=applicant-6',
+    rating: 4.7,
+    reviews: 15,
+    distance: '2.1 km',
+    location: 'กรุงเทพมหานคร',
+    title: 'Social Media Content Creator',
+    bio: 'สวัสดีค่ะ น้ำเป็น Social Media Content Creator มีประสบการณ์ 4 ปี เน้นงาน TikTok และ Instagram ค่ะ',
+    skills: ['Social Media Content', 'TikTok Editing'],
+    portfolio: [
+      { type: 'image', url: 'https://i.pravatar.cc/150?u=applicant-6' },
+      { type: 'image', url: 'https://images.unsplash.com/photo-1516876437184-593fda40c7c4?w=800&q=80' },
+    ]
+  }
 };
 
 const EmployerApplicantProfilePage = () => {
@@ -34,8 +119,8 @@ const EmployerApplicantProfilePage = () => {
   const [activeTab, setActiveTab] = useState('about');
 
 
-  // In a real app, you would fetch applicant data based on applicantId
-  const applicant = mockApplicantProfile;
+  // Get applicant data based on applicantId
+  const applicant = applicantsData[applicantId as keyof typeof applicantsData] || applicantsData['1'];
 
   const renderContent = () => {
     switch (activeTab) {
@@ -146,19 +231,19 @@ const EmployerApplicantProfilePage = () => {
               </div>
             </div>
             <div className="mt-6 flex justify-center space-x-4">
-              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex flex-col items-center justify-center">
+              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 flex flex-col items-center justify-center">
                 <MessageCircle size={32} strokeWidth={2.5} />
               </Button>
-              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex flex-col items-center justify-center">
+              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 flex flex-col items-center justify-center">
                 <Phone size={32} strokeWidth={2.5} />
               </Button>
-              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex flex-col items-center justify-center">
+              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 flex flex-col items-center justify-center">
                 <Video size={32} strokeWidth={2.5} />
               </Button>
-              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex flex-col items-center justify-center">
+              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 flex flex-col items-center justify-center">
                 <Share2 size={32} strokeWidth={2.5} />
               </Button>
-              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 flex flex-col items-center justify-center">
+              <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-gray-300 text-gray-700 hover:bg-gray-400 flex flex-col items-center justify-center">
                 <Star size={32} strokeWidth={2.5} />
               </Button>
             </div>
@@ -184,12 +269,7 @@ const EmployerApplicantProfilePage = () => {
         
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-white border-t">
-         <Button className="w-full h-12 text-lg rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-semibold shadow-md hover:from-amber-500 hover:to-yellow-600">
-            <UserCheck className="h-5 w-5 mr-2" />
-            ยืนยัน
-        </Button>
-      </div>
+
 
     </div>
   );

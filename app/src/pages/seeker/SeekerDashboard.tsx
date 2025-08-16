@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Search, FileText, MessageSquare, User, LogOut } from 'lucide-react';
 
-const ApplicantDashboard: React.FC = () => {
+const SeekerDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -17,28 +17,28 @@ const ApplicantDashboard: React.FC = () => {
       title: 'ค้นหางาน',
       description: 'หางานที่เหมาะกับคุณ',
       icon: Search,
-      path: '/applicant/jobs',
+      path: '/jobs',
       color: 'bg-primary',
     },
     {
-      title: 'งานที่สมัคร',
-      description: 'ติดตามสถานะการสมัคร',
+      title: 'งานของฉัน',
+      description: 'ติดตามตารางกะงาน',
       icon: FileText,
-      path: '/applicant/applications',
+      path: '/my-shifts',
       color: 'bg-green-500',
     },
     {
       title: 'แชท',
       description: 'สื่อสารกับนายจ้าง',
       icon: MessageSquare,
-      path: '/applicant/chat',
+      path: '/chat',
       color: 'bg-purple-500',
     },
     {
       title: 'โปรไฟล์',
       description: 'จัดการข้อมูลส่วนตัว',
       icon: User,
-      path: '/applicant/profile',
+      path: '/profile',
       color: 'bg-orange-500',
     },
   ];
@@ -141,4 +141,4 @@ const ApplicantDashboard: React.FC = () => {
   );
 };
 
-export default ApplicantDashboard;
+export default SeekerDashboard;

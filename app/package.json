@@ -91,7 +91,7 @@
   },
   "scripts": {
     "dev": "pnpm run dev:frontend",
-    "dev:frontend": "vite --port 32100",
+    "dev:frontend": "vite --port 32100 --host 0.0.0.0",
     "dev:backend": "cd server && node index.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

@@ -46,7 +46,8 @@
         touch-action: manipulation;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
-        user-select: none;
+        -moz-user-select: none;
+             user-select: none;
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior: none;
         position: fixed;
@@ -66,9 +67,9 @@
       }
     </style>
   </head>
-
   <body>
     <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
     <!-- Runtime app config -->
     <script src="/app-config.js"></script>
     <script>
@@ -109,6 +110,5 @@
         }
       });
     </script>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
