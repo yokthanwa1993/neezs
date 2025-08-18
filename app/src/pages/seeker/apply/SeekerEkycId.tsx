@@ -167,13 +167,11 @@ const SeekerEkycId: React.FC = () => {
           ) : (
             <div className="w-full">
               <img src={idCardImage} alt="ID Card Preview" className="w-full rounded-xl border" />
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex justify-center">
                 <Button type="button" variant="outline" onClick={retake} className="h-11 rounded-full font-semibold">
                   <RefreshCw className="h-4 w-4 mr-2" /> ถ่ายใหม่
                 </Button>
-                <Button onClick={handleNext} className="flex-1 h-11 rounded-full font-semibold bg-gradient-to-r from-amber-400 to-yellow-500 text-black hover:from-amber-500 hover:to-yellow-600">
-                  ถัดไป
-                </Button>
+                {/* Removed inline Next button as requested */}
               </div>
             </div>
           )}
