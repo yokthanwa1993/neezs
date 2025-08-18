@@ -3,26 +3,49 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Upload, X, Loader2, ArrowLeft } from 'lucide-react';
-import { useJobs } from '@/contexts/JobContext';
 import { Input } from '@/components/ui/input';
-import { apiClient } from '@neeiz/api-client';
-import { format } from 'date-fns';
-import { th } from 'date-fns/locale';
+import { storage, db, auth } from '@/lib/firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { collection, doc } from 'firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 
 const EmployerJobUpload: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { addJob } = useJobs();
-    const { aiPrompt, locationMode, locationDetails, wage, wageType, date, time } = location.state || {};
+    const { aiPrompt } = location.state || {};
+    const { user } = useAuth();
 
     const [images, setImages] = useState<string[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     
-    const uploadFile = async (file: File) => {
-        const fd = new FormData();
-        fd.append('file', file);
-        const res = await apiClient.post('/api/jobs/upload', fd);
-        return res.data.url as string;
+    const uploadFile = async (file: File): Promise<string> => {
+        // ตรวจสอบว่า user login แล้วหรือไม่
+        if (!user || !auth.currentUser) {
+            throw new Error('กรุณาเข้าสู่ระบบก่อนอัปโหลดรูปภาพ');
+        }
+
+        return new Promise((resolve, reject) => {
+            // ใช้ Firebase Firestore doc().id แทน uuid
+            const uniqueId = doc(collection(db, 'temp')).id;
+            const fileName = `jobs/${uniqueId}-${file.name}`;
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    // Optional: handle progress
+                }, 
+                (error) => {
+                    console.error('Upload error:', error);
+                    reject(error);
+                }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        resolve(downloadURL);
+                    });
+                }
+            );
+        });
     };
 
     const handleImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,26 +69,32 @@ const EmployerJobUpload: React.FC = () => {
     };
 
     const handleNext = () => {
-        navigate('/employer/job-summary', {
+        navigate('/employer/home', {
             state: {
                 aiPrompt,
-                locationMode: location.state.locationMode,
-                locationDetails: location.state.locationDetails,
-                wage: location.state.wage,
-                wageType: location.state.wageType,
-                date: location.state.date,
-                time: location.state.time,
-                images: images,
+                images,
+                step: 2, // Start the location selection step
             },
         });
     };
 
     if (!aiPrompt) {
         React.useEffect(() => {
-            navigate('/employer/add-job');
+            navigate('/employer/home');
         }, [navigate]);
         return null;
     }
+
+    // Redirect to login if user is not authenticated
+    React.useEffect(() => {
+        if (!user) {
+            // Redirect to login page after a short delay
+            const timer = setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [user, navigate]);
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center">
@@ -76,12 +105,21 @@ const EmployerJobUpload: React.FC = () => {
                         <CardDescription>เพิ่มรูปภาพเพื่อดึงดูดผู้สมัคร (ไม่บังคับ)</CardDescription>
                     </CardHeader>
                     <CardContent className="p-8">
-                        <label htmlFor="image-upload" className="cursor-pointer block border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-primary hover:bg-primary/5 transition-colors">
-                            <Upload className="mx-auto h-16 w-16 text-gray-400" />
-                            <p className="mt-4 text-lg text-gray-600">คลิกเพื่ออัปโหลด</p>
-                            <p className="text-sm text-gray-500 mt-1">PNG, JPG, GIF</p>
-                        </label>
-                        <Input id="image-upload" type="file" className="hidden" multiple accept="image/*" onChange={handleImagesChange} disabled={isUploading} />
+                        {!user ? (
+                            <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-yellow-800 font-medium">กรุณาเข้าสู่ระบบก่อนอัปโหลดรูปภาพ</p>
+                                <p className="text-yellow-600 text-sm mt-1">ระบบจะนำคุณไปยังหน้าล็อกอิน</p>
+                            </div>
+                        ) : (
+                            <>
+                                <label htmlFor="image-upload" className="cursor-pointer block border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-primary hover:bg-primary/5 transition-colors">
+                                    <Upload className="mx-auto h-16 w-16 text-gray-400" />
+                                    <p className="mt-4 text-lg text-gray-600">คลิกเพื่ออัปโหลด</p>
+                                    <p className="text-sm text-gray-500 mt-1">PNG, JPG, GIF</p>
+                                </label>
+                                <Input id="image-upload" type="file" className="hidden" multiple accept="image/*" onChange={handleImagesChange} disabled={isUploading} />
+                            </>
+                        )}
                         
                         {isUploading && (
                             <div className="mt-6 flex items-center justify-center text-lg text-gray-600">
@@ -121,7 +159,7 @@ const EmployerJobUpload: React.FC = () => {
                      <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => navigate('/employer/home')}
+                        onClick={() => navigate('/employer/add-job')}
                         className="h-12 w-12 rounded-full bg-black text-white hover:bg-gray-800"
                     >
                         <X className="h-6 w-6" />

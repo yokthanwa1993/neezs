@@ -7,16 +7,13 @@ const EmployerBottomNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Hide bottom nav on full-screen flow pages
-  if (location.pathname.startsWith('/employer/add-job')) {
-    return null;
-  }
+  // Keep bottom nav visible on all employer pages per new mapping
 
   // ตัวอย่างจำนวนแจ้งเตือนค้างอ่าน (ภายหลังสามารถเชื่อมต่อ API/สถานะจริงได้)
   const unreadNotifications = 3;
 
   const navItems = [
-    { path: '/employer/home', label: 'JOBS', icon: Briefcase }, // เปลี่ยน path ตรงนี้
+    { path: '/employer/my-jobs', label: 'JOBS', icon: Briefcase },
     { path: '/employer/chat', label: 'แชท', icon: MessageCircle },
     { path: 'add-job-trigger', icon: Plus, isCentral: true },
     { path: '/employer/notifications', label: 'แจ้งเตือน', icon: Bell, badge: unreadNotifications },
@@ -34,7 +31,7 @@ const EmployerBottomNavigation = () => {
                 <div 
                   key={item.path}
                   className="flex justify-center"
-                  onClick={() => navigate('/employer/add-job')}
+                  onClick={() => navigate('/employer/home')}
                 >
                   <div className="relative -top-6 flex items-center justify-center h-16 w-16 bg-yellow-400 rounded-full cursor-pointer shadow-lg hover:bg-yellow-500 transition-all duration-200 border-4 border-white">
                     <IconComponent className="text-black" size={32} strokeWidth={2.5} />

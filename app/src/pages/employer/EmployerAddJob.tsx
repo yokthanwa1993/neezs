@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Bot, X, MapPin, Pencil, Home, Globe, Search, ArrowLeft, Loader2, LocateFixed } from 'lucide-react';
+import { Bot, X, MapPin, Pencil, Home, Globe, Search, Loader2, LocateFixed, ChevronLeft } from 'lucide-react';
 import { GoogleMap, LoadScript, useLoadScript } from '@react-google-maps/api';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 import { runtimeConfig } from '@/lib/runtimeConfig';
@@ -24,18 +25,15 @@ const SearchOverlay: React.FC<{ onSelectPlace: (address: string) => void; onBack
     });
 
     return (
-        <div className="fixed inset-0 bg-white z-50 flex flex-col">
-            <header className="flex items-center p-2 border-b shrink-0 gap-2">
-                <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back">
-                    <ArrowLeft className="h-6 w-6" />
-                </Button>
-                <div className="relative flex-1">
+        <div className="fixed inset-0 bg-white z-50 flex flex-col pb-20">
+            <header className="p-4 pb-2 shrink-0">
+                <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <Input
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         disabled={!ready}
-                        placeholder="ค้นหาที่อยู่..."
+                        placeholder="ค้นหาที่อยู่หรือสถานที่"
                         className="w-full pl-10"
                         autoFocus
                     />
@@ -58,20 +56,30 @@ const SearchOverlay: React.FC<{ onSelectPlace: (address: string) => void; onBack
                 </ul>
                 )}
             </main>
+            <footer className="p-4 border-t">
+                <Button onClick={onBack} className="w-full h-12 text-lg font-bold bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg">
+                    ย้อนกลับ
+                </Button>
+            </footer>
         </div>
     )
 }
 
 const AddJob: React.FC = () => {
-    const [step, setStep] = useState(1);
+    const navigate = useNavigate();
+    const location = useLocation();
+    
+    const initialState = location.state || {};
+    const [step, setStep] = useState(initialState.step || 1);
     const [locationMode, setLocationMode] = useState<'onsite' | 'online' | null>(null);
-    const [aiPrompt, setAiPrompt] = useState('');
+    const [aiPrompt, setAiPrompt] = useState(initialState.aiPrompt || '');
+    const [images, setImages] = useState(initialState.images || []);
     const [locationDetails, setLocationDetails] = useState<{ lat: number; lng: number; address: string } | null>(null);
     const [mapCenter, setMapCenter] = useState({ lat: 13.736717, lng: 100.523186 });
     const [isSearching, setIsSearching] = useState(false);
-    const navigate = useNavigate();
+
     const mapRef = useRef<google.maps.Map | null>(null);
-    const debounceTimer = useRef<NodeJS.Timeout>();
+    const debounceTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: runtimeConfig.googleMapsApiKey,
@@ -126,11 +134,17 @@ const AddJob: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoaded]);
 
+
+
     const handleNext = () => {
         if (isSearching) return;
 
         if (step === 1) {
-            setStep(2);
+            navigate('/employer/job-upload', {
+                state: {
+                    aiPrompt,
+                }
+            });
             return;
         }
         
@@ -141,6 +155,7 @@ const AddJob: React.FC = () => {
                 navigate('/employer/job-schedule', {
                     state: {
                         aiPrompt,
+                        images,
                         locationMode,
                         locationDetails: null
                     }
@@ -151,6 +166,7 @@ const AddJob: React.FC = () => {
                 navigate('/employer/job-schedule', {
                     state: {
                         aiPrompt,
+                        images,
                         locationMode,
                         locationDetails
                     }
@@ -165,6 +181,7 @@ const AddJob: React.FC = () => {
         navigate('/employer/job-schedule', {
             state: {
                 aiPrompt,
+                images,
                 locationMode: 'online',
                 locationDetails: null
             }
@@ -232,7 +249,7 @@ const AddJob: React.FC = () => {
                         </Button>
                     </div>
                 </div>
-                <footer className="w-full border-t p-4 bg-white shrink-0">
+                <footer className="w-full border-t p-4 bg-white shrink-0 pb-24">
                     <div className="mb-3">
                         <p className="font-semibold text-lg">Delivery address</p>
                         <div className="flex justify-between items-start mt-1">
@@ -247,7 +264,6 @@ const AddJob: React.FC = () => {
                             onClick={handleClose}
                             className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center p-0 hover:bg-black/90"
                             type="button"
-                            style={{ minWidth: 56, minHeight: 56 }}
                         >
                             <X className="w-9 h-9 font-bold" strokeWidth={3} />
                         </Button>
@@ -288,6 +304,15 @@ const AddJob: React.FC = () => {
                             rows={10}
                             className="resize-y text-base"
                             />
+                            <div className="mt-4 pt-4 border-t">
+                                <Button
+                                    onClick={handleNext}
+                                    className="w-full h-12 text-lg font-bold bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg"
+                                    disabled={!aiPrompt.trim()}
+                                >
+                                    ถัดไป
+                                </Button>
+                            </div>
                         </div>
                     </>
                 )}
@@ -332,21 +357,31 @@ const AddJob: React.FC = () => {
                             </div>
                         </button>
                         </div>
+                        <div className="mt-6 pt-4 border-t">
+                            <Button
+                                onClick={handleNext}
+                                className="w-full h-12 text-lg font-bold bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg"
+                                disabled={!locationMode}
+                            >
+                                ถัดไป
+                            </Button>
+                        </div>
                     </div>
                 )}
             </div>
+            {step === 2 && (
             <footer className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto w-full">
                 <div className="flex gap-3 w-full items-center">
                 <Button
-                    onClick={() => navigate(-1)}
+                    onClick={handleClose}
                     className="h-14 w-14 rounded-full bg-gray-200 text-black flex items-center justify-center p-0 hover:bg-gray-300"
                     type="button"
                     style={{ minWidth: 56, minHeight: 56 }}
                 >
-                    <ArrowLeft className="w-9 h-9 font-bold" strokeWidth={3} />
+                    <ChevronLeft className="w-9 h-9 font-bold" strokeWidth={3} />
                 </Button>
                 <Button
-                    onClick={handleClose}
+                    onClick={() => navigate('/employer/my-jobs')}
                     className="h-14 w-14 rounded-full bg-black text-white flex items-center justify-center p-0 hover:bg-black/90"
                     type="button"
                     style={{ minWidth: 56, minHeight: 56 }}
@@ -356,16 +391,14 @@ const AddJob: React.FC = () => {
                 <Button
                     onClick={handleNext}
                     className="h-14 flex-1 text-lg font-bold"
-                    disabled={
-                        (step === 1 && !aiPrompt.trim()) ||
-                        (step === 2 && !locationMode)
-                    }
+                    disabled={!locationMode}
                     type="button"
                 >
-                    {step === 2 && locationMode === 'onsite' ? 'ยืนยัน' : 'ถัดไป'}
+                    {locationMode === 'onsite' ? 'ยืนยัน' : 'ถัดไป'}
                 </Button>
                 </div>
             </footer>
+            )}
         </div>
     );
 };

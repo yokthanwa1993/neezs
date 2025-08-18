@@ -21,6 +21,9 @@
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": false,
 
+    /* Type resolution */
+    "typeRoots": ["../node_modules/@types", "./node_modules/@types"],
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

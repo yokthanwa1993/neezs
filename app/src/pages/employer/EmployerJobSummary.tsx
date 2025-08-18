@@ -34,12 +34,12 @@ const EmployerJobSummary: React.FC = () => {
         
         addJob(newJob);
         alert('ประกาศงานเรียบร้อยแล้ว!');
-        navigate('/employer/home', { replace: true });
+        navigate('/employer/add-job', { replace: true });
     };
 
     if (!aiPrompt) {
         React.useEffect(() => {
-            navigate('/employer/add-job');
+            navigate('/employer/home');
         }, [navigate]);
         return null;
     }

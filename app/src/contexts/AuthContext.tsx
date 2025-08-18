@@ -9,6 +9,7 @@ interface User {
   name: string;
   picture?: string;
   email?: string;
+  role?: 'seeker' | 'employer';
 }
 
 const devUser: User = {
@@ -16,6 +17,7 @@ const devUser: User = {
   name: 'นักพัฒนา ทดสอบ',
   email: 'dev@example.com',
   picture: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face',
+  role: 'seeker',
 };
 
 interface AuthContextType {
@@ -55,14 +57,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
       if (fbUser) {
+        const idTokenResult = await fbUser.getIdTokenResult();
+        const userRole = (idTokenResult.claims.role as 'seeker' | 'employer') || 'seeker';
+        
         const userData: User = {
           id: fbUser.uid,
           name: fbUser.displayName || 'ผู้ใช้',
           email: fbUser.email || '',
           picture: fbUser.photoURL || undefined,
+          role: userRole,
         };
         setUser(userData);
         localStorage.setItem('auth_user', JSON.stringify(userData));

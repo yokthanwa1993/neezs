@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check, Clock, UserRound, Star, MapPin, XCircle, CheckCircle2 } from 'lucide-react';
+import { Check, Clock, User, Star, MapPin, XCircle, CheckCircle2 } from 'lucide-react';
 
 // Mock data to simulate job applicants (match reference UI)
 const applicants = [
@@ -95,7 +95,7 @@ const EmployerJobApplicants: React.FC = () => {
             case 'selected':
                 return (
                     <div className="flex items-center text-blue-700 text-sm font-medium">
-                        <UserRound className="w-4 h-4 mr-1" /> คัดเลือกแล้ว
+                        <User className="w-4 h-4 mr-1" /> คัดเลือกแล้ว
                     </div>
                 );
             default:
@@ -153,13 +153,13 @@ const EmployerJobApplicants: React.FC = () => {
                                             className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg border text-sm text-gray-700 hover:bg-gray-50"
                                             onClick={(e) => e.stopPropagation()}
                                         >
-                                            <XCircle className="w-4 h-4 mr-1" /> ปฏิเสธ
+                                            <XCircle className="w-4 h-4 mr-1" /> ปฏิเสธผู้สมัคร
                                         </button>
                                         <button
                                             className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-yellow-400 text-black text-sm font-semibold hover:bg-yellow-500"
                                             onClick={(e) => e.stopPropagation()}
                                         >
-                                            <CheckCircle2 className="w-4 h-4 mr-1" /> ยืนยัน
+                                            <CheckCircle2 className="w-4 h-4 mr-1" /> ยืนยันผู้สมัคร
                                         </button>
                                     </div>
                                 </div>

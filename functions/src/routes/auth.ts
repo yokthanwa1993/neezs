@@ -7,7 +7,7 @@ const router = Router();
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, role = 'seeker' } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ message: 'Missing required fields: email, password, name' });
@@ -19,12 +19,16 @@ router.post('/register', async (req: Request, res: Response) => {
       displayName: name,
     });
 
+    // Set custom claims
+    await auth.setCustomUserClaims(userRecord.uid, { role });
+
     const customToken = await auth.createCustomToken(userRecord.uid);
 
     res.status(201).json({ 
       message: 'User created successfully',
       uid: userRecord.uid,
-      customToken 
+      customToken,
+      role
     });
   } catch (error: any) {
     console.error('Registration error:', error);
@@ -43,11 +47,46 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const userRecord = await auth.getUserByEmail(email);
     const customToken = await auth.createCustomToken(userRecord.uid);
+    const role = (userRecord.customClaims as { role?: string })?.role || 'seeker';
 
     res.status(200).json({
       message: 'Login successful',
       uid: userRecord.uid,
-      customToken
+      customToken,
+      role
+    });
+  } catch (error: any) {
+    console.error('Login error:', error);
+    if ((error as any).code === 'auth/user-not-found') {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /api/auth/employer/login
+router.post('/employer/login', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Missing required field: email' });
+    }
+
+    const userRecord = await auth.getUserByEmail(email);
+    const role = (userRecord.customClaims as { role?: string })?.role;
+
+    if (role !== 'employer') {
+      return res.status(403).json({ message: 'Forbidden: Access is denied' });
+    }
+
+    const customToken = await auth.createCustomToken(userRecord.uid);
+
+    res.status(200).json({
+      message: 'Login successful',
+      uid: userRecord.uid,
+      customToken,
+      role
     });
   } catch (error: any) {
     console.error('Login error:', error);

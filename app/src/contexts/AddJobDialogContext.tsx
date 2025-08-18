@@ -14,7 +14,7 @@ export const useAddJobDialog = () => {
 };
 
 export const AddJobDialogProvider = ({ children }: { children: ReactNode }) => {
-  const openAddJobDialog = () => { window.location.href = '/employer/add-job' }
+  const openAddJobDialog = () => { window.location.href = '/employer/home' }
 
   return (
     <AddJobDialogContext.Provider value={{ openAddJobDialog }}>

@@ -97,7 +97,7 @@ const SeekerHome = () => {
                     </button>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                    {jobs.slice(0, 4).map((job) => (
+                    {jobs.slice(0, 20).map((job) => (
                         <Card key={job.id} className="overflow-hidden rounded-2xl shadow-lg border-none group w-full cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
                             <div className="relative">
                                 <img src={job.imageUrls[0]} alt={job.title} className="w-full h-32 object-cover" />

@@ -41,6 +41,7 @@ import ChangeEmailPage from './pages/ChangeEmailPage';
 import RoleLayoutWrapper from './components/shared/RoleLayoutWrapper';
 import EmployerJobApplicants from './pages/employer/EmployerJobApplicants';
 import EmployerApplicantProfilePage from './pages/employer/EmployerApplicantProfilePage';
+import EmployerJobDetail from './pages/employer/EmployerJobDetail';
 import { JobProvider } from './contexts/JobContext';
 import EmployerJobSchedule from './pages/employer/EmployerJobSchedule';
 // import EmployerJobPublish from './pages/employer/EmployerJobPublish.tsx';
@@ -52,6 +53,9 @@ import SeekerCategorySelection from './pages/seeker/apply/SeekerCategorySelectio
 import OnboardingFlow from './pages/shared/OnboardingFlow';
 import SeekerEkycId from './pages/seeker/apply/SeekerEkycId';
 import SeekerEkycFace from './pages/seeker/apply/SeekerEkycFace';
+import EmployerSeekerSelection from './pages/employer/EmployerSeekerSelection';
+import EmployerSeekerProfile from './pages/employer/EmployerSeekerProfile';
+import EmployerLogin from './components/shared/EmployerLogin';
 
 const AppContent = () => {
   const { user, isLoading } = useAuth();
@@ -86,6 +90,7 @@ const AppContent = () => {
       <Route path="/" element={<AppLayout><DevPage /></AppLayout>} />
       <Route path="/welcome" element={<OnboardingFlow />} />
       <Route path="/login" element={<AppLayout><LineLogin onLoginSuccess={() => navigate('/role-selection')} /></AppLayout>} />
+      <Route path="/employer-login" element={<AppLayout><EmployerLogin onLoginSuccess={() => navigate('/employer/profile')} /></AppLayout>} />
       <Route path="/callback" element={<AppLayout><LineCallback /></AppLayout>} />
       
       {/* Protected routes with specific layouts */}
@@ -118,9 +123,13 @@ const AppContent = () => {
       <Route path="/seeker/apply/ekyc-id" element={<SeekerEkycId />} />
       <Route path="/seeker/apply/ekyc-face" element={<SeekerEkycFace />} />
       
-      {/* Employer Routes (wrapped with layout, except add-job) */}
-      <Route path="/employer/add-job" element={<EmployerAddJob />} />
-      <Route path="/employer/home" element={<EmployerLayout><EmployerHome /></EmployerLayout>} />
+      {/* Employer Routes: home is the Add Job page, my-jobs is the job list */}
+      <Route path="/employer/home" element={<EmployerLayout><EmployerAddJob /></EmployerLayout>} />
+      <Route path="/employer/add-job" element={<Navigate to="/employer/home" replace />} />
+      <Route path="/employer/my-jobs" element={<EmployerLayout><EmployerMyJobsPage /></EmployerLayout>} />
+      <Route path="/employer/job/:jobId/seekers" element={<EmployerLayout><EmployerSeekerSelection /></EmployerLayout>} />
+      <Route path="/employer/seeker/:seekerId/profile" element={<EmployerLayout><EmployerSeekerProfile /></EmployerLayout>} />
+      <Route path="/employer/job/:jobId/detail" element={<EmployerLayout><EmployerJobDetail /></EmployerLayout>} />
       <Route path="/employer/job/:jobId/applicants" element={<EmployerLayout><EmployerJobApplicants /></EmployerLayout>} />
       <Route path="/employer/applicant/:applicantId" element={<EmployerLayout><EmployerApplicantProfilePage /></EmployerLayout>} />
       <Route path="/employer/my-jobs" element={<EmployerLayout><EmployerMyJobsPage /></EmployerLayout>} />

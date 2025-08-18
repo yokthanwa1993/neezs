@@ -16,7 +16,7 @@ const RoleSelection: React.FC = () => {
     if (role === 'applicant') {
       navigate('/home');
     } else {
-      navigate('/employer/home');
+      navigate('/employer/add-job');
     }
   };
 

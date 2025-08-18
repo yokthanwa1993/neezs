@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBvRiVMDAeqAKiylft59YPwc90oFz-WCXo",
@@ -36,6 +37,7 @@ let app;
 let auth;
 let db;
 let analytics;
+let storage;
 
 try {
   app = initializeApp(firebaseConfig);
@@ -57,6 +59,8 @@ try {
     analytics = getAnalytics(app);
   }
   
+  storage = getStorage(app);
+
   console.log('✅ Firebase initialized successfully');
   console.log('🔥 Project ID:', firebaseConfig.projectId);
 } catch (error) {
@@ -64,5 +68,5 @@ try {
   throw new Error('Firebase configuration is invalid. Please check your environment variables.');
 }
 
-export { auth, db, analytics };
+export { auth, db, analytics, storage };
 export default app;

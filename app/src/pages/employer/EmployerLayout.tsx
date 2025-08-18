@@ -3,7 +3,11 @@ import { Outlet } from 'react-router-dom';
 import EmployerBottomNavigation from '@/components/employer/EmployerBottomNavigation';
 import AppLayout from '@/components/shared/AppLayout';
 
-const EmployerLayout = ({ children }: { children?: ReactNode }) => {
+interface EmployerLayoutProps {
+  children?: ReactNode;
+}
+
+const EmployerLayout = ({ children }: EmployerLayoutProps) => {
   return (
     <AppLayout footer={<EmployerBottomNavigation />}>
       {children ?? <Outlet />}

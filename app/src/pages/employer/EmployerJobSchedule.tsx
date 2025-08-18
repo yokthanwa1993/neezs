@@ -11,8 +11,9 @@ type LocationDetails = { lat: number; lng: number; address: string } | null;
 const EmployerJobSchedule: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { aiPrompt, locationMode, locationDetails } = (location.state || {}) as {
+  const { aiPrompt, images, locationMode, locationDetails } = (location.state || {}) as {
     aiPrompt?: string;
+    images?: string[];
     locationMode?: 'onsite' | 'online' | null;
     locationDetails?: LocationDetails;
   };
@@ -24,7 +25,7 @@ const EmployerJobSchedule: React.FC = () => {
   // ป้องกันเข้าหน้านี้โดยตรงโดยไม่มีข้อมูลก่อนหน้า
   useEffect(() => {
     if (!aiPrompt || !locationMode) {
-      navigate('/employer/add-job', { replace: true });
+      navigate('/employer/home', { replace: true });
     }
   }, [aiPrompt, locationMode, navigate]);
 
@@ -41,6 +42,7 @@ const EmployerJobSchedule: React.FC = () => {
     navigate('/employer/job-wage', {
       state: {
         aiPrompt,
+        images,
         locationMode,
         locationDetails: (locationDetails || null) as LocationDetails,
         date,

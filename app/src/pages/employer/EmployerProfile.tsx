@@ -11,12 +11,12 @@ import { Button } from '@/components/ui/button';
 import EmployerProfileSettingsTab from './EmployerProfileSettingsTab';
 
 const EmployerProfile: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const companyProfile = {
-    name: 'เทค โซลูชั่นส์ จำกัด',
-    logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop&crop=center',
+    name: user?.name || 'เทค โซลูชั่นส์ จำกัด',
+    logo: user?.picture || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop&crop=center',
     bio: 'สร้างสรรค์โซลูชั่นดิจิทัลนวัตกรรมสำหรับธุรกิจทั่วโลก เรากำลังมองหาคนรุ่นใหม่มาร่วมทีม!',
     stats: {
       jobsPosted: 15,
@@ -24,6 +24,26 @@ const EmployerProfile: React.FC = () => {
       applicants: 258,
     },
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p>กำลังโหลด...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 text-center">
+        <h2 className="text-xl font-bold mb-4">กรุณาเข้าสู่ระบบ</h2>
+        <p className="text-gray-600 mb-6">คุณต้องเข้าสู่ระบบเพื่อดูโปรไฟล์ของคุณ</p>
+        <Button onClick={() => navigate('/employer-login')}>
+          ไปที่หน้าเข้าสู่ระบบ
+        </Button>
+      </div>
+    );
+  }
 
   const handleShare = async () => {
     const shareData = {

@@ -1,13 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MapPin, PlayCircle, UserCheck, Grid3x3, Clapperboard, UserSquare2, Briefcase, MessageCircle, Phone, Star, Video, Share2 } from 'lucide-react';
+import { MapPin, PlayCircle, UserCheck, Grid, Clapperboard, UserSquare2, Briefcase, MessageCircle, Phone, Star, Video, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import StarRating from '@/components/StarRating';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
+// Types
+type PortfolioItem = {
+  type: 'image' | 'video';
+  url: string;
+  thumbnail?: string;
+};
+
+type Applicant = {
+  id: string;
+  name: string;
+  avatarUrl: string;
+  rating: number;
+  reviews: number;
+  distance: string;
+  location: string;
+  title: string;
+  bio: string;
+  skills: string[];
+  portfolio: PortfolioItem[];
+};
+
 // Mock data for all applicants
-const applicantsData = {
+const applicantsData: Record<string, Applicant> = {
   '1': {
     id: '1',
     name: 'น้องมายด์',
@@ -153,7 +174,7 @@ const EmployerApplicantProfilePage = () => {
           <div className="grid grid-cols-3 gap-1">
             {applicant.portfolio.map((item, index) => (
               <div key={index} className="relative aspect-square">
-                <img src={item.type === 'video' ? item.thumbnail : item.url} alt={`Portfolio item ${index + 1}`} className="w-full h-full object-cover" />
+                <img src={item.type === 'video' ? (item.thumbnail ?? item.url) : item.url} alt={`Portfolio item ${index + 1}`} className="w-full h-full object-cover" />
                 {item.type === 'video' && (
                   <div className="absolute top-1 right-1">
                     <Clapperboard className="w-4 h-4 text-white" />
