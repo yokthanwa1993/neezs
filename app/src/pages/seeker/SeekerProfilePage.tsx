@@ -25,7 +25,7 @@ const TabButton = ({ icon: Icon, isActive, onClick }: { icon: React.ElementType,
 );
 
 const ProfilePage: React.FC = () => {
-  const { user, firebaseUser, logout, hardRefresh } = useAuth();
+  const { user, firebaseUser, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('about');
 
@@ -35,7 +35,7 @@ const ProfilePage: React.FC = () => {
     jobsApplied: 15,
     rating: 4.8,
     savedJobs: 5,
-    bio: 'นักศึกษาจบใหม่ มีความสนใจในงานบริการและงานขาย มีความกระตือรือร้นและพร้อมเรียนรู้งาน',
+    bio: 'นักศึกษาจบใหม่ มีความสนใจในงานบริการและงานขาย มีความกระตือร้นและพร้อมเรียนรู้งาน',
   };
 
   const walletData = {
@@ -176,18 +176,16 @@ const ProfilePage: React.FC = () => {
               onClick={async () => {
                 if (confirm('ต้องการออกจากระบบและล้างแคชทั้งหมดหรือไม่?')) {
                   await logout();
-                  window.location.replace('/');
+                  // ถ้าอยู่ใน LIFF ให้ปิดหน้าต่าง แทนการ redirect
+                  if (window.liff && typeof window.liff.closeWindow === 'function') {
+                    try { window.liff.closeWindow(); } catch {}
+                  } else {
+                    window.location.replace('/');
+                  }
                 }
               }}
             >
               ออกจากระบบ
-            </Button>
-            <Button
-              variant="secondary"
-              className="w-full mt-2"
-              onClick={async ()=>{ await hardRefresh(); }}
-            >
-              รีเฟรช (ล้างแคชหน้าเว็บ)
             </Button>
           </div>
         )}

@@ -120,7 +120,7 @@ const LineCallback: React.FC = () => {
       console.log('🔄 Redirecting to home page...');
 
       // Redirect to home page
-      navigate('/');
+      navigate('/home', { replace: true });
 
     } catch (error: any) {
       console.error('LINE callback error:', error);

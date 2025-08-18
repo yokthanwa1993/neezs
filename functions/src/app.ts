@@ -20,6 +20,8 @@ const defaultAllowedOrigins = [
   'https://neeiz-web.lslly.com',
   'https://neeiz-01.web.app',
   'https://neeiz-01.firebaseapp.com',
+  'https://www.neeiz.com',
+  'https://neeiz.com',
 ];
 
 const allowedOrigins = (process.env.CORS_ORIGINS

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { useDevMode } from './contexts/DevModeContext';
+import { useLiff } from './contexts/LiffContext';
 import { AppProviders } from '@/providers/AppProviders';
 import LineLogin from './components/shared/LineLogin';
 import SeekerProfilePage from './pages/seeker/SeekerProfilePage';
@@ -49,39 +50,49 @@ import EmployerJobUpload from './pages/employer/EmployerJobUpload.tsx';
 import EmployerJobWage from './pages/employer/EmployerJobWage';
 import EmployerJobSummary from './pages/employer/EmployerJobSummary';
 import SeekerOtpVerification from './pages/seeker/apply/SeekerOtpVerification';
-import SeekerCategorySelection from './pages/seeker/apply/SeekerCategorySelection';
 import OnboardingFlow from './pages/shared/OnboardingFlow';
 import SeekerEkycId from './pages/seeker/apply/SeekerEkycId';
 import SeekerEkycFace from './pages/seeker/apply/SeekerEkycFace';
+import SeekerBidPrice from './pages/seeker/apply/SeekerBidPrice';
 import EmployerSeekerSelection from './pages/employer/EmployerSeekerSelection';
 import EmployerSeekerProfile from './pages/employer/EmployerSeekerProfile';
 import EmployerLogin from './components/shared/EmployerLogin';
+import SeekerLogin from './components/shared/SeekerLogin';
+import SplashScreen from './components/shared/SplashScreen';
 
 const AppContent = () => {
   const { user, isLoading } = useAuth();
   const { isDevMode } = useDevMode();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLiffLoading } = useLiff();
 
   useEffect(() => {
+    if (isLoading || isLiffLoading) return;
     const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-    if (!onboardingCompleted) {
+    const hasCachedUser = !!localStorage.getItem('auth_user');
+    // Redirect to welcome only on root path and when truly no user/cached user
+    if (location.pathname === '/' && !user && !hasCachedUser && !onboardingCompleted) {
       navigate('/welcome', { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, isLoading, isLiffLoading, user, location.pathname]);
 
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+  if (isLoading || isLiffLoading) {
+    return <SplashScreen />;
   }
 
-  const protectedRoute = (element: React.ReactElement) => {
+  const protectedRoute = (element: React.ReactElement, role: 'seeker' | 'employer' | 'any' = 'any') => {
     if (isDevMode) return element;
-    return user ? element : <Navigate to="/login" replace />;
+    if (!user) {
+      if (role === 'seeker') {
+        return <Navigate to="/seeker-login" replace />;
+      }
+      if (role === 'employer') {
+        return <Navigate to="/employer-login" replace />;
+      }
+      return <Navigate to="/login" replace />;
+    }
+    return element;
   };
 
   return (
@@ -89,7 +100,8 @@ const AppContent = () => {
       {/* Root and Shared Routes */}
       <Route path="/" element={<AppLayout><DevPage /></AppLayout>} />
       <Route path="/welcome" element={<OnboardingFlow />} />
-      <Route path="/login" element={<AppLayout><LineLogin onLoginSuccess={() => navigate('/role-selection')} /></AppLayout>} />
+      <Route path="/login" element={<AppLayout><LineLogin onLoginSuccess={() => navigate('/home')} /></AppLayout>} />
+      <Route path="/seeker-login" element={<AppLayout><SeekerLogin /></AppLayout>} />
       <Route path="/employer-login" element={<AppLayout><EmployerLogin onLoginSuccess={() => navigate('/employer/profile')} /></AppLayout>} />
       <Route path="/callback" element={<AppLayout><LineCallback /></AppLayout>} />
       
@@ -108,8 +120,8 @@ const AppContent = () => {
       <Route path="/home" element={<SeekerLayout><SeekerHome /></SeekerLayout>} />
       <Route path="/profile" element={<SeekerLayout><SeekerProfilePage /></SeekerLayout>} />
       <Route path="/profile/edit" element={<SeekerLayout><SeekerProfileEditPage /></SeekerLayout>} />
-      <Route path="/wallet" element={protectedRoute(<SeekerLayout><SeekerWallet /></SeekerLayout>)} />
-      <Route path="/my-shifts" element={protectedRoute(<SeekerLayout><SeekerMyShifts /></SeekerLayout>)} />
+      <Route path="/wallet" element={protectedRoute(<SeekerLayout><SeekerWallet /></SeekerLayout>, 'seeker')} />
+      <Route path="/my-shifts" element={protectedRoute(<SeekerLayout><SeekerMyShifts /></SeekerLayout>, 'seeker')} />
       <Route path="/job/:id" element={<SeekerLayout><SeekerJobDetail /></SeekerLayout>} />
       <Route path="/jobs" element={<SeekerLayout><SeekerJobFeed /></SeekerLayout>} />
       <Route path="/full-time-jobs" element={<SeekerLayout><SeekerFullTimeJobs /></SeekerLayout>} />
@@ -118,10 +130,11 @@ const AppContent = () => {
       <Route path="/notifications" element={<SeekerLayout><NotificationsPage /></SeekerLayout>} />
       
       {/* Seeker Application Flow */}
-      <Route path="/seeker/apply/otp" element={<SeekerOtpVerification />} />
-      <Route path="/seeker/apply/select-category" element={<SeekerCategorySelection />} />
-      <Route path="/seeker/apply/ekyc-id" element={<SeekerEkycId />} />
-      <Route path="/seeker/apply/ekyc-face" element={<SeekerEkycFace />} />
+      <Route path="/seeker/apply/otp" element={<SeekerLayout><SeekerOtpVerification /></SeekerLayout>} />
+      {/* select-category removed per request */}
+      <Route path="/seeker/apply/ekyc-id" element={<SeekerLayout><SeekerEkycId /></SeekerLayout>} />
+      <Route path="/seeker/apply/ekyc-face" element={<SeekerLayout><SeekerEkycFace /></SeekerLayout>} />
+      <Route path="/seeker/apply/bid" element={<SeekerLayout><SeekerBidPrice /></SeekerLayout>} />
       
       {/* Employer Routes: home is the Add Job page, my-jobs is the job list */}
       <Route path="/employer/home" element={<EmployerLayout><EmployerAddJob /></EmployerLayout>} />

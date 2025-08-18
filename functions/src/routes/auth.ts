@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import admin, { auth, db, bucket } from '../firebase';
 import { randomUUID } from 'crypto';
+import * as functions from 'firebase-functions';
 
 const router = Router();
 
@@ -112,10 +113,44 @@ router.post('/line', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'ID Token is required' });
     }
 
+    // Resolve lineUserId from profile or by verifying id_token
+    let lineUserId = profile?.userId as string | undefined;
+    try {
+      if (!lineUserId) {
+        const channelId = process.env.LINE_CHANNEL_ID || (functions.config?.() as any)?.line?.channel_id;
+        if (!channelId) {
+          console.warn('Missing LINE_CHANNEL_ID; cannot verify id_token to obtain sub');
+        } else {
+          const verifyResp = await fetch('https://api.line.me/oauth2/v2.1/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id_token=${encodeURIComponent(idToken)}&client_id=${encodeURIComponent(channelId)}`
+          });
+          if (verifyResp.ok) {
+            const verifyData = await verifyResp.json() as any;
+            if (verifyData?.sub) {
+              lineUserId = verifyData.sub as string;
+              console.log('✅ Derived lineUserId from id_token verify:', lineUserId);
+            } else {
+              console.warn('LINE verify did not return sub field');
+            }
+          } else {
+            console.warn('LINE verify request failed:', verifyResp.status, await verifyResp.text());
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to verify id_token for lineUserId:', e);
+    }
+
+    // Fallback if still missing
+    if (!lineUserId) {
+      lineUserId = 'line_user_' + Date.now();
+      console.warn('Using fallback lineUserId:', lineUserId);
+    }
+
     // Create or get Firebase user based on LINE profile
     let userRecord;
-    const lineUserId = profile?.userId || 'line_user_' + Date.now();
-    
     console.log('👤 Processing LINE user:', {
       lineUserId,
       displayName: profile?.displayName,
@@ -123,7 +158,7 @@ router.post('/line', async (req: Request, res: Response) => {
     });
     
     try {
-      // Try to get existing user by custom claim
+      // Try to get existing user by derived email
       userRecord = await auth.getUserByEmail(`${lineUserId}@line.com`);
       
       // Update existing user with latest profile data
@@ -178,18 +213,25 @@ router.post('/line', async (req: Request, res: Response) => {
       const userRef = db.collection('users').doc(uid);
       const now = admin.firestore.FieldValue.serverTimestamp();
       const snapshot = await userRef.get();
+      
+      console.log('💾 Writing to Firestore with lineUserId:', lineUserId);
+      
       await userRef.set(
         {
+          uid: uid,
           name: userRecord.displayName || profile?.displayName || 'LINE User',
           email: userRecord.email || '',
           picture: storedPictureUrl || userRecord.photoURL || profile?.pictureUrl || '',
           provider: 'line',
           role: 'seeker',
+          lineUserId: lineUserId || 'missing_line_user_id',
           updatedAt: now,
           ...(snapshot.exists ? {} : { createdAt: now }),
         },
         { merge: true }
       );
+      
+      console.log('✅ Firestore user document written successfully');
     } catch (e) {
       console.warn('Failed to upsert Firestore user doc:', e);
     }
@@ -218,6 +260,47 @@ router.post('/line', async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('LINE authentication error:', error);
     res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /api/auth/line/logout-notify
+router.post('/line/logout-notify', async (req: Request, res: Response) => {
+  try {
+    const { lineUserId, message = 'Logout' } = req.body as { lineUserId?: string; message?: string };
+    if (!lineUserId) {
+      return res.status(400).json({ message: 'lineUserId is required' });
+    }
+
+    const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || (functions.config?.() as any)?.line?.channel_access_token;
+    if (!channelAccessToken) {
+      console.error('Missing LINE_CHANNEL_ACCESS_TOKEN env var');
+      return res.status(500).json({ message: 'Server misconfigured' });
+    }
+
+    const resp = await fetch('https://api.line.me/v2/bot/message/push', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${channelAccessToken}`,
+      },
+      body: JSON.stringify({
+        to: lineUserId,
+        messages: [
+          { type: 'text', text: message }
+        ],
+      }),
+    });
+
+    if (!resp.ok) {
+      const txt = await resp.text();
+      console.error('LINE push error:', resp.status, txt);
+      return res.status(502).json({ message: 'Failed to push message to LINE' });
+    }
+
+    return res.status(200).json({ ok: true });
+  } catch (error: any) {
+    console.error('Logout notify error:', error);
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -272,12 +355,35 @@ router.post('/line-webhook', async (req: Request, res: Response) => {
   try {
     const { events } = req.body;
 
-    if (!events) {
-      return res.status(400).json({ message: 'Missing events' });
+    if (!events || !Array.isArray(events) || events.length === 0) {
+      return res.status(200).json({ message: 'No events to process' });
     }
 
-    // TODO: Process LINE webhook events
-    // TODO: Handle different event types (message, follow, etc.)
+    const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN || (functions.config?.() as any)?.line?.channel_access_token;
+    if (!channelAccessToken) {
+      console.error('Missing LINE_CHANNEL_ACCESS_TOKEN');
+      return res.status(500).json({ message: 'Server misconfigured' });
+    }
+
+    for (const event of events) {
+      if (event.type === 'message' && event.message.type === 'text') {
+        try {
+          await fetch('https://api.line.me/v2/bot/message/reply', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${channelAccessToken}`,
+            },
+            body: JSON.stringify({
+              replyToken: event.replyToken,
+              messages: [{ type: 'text', text: 'Webhook received' }],
+            }),
+          });
+        } catch (replyError) {
+          console.error('Failed to send LINE reply:', replyError);
+        }
+      }
+    }
 
     res.status(200).json({ message: 'Webhook processed' });
   } catch (error: any) {

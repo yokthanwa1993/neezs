@@ -5,7 +5,7 @@ const AppLayout = ({ children, footer }: { children?: ReactNode, footer?: ReactN
   return (
     <div className="min-h-screen bg-[#F3F4F6] flex justify-center">
       <div className="w-full max-w-md min-h-screen shadow-xl flex flex-col">
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-24">
           {children ?? <Outlet />}
         </main>
         {footer}

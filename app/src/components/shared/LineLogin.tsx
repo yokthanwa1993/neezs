@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLiff } from '@/contexts/LiffContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LineLoginProps {
   onLoginSuccess?: () => void;
@@ -7,81 +9,40 @@ interface LineLoginProps {
 
 const LineLogin: React.FC<LineLoginProps> = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLiffReady, isLiffLoading, liff } = useLiff();
+  const { user } = useAuth();
 
   useEffect(() => {
-    initializeLiff();
-  }, []);
-
-  const initializeLiff = async () => {
-    try {
-      // Load LIFF SDK if not already loaded
-      if (!window.liff) {
-        await loadLiffSdk();
-      }
-
-      const liffId = import.meta.env.VITE_LINE_LIFF_ID || '2007840854-rKv5DGlD';
-      console.log('🆔 Using LIFF ID:', liffId);
-
-      // Initialize LIFF
-      await window.liff.init({ liffId });
-
-      // Check if user is already logged in
-      const loggedIn = window.liff.isLoggedIn();
-      setIsLoggedIn(loggedIn);
-
-      if (loggedIn) {
-        console.log('✅ User already logged in to LIFF');
-        // Store token immediately if user is logged in
-        const idToken = window.liff.getIDToken();
-        if (idToken) {
-          console.log('🎫 Storing LIFF token for logged in user');
-          localStorage.setItem('liff_id_token', idToken);
-          
-          // Get user profile and store it
-          try {
-            const profile = await window.liff.getProfile();
-            localStorage.setItem('liff_user_id', profile.userId);
-            localStorage.setItem('liff_display_name', profile.displayName);
-            localStorage.setItem('liff_picture_url', profile.pictureUrl);
-            console.log('👤 Stored LIFF user profile:', profile);
-          } catch (profileError) {
-            console.warn('⚠️ Could not get LIFF profile:', profileError);
-          }
-        }
+    // If authentication completes and we get a user object, proceed.
+    if (user) {
+      console.log('✅ Auth user found, proceeding to login success...');
+      if (onLoginSuccess) {
+        onLoginSuccess();
       } else {
-        console.log('ℹ️ User not logged in to LIFF');
-        // Store initial access timestamp
-        localStorage.setItem('liff_first_access', new Date().toISOString());
+        navigate('/home');
       }
-
-    } catch (error) {
-      console.error('❌ LIFF initialization error:', error);
-    } finally {
-      setIsInitializing(false);
     }
-  };
+  }, [user, onLoginSuccess]);
+
 
   const handleLogin = async () => {
-    try {
-      if (!window.liff) {
-        throw new Error('LIFF SDK not loaded');
-      }
+    if (!isLiffReady || !liff) {
+      alert('LIFF is not ready yet. Please try again in a moment.');
+      return;
+    }
 
-      const redirectUri = new URL('/callback', window.location.origin).toString();
-      
-      if (!redirectUri) {
-        throw new Error('VITE_LINE_REDIRECT_URI environment variable is not set');
+    try {
+      if (liff.isLoggedIn()) {
+        console.log('User is already logged in to LIFF, but auth context is missing. Re-authenticating.');
+        // This case can happen if something went wrong in LiffProvider's auto-login
+        // We can trigger the redirect flow to be safe.
       }
       
+      const redirectUri = new URL('/callback', window.location.origin).toString();
       console.log('🚀 Starting LINE login with redirect:', redirectUri);
 
-      // Store login attempt timestamp
-      localStorage.setItem('liff_login_attempt', new Date().toISOString());
-
       // Start LINE login
-      window.liff.login({ redirectUri });
+      liff.login({ redirectUri });
 
     } catch (error: any) {
       console.error('❌ LINE login error:', error);
@@ -89,25 +50,12 @@ const LineLogin: React.FC<LineLoginProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  const loadLiffSdk = (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
-      script.async = true;
-      
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('ไม่สามารถโหลด LINE SDK ได้'));
-      
-      document.head.appendChild(script);
-    });
-  };
-
-  if (isInitializing) {
+  if (isLiffLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">กำลังโหลด...</p>
+          <p className="text-gray-600">กำลังเชื่อมต่อกับ LINE...</p>
         </div>
       </div>
     );
@@ -129,7 +77,8 @@ const LineLogin: React.FC<LineLoginProps> = ({ onLoginSuccess }) => {
 
           <button
             onClick={handleLogin}
-            className="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors mb-4"
+            disabled={!isLiffReady}
+            className="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors mb-4 disabled:bg-gray-400"
           >
             เข้าสู่ระบบด้วย LINE
           </button>
@@ -142,14 +91,6 @@ const LineLogin: React.FC<LineLoginProps> = ({ onLoginSuccess }) => {
               ← กลับหน้าแรก
             </button>
           </div>
-
-          {isLoggedIn && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-700 text-sm">
-                ✅ คุณได้เข้าสู่ระบบ LIFF แล้ว
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

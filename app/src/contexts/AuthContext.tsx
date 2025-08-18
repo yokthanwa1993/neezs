@@ -84,6 +84,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Notify LINE OA about logout if possible
+      try {
+        let lineUserId: string | null = null;
+        try {
+          if (typeof window !== 'undefined' && (window as any).liff && typeof (window as any).liff.getProfile === 'function') {
+            const profile = await (window as any).liff.getProfile();
+            lineUserId = profile?.userId || null;
+          }
+        } catch {}
+        if (!lineUserId) {
+          lineUserId = localStorage.getItem('liff_user_id');
+        }
+        if (lineUserId) {
+          await fetch('/api/auth/line/logout-notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lineUserId, message: 'Logout' }),
+            // ensure request is sent even if the page is being closed
+            keepalive: true as any,
+          } as any);
+        }
+      } catch {}
+
       await signOut(auth);
       setUser(null);
       setFirebaseUser(null);

@@ -7,7 +7,7 @@ import {
     ArrowLeft, Utensils, ConciergeBell, GlassWater, Store, Soup, Coffee, Sandwich, Landmark, Dog, Palette,
     Baby, Sparkles, Wrench, Phone, Car, GraduationCap, Cog, Popcorn, PartyPopper, Shirt, Stethoscope,
     ClipboardList, Laptop, Gavel, UserCog, Factory, Clipboard, Globe, Megaphone, Scissors, FlaskConical,
-    Shield, HeartPulse, Warehouse, Pencil, MoreHorizontal 
+    Shield, HeartPulse, Warehouse, Pencil, MoreHorizontal, X 
 } from 'lucide-react';
 
 const categories = [
@@ -55,6 +55,9 @@ const SeekerCategorySelection: React.FC = () => {
     const { jobId, phone } = location.state || {};
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [otherValue, setOtherValue] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredCategories = categories.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const handleCategoryToggle = (categoryName: string) => {
         setSelectedCategories(prev =>
@@ -63,6 +66,12 @@ const SeekerCategorySelection: React.FC = () => {
                 : [...prev, categoryName]
         );
     };
+
+    const handleRemoveSelected = (name: string) => {
+        setSelectedCategories(prev => prev.filter(c => c !== name));
+    };
+
+    const handleClearAll = () => setSelectedCategories([]);
 
     const handleSubmit = () => {
         console.log('Applying for job:', jobId);
@@ -85,13 +94,42 @@ const SeekerCategorySelection: React.FC = () => {
     return (
         <div className="min-h-screen bg-white flex flex-col">
             <main className="flex-1 w-full max-w-lg mx-auto p-4 pt-12 pb-24">
-                <div className="text-center mb-10">
+                <div className="text-center mb-6">
                     <h1 className="text-3xl font-bold tracking-tight">คุณถนัดงานประเภทไหน?</h1>
                     <p className="text-muted-foreground mt-2">เลือกประเภทงานที่ใช่สำหรับคุณ (เลือกได้หลายข้อ)</p>
                 </div>
 
+                {/* Search + Clear */}
+                <div className="mb-4 flex items-center gap-2">
+                    <Input
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="ค้นหาประเภทงาน..."
+                        className="h-11"
+                    />
+                    {selectedCategories.length > 0 && (
+                        <Button variant="outline" onClick={handleClearAll} className="h-11">
+                            ล้างทั้งหมด
+                        </Button>
+                    )}
+                </div>
+
+                {/* Selected tags */}
+                {selectedCategories.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2">
+                        {selectedCategories.map((name) => (
+                            <span key={name} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300 text-sm">
+                                {name}
+                                <button onClick={() => handleRemoveSelected(name)} className="ml-1 text-yellow-700 hover:text-yellow-900">
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </span>
+                        ))}
+                    </div>
+                )}
+
                 <div className="flex flex-wrap justify-center gap-3">
-                    {categories.map((category) => {
+                    {filteredCategories.map((category) => {
                         const isSelected = selectedCategories.includes(category.name);
                         return (
                             <button

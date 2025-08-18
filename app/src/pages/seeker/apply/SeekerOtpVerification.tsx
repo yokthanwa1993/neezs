@@ -20,33 +20,31 @@ const SeekerOtpVerification: React.FC = () => {
     const [step, setStep] = useState<'phone' | 'otp'>('phone');
 
     const handleSendOtp = () => {
-        // TODO: Implement actual OTP sending logic here
         console.log(`Sending OTP to ${phone} for job ${jobId}`);
         setStep('otp');
     };
 
     const handleVerifyOtp = () => {
-        // TODO: Implement actual OTP verification logic here
         console.log(`Verifying OTP ${otp}`);
-        navigate('/seeker/apply/select-category', { state: { jobId, phone } });
+        navigate('/seeker/apply/ekyc-id', { state: { jobId, phone } });
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center">
-            <main className="flex-1 w-full max-w-lg mx-auto p-4 flex flex-col justify-center">
-                <Card>
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-3xl font-bold tracking-tight">ยินดีต้อนรับสู่ NEEZS!</CardTitle>
+        <div className="bg-gray-50 flex flex-col">
+            <main className="w-full max-w-lg mx-auto p-4 flex-1 flex items-center justify-center">
+                <Card className="w-full max-w-md">
+                    <CardHeader className="text-center p-5">
+                        <CardTitle className="text-3xl font-extrabold tracking-tight">ยินดีต้อนรับสู่ NEEZS!</CardTitle>
                         <CardDescription className="text-sm text-muted-foreground">
                             เนื่องจากเป็นการสมัครงานครั้งแรก<br/>กรุณายืนยันเบอร์โทรศัพท์เพื่อสร้างโปรไฟล์ที่ปลอดภัยและน่าเชื่อถือ
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6 p-8">
+                    <CardContent className="space-y-6 p-6">
                         {step === 'phone' ? (
                             <div>
-                                <div className="relative">
+                                <div className="relative max-w-sm mx-auto">
                                     <div className="absolute inset-y-0 left-0 flex items-center pl-4 pr-3 pointer-events-none">
-                                        <span className="text-gray-500 text-lg">+66</span>
+                                        <span className="text-gray-500 text-xl">+66</span>
                                     </div>
                                     <Input
                                         id="phone"
@@ -55,29 +53,28 @@ const SeekerOtpVerification: React.FC = () => {
                                         value={phone}
                                         onChange={(e) => {
                                             const value = e.target.value.replace(/\D/g, '');
-                                            // Allow up to 10 digits for a full Thai mobile number
                                             if (value.length <= 10) {
                                                 setPhone(value);
                                             }
                                         }}
-                                        className="h-14 text-2xl pl-16"
+                                        className="h-16 text-2xl pl-16 text-center tracking-widest"
                                     />
                                 </div>
                             </div>
                         ) : (
                             <div>
-                                <label htmlFor="otp" className="block text-lg font-medium text-gray-700 mb-2">
+                                <label htmlFor="otp" className="block text-base font-medium text-gray-700 mb-2 text-center">
                                     รหัส OTP (6 หลัก)
                                 </label>
                                 <div className="flex justify-center">
                                     <InputOTP maxLength={6} value={otp} onChange={setOtp}>
                                         <InputOTPGroup className="gap-2">
-                                            <InputOTPSlot index={0} className="h-14 w-14 rounded-full text-2xl" />
-                                            <InputOTPSlot index={1} className="h-14 w-14 rounded-full text-2xl" />
-                                            <InputOTPSlot index={2} className="h-14 w-14 rounded-full text-2xl" />
-                                            <InputOTPSlot index={3} className="h-14 w-14 rounded-full text-2xl" />
-                                            <InputOTPSlot index={4} className="h-14 w-14 rounded-full text-2xl" />
-                                            <InputOTPSlot index={5} className="h-14 w-14 rounded-full text-2xl" />
+                                            <InputOTPSlot index={0} className="h-12 w-12 rounded-full text-xl" />
+                                            <InputOTPSlot index={1} className="h-12 w-12 rounded-full text-xl" />
+                                            <InputOTPSlot index={2} className="h-12 w-12 rounded-full text-xl" />
+                                            <InputOTPSlot index={3} className="h-12 w-12 rounded-full text-xl" />
+                                            <InputOTPSlot index={4} className="h-12 w-12 rounded-full text-xl" />
+                                            <InputOTPSlot index={5} className="h-12 w-12 rounded-full text-xl" />
                                         </InputOTPGroup>
                                     </InputOTP>
                                 </div>
@@ -86,8 +83,9 @@ const SeekerOtpVerification: React.FC = () => {
                     </CardContent>
                 </Card>
             </main>
-            <footer className="sticky bottom-0 w-full bg-white border-t p-4">
-                <div className="max-w-md mx-auto flex items-center gap-4">
+            {/* Floating actions above bottom navbar */}
+            <div className="fixed left-1/2 -translate-x-1/2 bottom-20 w-full max-w-md px-4 z-40">
+                <div className="flex items-center gap-4">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -98,13 +96,13 @@ const SeekerOtpVerification: React.FC = () => {
                     </Button>
                     <Button
                         onClick={step === 'phone' ? handleSendOtp : handleVerifyOtp}
-                        className="w-full h-12 text-lg font-bold flex-1 bg-yellow-400 text-black hover:bg-yellow-500 rounded-lg"
+                        className="flex-1 h-12 text-lg font-bold rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-black hover:from-amber-500 hover:to-yellow-600"
                         disabled={(step === 'phone' && phone.length < 10) || (step === 'otp' && otp.length < 6)}
                     >
-                        {step === 'phone' ? 'รับรหัส OTP' : 'ยืนยัน'}
+                        {step === 'phone' ? 'ถัดไป' : 'ยืนยัน'}
                     </Button>
                 </div>
-            </footer>
+            </div>
         </div>
     );
 };

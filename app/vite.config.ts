@@ -7,6 +7,12 @@ export default defineConfig(() => ({
   server: {
     host: "::",
     port: 32100,
+    allowedHosts: ["www.neeiz.com", "neeiz.com"],
+    hmr: {
+      host: "www.neeiz.com",
+      protocol: "ws",
+      port: 80,
+    },
     proxy: {
       "/api": {
         // Route dev API calls to production by default so local UI sees real data

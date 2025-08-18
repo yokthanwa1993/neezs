@@ -387,26 +387,25 @@ messages (
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   GitHub        │    │   CapRover      │    │   Domain        │
-│   Repository    │    │   Server        │    │   (DNS)         │
+│   GitHub        │    │   Firebase      │    │   Domain        │
+│   Repository    │    │   Platform      │    │   (DNS)         │
 └─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
           │                       │                       │
           ▼                       ▼                       ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   GitHub        │    │   Docker        │    │   Users         │
-│   Actions       │    │   Containers    │    │   Access        │
+│   GitHub        │    │   Firebase      │    │   Users         │
+│   Actions       │    │   Services      │    │   Access        │
 │   (CI/CD)       │    │                 │    │                 │
-│                 │    │ • neeiz-web     │    │ • Web Platform  │
-│ • Build         │    │ • neeiz-api     │    │ • Mobile App    │
-│ • Test          │    │ • neeiz-mobile  │    │ • API Access    │
-│ • Deploy        │    │ • Database      │    │                 │
+│                 │    │ • Hosting       │    │ • Web Platform  │
+│ • Build         │    │ • Functions     │    │ • Mobile App    │
+│ • Test          │    │ • Firestore     │    │ • API Access    │
+│ • Deploy        │    │ • Storage       │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ### **Deployment URLs:**
-- **Web Platform**: `https://neeiz.lslly.com`
-- **API**: `https://neeiz-api.lslly.com`
-- **Mobile App**: `https://neeiz-app.lslly.com`
+- **Web Platform**: `https://<your-firebase-project-id>.web.app`
+- **API**: Deployed as Firebase Functions
 
 ---
 
@@ -427,7 +426,7 @@ messages (
 
 ### **DevOps:**
 - **Containerization**: Docker
-- **Platform**: CapRover
+- **Platform**: Firebase
 - **CI/CD**: GitHub Actions
 - **Package Manager**: pnpm
 - **Monorepo**: Turborepo
@@ -569,8 +568,8 @@ pnpm dev:api      # Start API server
 
 ### **Production Deployment:**
 ```bash
-# Deploy to CapRover
-git push origin main
+# Deploy to Firebase
+firebase deploy
 ```
 
 ---
